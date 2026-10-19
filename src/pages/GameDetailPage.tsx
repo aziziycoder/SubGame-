@@ -169,6 +169,20 @@ export const GameDetailPage: React.FC = () => {
                   </div>
                 )}
 
+                {/* Torrent Igruha Fast Download Button */}
+                {game.torrentUrl && (
+                  <a
+                    href={game.torrentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/60 font-bold text-sm sm:text-base transition-all"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>O‘yinni yuklab olish (Torrent Igruha)</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                )}
+
                 <div className="flex items-center gap-2.5">
                   {/* Favorite Button */}
                   <button
@@ -545,6 +559,44 @@ export const GameDetailPage: React.FC = () => {
                 Yuklab olish fayli virus va zararlardan toza tekshirilgan.
               </div>
             </div>
+
+            {/* Torrent Igruha Download Card */}
+            {game.torrentUrl && (
+              <div className="bg-gradient-to-b from-[#141821] to-[#0B0D12] rounded-2xl p-5 sm:p-6 border border-emerald-500/30 hover:border-emerald-500/50 transition-all space-y-3.5 shadow-lg">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Download className="w-3.5 h-3.5" />
+                    Bepul Torrent
+                  </span>
+                  <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-semibold border border-emerald-500/30">
+                    Torrent Igruha
+                  </span>
+                </div>
+
+                <h3 className="text-base sm:text-lg font-bold text-white">
+                  O‘yinni yuklab olish (Torrent)
+                </h3>
+
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  O‘yin kompyuteringizda bo‘lmasa, uni Torrent Igruha orqali bepul torrent repack shaklida yuklab olishingiz mumkin.
+                </p>
+
+                <a
+                  href={game.torrentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-[#0B0D12] font-black text-sm transition-all shadow-md hover:scale-[1.01]"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Torrent Igruhadan yuklab olish</span>
+                  <ExternalLink className="w-4 h-4 ml-0.5" />
+                </a>
+
+                <div className="text-[11px] text-gray-400 text-center">
+                  O‘yinni o‘rnatgach, SubGame o‘zbekcha subtitr paketini o‘rnating.
+                </div>
+              </div>
+            )}
 
             {/* Official Store Purchase Card */}
             <div className="bg-[#141821] rounded-2xl p-5 sm:p-6 border border-[#2A3245] space-y-4">

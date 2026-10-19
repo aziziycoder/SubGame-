@@ -31,6 +31,7 @@ export interface Game {
   cover: string;
   cardImage?: string;
   heroImage: string;
+  torrentUrl?: string;
   screenshots: string[];
   shortDescription: string;
   fullDescription: string;
