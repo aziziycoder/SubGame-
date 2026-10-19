@@ -22,43 +22,43 @@ export const GameCard: React.FC<GameCardProps> = ({ game, priority = false }) =>
 
   return (
     <div className="group relative bg-[#1A1F2A] rounded-2xl border border-[#2A3245] hover:border-[#A3E635]/60 transition-all duration-300 hover:shadow-card-glow flex flex-col overflow-hidden">
-      {/* Top Media / Poster */}
-      <Link to={`/games/${game.slug}`} className="relative block aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-[#141821]">
-        <img
-          src={game.cardImage || game.cover}
-          alt={game.title}
-          loading={priority ? 'eager' : 'lazy'}
-          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-        />
-
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1A1F2A] via-transparent to-black/30" />
-
-        {/* Subtitle status badge in top-left */}
-        <div className="absolute top-3 left-3 z-10">
+      {/* Top Header Bar: Status Badge, Version & Favorite button (Outside the image so art and logos are 100% visible) */}
+      <div className="flex items-center justify-between px-3.5 py-2.5 bg-[#141821] border-b border-[#2A3245]">
+        <div className="flex items-center gap-2">
           <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
+          {game.subtitleStatus === 'Tayyor' && (
+            <span className="inline-flex items-center gap-1 text-[11px] font-mono text-[#A3E635] bg-[#0B0D12] px-2 py-0.5 rounded border border-[#A3E635]/30">
+              <ShieldCheck className="w-3 h-3" />
+              <span>{game.subtitleVersion}</span>
+            </span>
+          )}
         </div>
 
-        {/* Favorite toggle button in top-right */}
         <button
           onClick={handleFavoriteClick}
           aria-label={favorited ? 'Sevimlilardan o‘chirish' : 'Sevimlilarga qo‘shish'}
-          className={`absolute top-3 right-3 z-10 p-2.5 rounded-xl backdrop-blur-md transition-all ${
+          className={`p-1.5 rounded-lg transition-all ${
             favorited
               ? 'bg-rose-500/20 text-rose-500 border border-rose-500/40'
-              : 'bg-black/50 text-gray-300 hover:text-white border border-white/10 hover:bg-black/70'
+              : 'text-gray-400 hover:text-white bg-[#0B0D12] hover:bg-white/10 border border-[#2A3245]'
           }`}
         >
           <Heart className={`w-4 h-4 ${favorited ? 'fill-rose-500' : ''}`} />
         </button>
+      </div>
 
-        {/* Subtitle version tag if ready */}
-        {game.subtitleStatus === 'Tayyor' && (
-          <div className="absolute bottom-2.5 left-3 flex items-center gap-1.5 text-xs font-mono text-[#A3E635] bg-[#0B0D12]/80 px-2.5 py-1 rounded-md border border-[#A3E635]/30 backdrop-blur-sm">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Subtitr {game.subtitleVersion}</span>
-          </div>
-        )}
+      {/* Media / Poster: Exact Steam Header 460:215 ratio, 100% Uncropped */}
+      <Link
+        to={`/games/${game.slug}`}
+        className="relative block w-full bg-[#0B0D12] overflow-hidden"
+        style={{ aspectRatio: '460 / 215' }}
+      >
+        <img
+          src={game.cardImage || game.cover}
+          alt={game.title}
+          loading={priority ? 'eager' : 'lazy'}
+          className="w-full h-full object-contain transition-transform duration-500 ease-out group-hover:scale-105"
+        />
       </Link>
 
       {/* Content */}
