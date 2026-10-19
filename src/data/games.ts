@@ -192,30 +192,30 @@ export const GAMES_DATA: Game[] = [
     tags: ['Klassika', 'Yil o‘yini nomzodi', 'Inkvizitsiya', 'O‘zbekcha subtitr']
   },
   {
-    id: 'a-plague-tale-3',
-    slug: 'a-plague-tale-3',
-    title: 'A Plague Tale 3',
+    id: 'a-plague-tale-legacy',
+    slug: 'a-plague-tale-legacy',
+    title: 'A Plague Tale: Legacy',
     cover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/library_600x900.jpg',
     cardImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/header.jpg',
-    heroImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_a8ce48e34efa5b0bbb4fbe6efa601ed7a33f6c23.1920x1080.jpg',
+    heroImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_1429300fd4c86bac7a5abfd31c3e14a4115bf641.1920x1080.jpg',
     screenshots: [
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_1429300fd4c86bac7a5abfd31c3e14a4115bf641.1920x1080.jpg',
       'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_a8ce48e34efa5b0bbb4fbe6efa601ed7a33f6c23.1920x1080.jpg',
       'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_3a36ec0873d4c9be584c99a2a62a41e712bb5e6a.1920x1080.jpg',
-      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_1429300fd4c86bac7a5abfd31c3e14a4115bf641.1920x1080.jpg',
       'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_9cbcd6b81cc32ecf75b36f40b92157da78a19598.1920x1080.jpg'
     ],
-    shortDescription: 'Afsonaviy Plague Tale seriyasining intizorlik bilan kutilayotgan uchinchi qismi. Yangi qahramonlar, qadimiy la‘nat sirlari va omon qolish uchun yangi kurash.',
-    fullDescription: 'A Plague Tale: Innocence va A Plague Tale: Requiem voqealaridan so‘ng, Asobo Studio tomonidan yaratilayotgan franchayzaning navbatdagi epik qismi. Dunyo bo‘ylab millionlab geymerlar qalbini zabt etgan ushbu afsonaviy hikoya yangi qahramonlar, takomillashtirilgan jang mexanikasi va chuqur hissiy voqealari bilan qaytmoqda. SubGame jamoasi o‘yin rasmiy taqdim etilishi bilan birinchilardan bo‘lib to‘liq o‘zbekcha subtitrlarni tayyorlab taqdim etishni rejalashtirgan.',
+    shortDescription: 'Mashhur A Plague Tale olamining yangi sahifasi. Jasur kontrabandachi Sofiya (Sophia) ning Requiem voqealaridan 15 yil avvalgi xavfli, jangovar va sirli sarguzashtlari.',
+    fullDescription: 'Resonance: A Plague Tale Legacy — Asobo Studio va Focus Entertainment tomonidan yaratilgan yangi rasmiy sarguzasht. O‘yin A Plague Tale: Requiem voqealaridan 15 yil oldin bo‘lib o‘tadi va bosh qahramon sifatida jasur kontrabandachi ayol Sofiya (Sophia) gavdalanadi. U afsonaviy Minotavr oroli (Krit)ga yo‘l olib, o‘zining o‘tmishidan qochishga va qadimiy Makula la‘natining sirli ildizlarini ochishga intiladi. Yangilangan jang mexanikasi (xanjarlar, qilichlar, parriylar) va ekshn-sarguzasht uslubi bilan boyitilgan ushbu o‘yin uchun o‘zbekcha subtitrlar tez kunda SubGame platformasida taqdim etiladi.',
     releaseYear: 2026,
     developer: 'Asobo Studio',
     publisher: 'Focus Entertainment',
-    genres: ['Sarguzasht', 'Action', 'Stealth', 'Dramatik hikoya'],
+    genres: ['Sarguzasht', 'Action', 'Jangari', 'Tarixiy drama'],
     platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S'],
     officialStoreLinks: [
       {
         name: 'Steam',
         url: 'https://store.steampowered.com/developer/AsoboStudio',
-        priceNote: 'Rasmiy anonsdan so‘ng e‘lon qilinadi'
+        priceNote: 'Rasmiy do‘konlarda e‘lon qilingan'
       }
     ],
     price: 'Tez kunda',
@@ -234,7 +234,7 @@ export const GAMES_DATA: Game[] = [
       {
         step: 1,
         title: 'O‘yin anonsi va chiqarilishi',
-        description: 'Asobo Studio tomonidan o‘yin rasman taqdim etilishi kutilmoqda.'
+        description: 'Asobo Studio va Focus Entertainment tomonidan o‘yin rasman chiqarilishi kutilmoqda.'
       },
       {
         step: 2,
@@ -243,7 +243,7 @@ export const GAMES_DATA: Game[] = [
       }
     ],
     knownIssues: [
-      'O‘yin hozirda ishlab chiqish bosqichida.'
+      'O‘yin hozirda tayyorlanish bosqichida.'
     ],
     minimumRequirements: {
       os: 'Windows 10 / 11 (64-bit)',
@@ -252,7 +252,7 @@ export const GAMES_DATA: Game[] = [
       graphics: 'GeForce RTX 2060 / Radeon RX 5600 XT',
       directX: 'Versiya 12',
       storage: '60 GB bo‘sh joy',
-      additionalNotes: 'Tizim talablari rasmiy anonsdan so‘ng yangilanadi.'
+      additionalNotes: 'Minimal 1080p sozlamalari uchun mo‘ljallangan.'
     },
     recommendedRequirements: {
       os: 'Windows 11 (64-bit)',
@@ -264,7 +264,7 @@ export const GAMES_DATA: Game[] = [
       additionalNotes: 'Ultra grafik sozlamalari va nurlar treysingi (Ray Tracing) uchun.'
     },
     isFeatured: true,
-    tags: ['Premyera', 'Kutilmoqda', 'Hit o‘yin', 'Tez kunda']
+    tags: ['Premyera', 'Kutilmoqda', 'Sofiya', 'Tez kunda']
   }
 ];
 
