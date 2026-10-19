@@ -29,6 +29,7 @@ export interface Game {
   slug: string;
   title: string;
   cover: string;
+  cardImage?: string;
   heroImage: string;
   screenshots: string[];
   shortDescription: string;

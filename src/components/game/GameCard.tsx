@@ -25,7 +25,7 @@ export const GameCard: React.FC<GameCardProps> = ({ game, priority = false }) =>
       {/* Top Media / Poster */}
       <Link to={`/games/${game.slug}`} className="relative block aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-[#141821]">
         <img
-          src={game.cover}
+          src={game.cardImage || game.cover}
           alt={game.title}
           loading={priority ? 'eager' : 'lazy'}
           className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"

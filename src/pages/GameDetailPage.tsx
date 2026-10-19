@@ -39,8 +39,8 @@ export const GameDetailPage: React.FC = () => {
         <div className="w-16 h-16 rounded-2xl bg-[#1A1F2A] border border-[#2A3245] flex items-center justify-center text-rose-500 mb-4">
           <AlertTriangle className="w-8 h-8" />
         </div>
-        <h1 className="text-3xl font-extrabold text-white mb-2">O‘yin topilmadi</h1>
-        <p className="text-gray-400 mb-6 max-w-md">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">O‘yin topilmadi</h1>
+        <p className="text-gray-400 mb-6 max-w-md text-sm">
           Siz qidirayotgan o‘yin sahifasi mavjud emas yoki manzili o‘zgargan bo‘lishi mumkin.
         </p>
         <Link
@@ -83,25 +83,25 @@ export const GameDetailPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#0B0D12] text-white">
       {/* A. Hero Section with Backdrop Artwork */}
-      <section className="relative min-h-[640px] flex items-end pt-28 sm:pt-32 pb-12 overflow-hidden border-b border-[#2A3245]">
+      <section className="relative min-h-[460px] sm:min-h-[560px] flex items-end pt-24 sm:pt-32 pb-8 sm:pb-12 overflow-hidden border-b border-[#2A3245]">
         {/* Backdrop Image extending behind navbar */}
         <div className="absolute inset-0 z-0">
           <img
             src={game.heroImage}
             alt={game.title}
-            className="w-full h-full object-cover object-center filter brightness-[0.68] contrast-110 scale-105"
+            className="w-full h-full object-cover object-center filter brightness-[0.55] sm:brightness-[0.65] contrast-110 scale-105"
           />
           {/* Smooth bottom blend */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D12] via-[#0B0D12]/45 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D12] via-[#0B0D12]/60 to-transparent" />
           {/* Left gradient for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0B0D12]/90 via-[#0B0D12]/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0B0D12]/95 via-[#0B0D12]/60 to-transparent" />
           {/* Top subtle shade behind navbar */}
-          <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#0B0D12]/70 via-[#0B0D12]/30 to-transparent pointer-events-none" />
+          <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#0B0D12]/80 via-[#0B0D12]/30 to-transparent pointer-events-none" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-xs text-gray-400 mb-6">
+          <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-4 overflow-x-auto whitespace-nowrap scrollbar-none">
             <Link to="/" className="hover:text-white transition-colors">Bosh sahifa</Link>
             <span>/</span>
             <Link to="/games" className="hover:text-white transition-colors">O‘yinlar</Link>
@@ -109,44 +109,43 @@ export const GameDetailPage: React.FC = () => {
             <span className="text-[#A3E635] font-medium">{game.title}</span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
-            {/* Left Cover Poster (3 cols) */}
-            <div className="hidden lg:block lg:col-span-3">
-              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border-2 border-[#2A3245] shadow-2xl bg-[#141821]">
-                <img
-                  src={game.cover}
-                  alt={game.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+          {/* Hero Content: Mobile & Desktop Layout */}
+          <div className="flex flex-col sm:flex-row gap-5 lg:gap-8 items-start sm:items-end">
+            {/* Poster Thumbnail (Shown on both Mobile and Desktop) */}
+            <div className="w-24 sm:w-36 lg:w-48 shrink-0 aspect-[2/3] rounded-xl sm:rounded-2xl overflow-hidden border-2 border-[#2A3245] shadow-2xl bg-[#141821]">
+              <img
+                src={game.cover}
+                alt={game.title}
+                className="w-full h-full object-cover"
+              />
             </div>
 
-            {/* Main Info (9 cols) */}
-            <div className="lg:col-span-9 space-y-4">
-              <div className="flex flex-wrap items-center gap-3">
-                <SubtitleStatusBadge status={game.subtitleStatus} size="md" />
-                <span className="text-xs font-mono text-gray-300 bg-[#141821] px-3 py-1 rounded-full border border-[#2A3245]">
+            {/* Main Info */}
+            <div className="space-y-3.5 flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
+                <span className="text-xs font-mono text-gray-300 bg-[#141821] px-2.5 py-0.5 rounded-full border border-[#2A3245]">
                   {game.releaseYear}
                 </span>
-                <span className="text-xs text-gray-400 bg-[#141821] px-3 py-1 rounded-full border border-[#2A3245]">
+                <span className="text-xs text-gray-400 bg-[#141821] px-2.5 py-0.5 rounded-full border border-[#2A3245]">
                   {game.developer}
                 </span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
                 {game.title}
               </h1>
 
-              <p className="text-sm sm:text-base text-gray-300 leading-relaxed max-w-3xl">
+              <p className="text-xs sm:text-sm lg:text-base text-gray-300 leading-relaxed max-w-3xl line-clamp-3 sm:line-clamp-none">
                 {game.shortDescription}
               </p>
 
               {/* Genre Pills */}
-              <div className="flex flex-wrap gap-2 pt-1">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 pt-1">
                 {game.genres.map((g) => (
                   <span
                     key={g}
-                    className="text-xs px-3 py-1 rounded-lg bg-[#141821] text-gray-300 border border-[#2A3245]"
+                    className="text-xs px-2.5 py-1 rounded-lg bg-[#141821] text-gray-300 border border-[#2A3245]"
                   >
                     {g}
                   </span>
@@ -154,43 +153,47 @@ export const GameDetailPage: React.FC = () => {
               </div>
 
               {/* Primary Action Buttons Bar */}
-              <div className="pt-4 flex flex-wrap items-center gap-3">
+              <div className="pt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 {game.subtitleStatus === 'Tayyor' ? (
                   <button
                     onClick={handleDownloadSubtitle}
-                    className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-sm sm:text-base hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-sm sm:text-base hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
                   >
                     <Download className="w-5 h-5" />
                     <span>Subtitrni yuklab olish (Bepul)</span>
                   </button>
                 ) : (
-                  <div className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30 text-sm font-semibold">
+                  <div className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30 text-sm font-semibold">
                     <Sparkles className="w-4 h-4" />
                     <span>Subtitr tayyorlanmoqda ({game.subtitleStatus})</span>
                   </div>
                 )}
 
-                {/* Favorite Button */}
-                <button
-                  onClick={() => toggleFavorite(game.id)}
-                  aria-label="Sevimlilar"
-                  className={`p-3.5 rounded-xl border transition-all ${
-                    favorited
-                      ? 'bg-rose-500/20 text-rose-500 border-rose-500/40'
-                      : 'bg-[#141821] text-gray-300 hover:text-white border-[#2A3245] hover:border-gray-500'
-                  }`}
-                >
-                  <Heart className={`w-5 h-5 ${favorited ? 'fill-rose-500' : ''}`} />
-                </button>
+                <div className="flex items-center gap-2.5">
+                  {/* Favorite Button */}
+                  <button
+                    onClick={() => toggleFavorite(game.id)}
+                    aria-label="Sevimlilar"
+                    className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-3 sm:p-3.5 rounded-xl border transition-all cursor-pointer ${
+                      favorited
+                        ? 'bg-rose-500/20 text-rose-500 border-rose-500/40'
+                        : 'bg-[#141821] text-gray-300 hover:text-white border-[#2A3245] hover:border-gray-500'
+                    }`}
+                  >
+                    <Heart className={`w-5 h-5 ${favorited ? 'fill-rose-500' : ''}`} />
+                    <span className="sm:hidden text-xs font-semibold">Sevimlilar</span>
+                  </button>
 
-                {/* Share Button */}
-                <button
-                  onClick={handleShare}
-                  aria-label="Ulashish"
-                  className="p-3.5 rounded-xl bg-[#141821] border border-[#2A3245] text-gray-300 hover:text-white hover:border-gray-500 transition-colors relative"
-                >
-                  {shared ? <Check className="w-5 h-5 text-[#A3E635]" /> : <Share2 className="w-5 h-5" />}
-                </button>
+                  {/* Share Button */}
+                  <button
+                    onClick={handleShare}
+                    aria-label="Ulashish"
+                    className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-3 sm:p-3.5 rounded-xl bg-[#141821] border border-[#2A3245] text-gray-300 hover:text-white hover:border-gray-500 transition-colors cursor-pointer"
+                  >
+                    {shared ? <Check className="w-5 h-5 text-[#A3E635]" /> : <Share2 className="w-5 h-5" />}
+                    <span className="sm:hidden text-xs font-semibold">{shared ? 'Nusxalandi' : 'Ulashish'}</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -198,18 +201,18 @@ export const GameDetailPage: React.FC = () => {
       </section>
 
       {/* Main Content Layout */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          {/* Main Body (8 cols) */}
-          <div className="lg:col-span-8 space-y-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+          {/* Main Body (8 cols on desktop) */}
+          <div className="lg:col-span-8 space-y-8 sm:space-y-12">
             {/* B. About the Game */}
-            <section className="bg-[#141821] rounded-2xl p-6 sm:p-8 border border-[#2A3245]">
+            <section className="bg-[#141821] rounded-2xl p-5 sm:p-8 border border-[#2A3245]">
               <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">
                 O‘yin haqida
               </h2>
               <div className="text-sm sm:text-base text-gray-300 leading-relaxed space-y-4">
                 <p>{game.fullDescription}</p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-[#2A3245]/60 text-xs text-gray-400">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 pt-4 border-t border-[#2A3245]/60 text-xs text-gray-400">
                   <div>
                     <span className="block text-gray-500">Ishlab chiquvchi</span>
                     <strong className="text-white text-sm">{game.developer}</strong>
@@ -226,9 +229,9 @@ export const GameDetailPage: React.FC = () => {
               </div>
             </section>
 
-            {/* C. Screenshots Gallery */}
-            <section className="bg-[#141821] rounded-2xl p-6 sm:p-8 border border-[#2A3245]">
-              <div className="flex items-center justify-between mb-6">
+            {/* C. Screenshots Gallery (2x2 on mobile for compact viewing) */}
+            <section className="bg-[#141821] rounded-2xl p-5 sm:p-8 border border-[#2A3245]">
+              <div className="flex items-center justify-between mb-5">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-bold text-white">
                     O‘yin skrinshotlari
@@ -242,7 +245,7 @@ export const GameDetailPage: React.FC = () => {
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 {game.screenshots.map((src, index) => (
                   <div
                     key={index}
@@ -258,7 +261,7 @@ export const GameDetailPage: React.FC = () => {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <span className="text-xs font-bold text-white bg-black/60 px-3 py-1.5 rounded-lg border border-white/20 backdrop-blur-sm">
+                      <span className="text-[11px] sm:text-xs font-bold text-white bg-black/60 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-white/20 backdrop-blur-sm">
                         Kattalashtirish
                       </span>
                     </div>
@@ -268,15 +271,15 @@ export const GameDetailPage: React.FC = () => {
             </section>
 
             {/* E. Uzbek Subtitle In-Depth Details */}
-            <section className="bg-[#141821] rounded-2xl p-6 sm:p-8 border border-[#2A3245]">
-              <div className="flex items-center justify-between mb-6">
+            <section className="bg-[#141821] rounded-2xl p-5 sm:p-8 border border-[#2A3245]">
+              <div className="flex items-center justify-between mb-5">
                 <h2 className="text-xl sm:text-2xl font-bold text-white">
                   O‘zbekcha subtitr haqida
                 </h2>
                 <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
                 <div className="p-4 rounded-xl bg-[#0B0D12] border border-[#2A3245]">
                   <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">
                     Subtitr tili
@@ -301,7 +304,7 @@ export const GameDetailPage: React.FC = () => {
                     Versiya va Sana
                   </span>
                   <strong className="text-sm text-white font-medium">
-                    {game.subtitleVersion} (Yangilangan: {game.subtitleLastUpdated})
+                    {game.subtitleVersion} ({game.subtitleLastUpdated})
                   </strong>
                 </div>
 
@@ -315,12 +318,12 @@ export const GameDetailPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#1A1F2A] border border-[#2A3245] space-y-2 mb-6">
+              <div className="p-4 rounded-xl bg-[#1A1F2A] border border-[#2A3245] space-y-2 mb-4">
                 <div className="flex items-center gap-2 text-xs font-bold text-gray-300 uppercase tracking-wider">
                   <CheckCircle2 className="w-4 h-4 text-[#A3E635]" />
                   <span>Moslik (Compatibility)</span>
                 </div>
-                <p className="text-sm text-gray-300">
+                <p className="text-xs sm:text-sm text-gray-300">
                   {game.subtitleCompatibility}
                 </p>
               </div>
@@ -331,7 +334,7 @@ export const GameDetailPage: React.FC = () => {
                     <AlertTriangle className="w-4 h-4" />
                     <span>Ma‘lum xatolar va cheklovlar</span>
                   </div>
-                  <ul className="list-disc list-inside space-y-1 text-gray-300">
+                  <ul className="list-disc list-inside space-y-1 text-gray-300 text-xs">
                     {game.knownIssues.map((issue, idx) => (
                       <li key={idx}>{issue}</li>
                     ))}
@@ -341,7 +344,7 @@ export const GameDetailPage: React.FC = () => {
             </section>
 
             {/* G. Step-by-Step Installation Guide */}
-            <section className="bg-[#141821] rounded-2xl p-6 sm:p-8 border border-[#2A3245]">
+            <section className="bg-[#141821] rounded-2xl p-5 sm:p-8 border border-[#2A3245]">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-bold text-white">
@@ -351,32 +354,32 @@ export const GameDetailPage: React.FC = () => {
                     Fayllarni to‘g‘ri joylashtirish bo‘yicha bosqichma-bosqich yo‘riqnoma
                   </p>
                 </div>
-                <FolderOpen className="w-6 h-6 text-[#A3E635]" />
+                <FolderOpen className="w-6 h-6 text-[#A3E635] shrink-0" />
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 {game.installationGuide.map((step) => (
                   <div
                     key={step.step}
-                    className="flex gap-4 p-5 rounded-xl bg-[#0B0D12] border border-[#2A3245]"
+                    className="flex gap-3.5 sm:gap-4 p-4 sm:p-5 rounded-xl bg-[#0B0D12] border border-[#2A3245]"
                   >
-                    <div className="w-8 h-8 rounded-full bg-[#A3E635]/20 text-[#A3E635] flex items-center justify-center font-bold text-sm shrink-0 border border-[#A3E635]/40">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#A3E635]/20 text-[#A3E635] flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 border border-[#A3E635]/40">
                       {step.step}
                     </div>
-                    <div className="space-y-2 flex-1">
-                      <h4 className="text-base font-bold text-white">
+                    <div className="space-y-2 flex-1 min-w-0">
+                      <h4 className="text-sm sm:text-base font-bold text-white">
                         {step.title}
                       </h4>
-                      <p className="text-sm text-gray-300 leading-relaxed">
+                      <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
                         {step.description}
                       </p>
 
                       {step.pathOrCommand && (
-                        <div className="mt-2 flex items-center justify-between bg-[#141821] p-2.5 rounded-lg border border-[#2A3245] text-xs font-mono text-gray-300">
-                          <code className="truncate mr-2">{step.pathOrCommand}</code>
+                        <div className="mt-2 flex items-center justify-between bg-[#141821] p-2.5 rounded-lg border border-[#2A3245] text-xs font-mono text-gray-300 min-w-0">
+                          <code className="truncate mr-2 text-[11px] sm:text-xs select-all">{step.pathOrCommand}</code>
                           <button
                             onClick={() => handleCopyPath(step.pathOrCommand!)}
-                            className="p-1.5 rounded hover:bg-[#1A1F2A] text-gray-400 hover:text-white transition-colors shrink-0"
+                            className="p-1.5 rounded hover:bg-[#1A1F2A] text-gray-400 hover:text-white transition-colors shrink-0 cursor-pointer"
                             title="Nusxa olish"
                           >
                             {copiedPath === step.pathOrCommand ? (
@@ -389,7 +392,7 @@ export const GameDetailPage: React.FC = () => {
                       )}
 
                       {step.note && (
-                        <p className="text-xs text-amber-400/90 italic pt-1">
+                        <p className="text-xs text-amber-400/90 italic pt-0.5">
                           {step.note}
                         </p>
                       )}
@@ -398,13 +401,13 @@ export const GameDetailPage: React.FC = () => {
                 ))}
               </div>
 
-              <div className="mt-6 pt-6 border-t border-[#2A3245]/60 flex items-center justify-between">
+              <div className="mt-6 pt-5 border-t border-[#2A3245]/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <span className="text-xs text-gray-400">
                   O‘rnatishda xatolik yuz berdimi?
                 </span>
                 <button
                   onClick={() => setIsReportModalOpen(true)}
-                  className="text-xs text-amber-400 hover:underline font-semibold flex items-center gap-1"
+                  className="text-xs text-amber-400 hover:underline font-semibold flex items-center gap-1 cursor-pointer"
                 >
                   <AlertTriangle className="w-3.5 h-3.5" />
                   <span>Xatolik haqida xabar bering</span>
@@ -413,7 +416,7 @@ export const GameDetailPage: React.FC = () => {
             </section>
 
             {/* D. Verified System Requirements */}
-            <section className="bg-[#141821] rounded-2xl p-6 sm:p-8 border border-[#2A3245]">
+            <section className="bg-[#141821] rounded-2xl p-5 sm:p-8 border border-[#2A3245]">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-bold text-white">
@@ -423,12 +426,12 @@ export const GameDetailPage: React.FC = () => {
                     Rasmiy tekshirilgan texnik ma‘lumotlar
                   </p>
                 </div>
-                <Monitor className="w-6 h-6 text-gray-400" />
+                <Monitor className="w-6 h-6 text-gray-400 shrink-0" />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 {/* Minimum */}
-                <div className="bg-[#0B0D12] p-5 rounded-xl border border-[#2A3245] space-y-3.5">
+                <div className="bg-[#0B0D12] p-4 sm:p-5 rounded-xl border border-[#2A3245] space-y-3">
                   <div className="flex items-center justify-between border-b border-[#2A3245] pb-2">
                     <h3 className="font-bold text-white text-sm">Minimal talablar</h3>
                     <span className="text-[11px] text-gray-400">720p / 30 FPS</span>
@@ -463,7 +466,7 @@ export const GameDetailPage: React.FC = () => {
                 </div>
 
                 {/* Recommended */}
-                <div className="bg-[#0B0D12] p-5 rounded-xl border border-[#A3E635]/30 space-y-3.5 shadow-accent-glow">
+                <div className="bg-[#0B0D12] p-4 sm:p-5 rounded-xl border border-[#A3E635]/30 space-y-3 shadow-accent-glow">
                   <div className="flex items-center justify-between border-b border-[#2A3245] pb-2">
                     <h3 className="font-bold text-[#A3E635] text-sm">Tavsiya etilgan</h3>
                     <span className="text-[11px] text-[#A3E635]">1080p / 60 FPS</span>
@@ -500,10 +503,10 @@ export const GameDetailPage: React.FC = () => {
             </section>
           </div>
 
-          {/* Right Sidebar: Store & Actions (4 cols) */}
+          {/* Right Sidebar: Store & Actions (4 cols on desktop) */}
           <div className="lg:col-span-4 space-y-6">
             {/* Download Subtitle Card */}
-            <div className="bg-gradient-to-b from-[#1A1F2A] to-[#141821] rounded-2xl p-6 border-2 border-[#A3E635]/50 shadow-card-glow space-y-4">
+            <div className="bg-gradient-to-b from-[#1A1F2A] to-[#141821] rounded-2xl p-5 sm:p-6 border-2 border-[#A3E635]/50 shadow-card-glow space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-[#A3E635] uppercase tracking-wider">
                   Lokalizatsiya to‘plami
@@ -513,7 +516,7 @@ export const GameDetailPage: React.FC = () => {
                 </span>
               </div>
 
-              <h3 className="text-lg font-bold text-white">
+              <h3 className="text-base sm:text-lg font-bold text-white">
                 O‘zbekcha subtitrni yuklab olish
               </h3>
 
@@ -524,7 +527,7 @@ export const GameDetailPage: React.FC = () => {
               {game.subtitleStatus === 'Tayyor' ? (
                 <button
                   onClick={handleDownloadSubtitle}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-sm hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-sm hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
                 >
                   <Download className="w-4 h-4" />
                   <span>Subtitrni yuklab olish ({game.subtitleSize || 'ZIP'})</span>
@@ -544,12 +547,12 @@ export const GameDetailPage: React.FC = () => {
             </div>
 
             {/* Official Store Purchase Card */}
-            <div className="bg-[#141821] rounded-2xl p-6 border border-[#2A3245] space-y-4">
+            <div className="bg-[#141821] rounded-2xl p-5 sm:p-6 border border-[#2A3245] space-y-4">
               <h3 className="text-base font-bold text-white">
                 O‘yinni sotib olish (Litsenziya)
               </h3>
               <p className="text-xs text-gray-400 leading-relaxed">
-                Subtitrdan foydalanish uchun o‘yinning o‘zi kompyuteringizda o‘rnatilgan bo‘lishi lozim. O‘yinni quyidagi rasmiy do‘konlardan xarid qilishingiz mumkin:
+                Subtitrdan foydalanish uchun o‘yinning o‘zi kompyuteringizda o‘rnatilgan bo‘lishi lozim. O‘yinni rasmiy do‘konlardan xarid qilishingiz mumkin:
               </p>
 
               <div className="space-y-2.5">
@@ -559,7 +562,7 @@ export const GameDetailPage: React.FC = () => {
                     href={store.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between p-3 rounded-xl bg-[#0B0D12] border border-[#2A3245] hover:border-gray-400 text-gray-200 hover:text-white transition-colors text-sm"
+                    className="flex items-center justify-between p-3 rounded-xl bg-[#0B0D12] border border-[#2A3245] hover:border-gray-400 text-gray-200 hover:text-white transition-colors text-xs sm:text-sm"
                   >
                     <div className="flex items-center gap-2 font-medium">
                       <span>{store.name} rasmiy sahifasi</span>
@@ -571,21 +574,21 @@ export const GameDetailPage: React.FC = () => {
 
               <div className="text-[11px] text-gray-500 pt-2 border-t border-[#2A3245]/60 flex items-center gap-1.5">
                 <Info className="w-3.5 h-3.5 shrink-0" />
-                <span>O‘yin narxi mintaqa va joriy chegirmalarga ko‘ra do‘konda belgilanadi.</span>
+                <span>O‘yin narxi do‘konda rasmiy valyutada belgilanadi.</span>
               </div>
             </div>
 
             {/* Support and Report Card */}
-            <div className="bg-[#141821] rounded-2xl p-6 border border-[#2A3245] space-y-3">
+            <div className="bg-[#141821] rounded-2xl p-5 sm:p-6 border border-[#2A3245] space-y-3">
               <h4 className="text-sm font-bold text-white">
                 Yordam kerakmi?
               </h4>
               <p className="text-xs text-gray-400 leading-relaxed">
-                Subtitrni o‘rnatishda qiyinchilik bo‘lsa yoki matnda grammatik xato topsangiz, bizga xabar bering.
+                Subtitrni o‘rnatishda qiyinchilik bo‘lsa yoki matnda xato topsangiz, bizga xabar bering.
               </p>
               <button
                 onClick={() => setIsReportModalOpen(true)}
-                className="w-full py-2.5 px-4 rounded-xl bg-[#1A1F2A] hover:bg-[#222938] text-amber-400 border border-amber-500/30 text-xs font-semibold transition-colors flex items-center justify-center gap-2"
+                className="w-full py-2.5 px-4 rounded-xl bg-[#1A1F2A] hover:bg-[#222938] text-amber-400 border border-amber-500/30 text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 <AlertTriangle className="w-4 h-4" />
                 <span>Xatolik haqida xabar berish</span>
@@ -617,7 +620,7 @@ export const GameDetailPage: React.FC = () => {
       {/* Download Success Simulation Modal */}
       {downloadSuccessModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#141821] border border-[#2A3245] rounded-2xl max-w-md w-full p-6 text-center space-y-4 shadow-modal">
+          <div className="bg-[#141821] border border-[#2A3245] rounded-2xl max-w-sm sm:max-w-md w-full p-5 sm:p-6 text-center space-y-4 shadow-modal">
             <div className="w-14 h-14 rounded-full bg-[#A3E635]/20 text-[#A3E635] flex items-center justify-center mx-auto">
               <Check className="w-7 h-7" />
             </div>
@@ -635,7 +638,7 @@ export const GameDetailPage: React.FC = () => {
             </div>
             <button
               onClick={() => setDownloadSuccessModal(false)}
-              className="w-full py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-bold text-sm hover:bg-[#84CC16]"
+              className="w-full py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-bold text-sm hover:bg-[#84CC16] cursor-pointer"
             >
               Tushundim
             </button>
