@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { SITE_CONFIG } from '../../config/site';
 import { useFavorites } from '../../context/FavoritesContext';
 import {
-  Gamepad2,
   Heart,
   Send,
   Menu,
@@ -75,8 +74,12 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2.5 group shrink-0">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1A1F2A] to-[#141821] border border-[#A3E635]/40 flex items-center justify-center text-[#A3E635] shadow-accent-glow group-hover:scale-105 transition-transform">
-                <Gamepad2 className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl overflow-hidden border border-[#A3E635]/40 flex items-center justify-center bg-[#141821] shadow-accent-glow group-hover:scale-105 transition-transform">
+                <img
+                  src="/images/logo_concept_doppi.jpg"
+                  alt="SubGame Logo"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">

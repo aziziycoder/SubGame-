@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { SITE_CONFIG } from '../../config/site';
-import { Gamepad2, Send, ArrowUp, Shield, Sparkles, MessageSquare } from 'lucide-react';
+import { Send, ArrowUp, Shield, Sparkles, MessageSquare } from 'lucide-react';
 
 interface FooterProps {
   onOpenSuggestModal?: () => void;
@@ -23,8 +23,12 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Brand Info (2 cols) */}
           <div className="lg:col-span-2 space-y-4">
             <Link to="/" className="flex items-center gap-2.5 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1A1F2A] to-[#141821] border border-[#A3E635]/40 flex items-center justify-center text-[#A3E635] shadow-accent-glow">
-                <Gamepad2 className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl overflow-hidden border border-[#A3E635]/40 flex items-center justify-center bg-[#141821] shadow-accent-glow group-hover:scale-105 transition-transform">
+                <img
+                  src="/images/logo_concept_doppi.jpg"
+                  alt="SubGame Logo"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <span className="text-xl font-extrabold tracking-tight text-white">
                 Sub<span className="text-[#A3E635]">Game</span>
