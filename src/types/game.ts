@@ -54,7 +54,7 @@ export interface Game {
   subtitleSize?: string;
   subtitleDownloadUrl?: string; // Real or direct link
   subtitlePrice: 'Bepul' | 'Pullik' | 'Tez kunda';
-  subtitleTranslationType: 'AI yordamida (Kontekstual tahrirlangan)' | 'AI + Qo‘lda tekshirilgan';
+  subtitleTranslationType: string;
   
   // Installation & Requirements
   installationGuide: InstallationStep[];

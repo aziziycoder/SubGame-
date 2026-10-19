@@ -1,7 +1,7 @@
 export const SITE_CONFIG = {
   name: 'SubGame',
   tagline: 'O‘zbekcha subtitrli videoo‘yinlar platformasi',
-  description: 'Sevimli videoo‘yinlaringizni o‘zbekcha AI subtitrlar bilan o‘ynang. Har bir hikoyani o‘z tilingizda his qiling.',
+  description: 'Sevimli videoo‘yinlaringizni o‘zbekcha subtitrlar bilan o‘ynang. Har bir hikoyani o‘z tilingizda his qiling.',
   telegramUrl: 'https://t.me/oyinlartarjima', // Configurable Telegram link
   telegramChannelName: '@oyinlartarjima',
   githubUrl: 'https://github.com',

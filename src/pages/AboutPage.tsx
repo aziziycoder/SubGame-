@@ -20,8 +20,8 @@ export const AboutPage: React.FC = () => {
     },
     {
       step: '02',
-      title: 'Kontekstual AI Tarjima',
-      description: 'Loyiha uchun maxsus sozlangan sun‘iy intellekt modeli personajlar fe‘l-atvori, davr tili va o‘yin terminlarini hisobga olgan holda tarjima qiladi.'
+      title: 'Kontekstual mahalliylashtirish',
+      description: 'Personajlar fe‘l-atvori, davr muhiti, o‘yin terminlari va dialoglarning tabiiy jaranglashini hisobga olgan holda sinchkovlik bilan tarjima qilinadi.'
     },
     {
       step: '03',
@@ -67,7 +67,7 @@ export const AboutPage: React.FC = () => {
           </div>
         </div>
 
-        {/* AI Translation Pipeline */}
+        {/* Translation Pipeline */}
         <div className="mb-16">
           <div className="text-center max-w-xl mx-auto mb-12">
             <span className="text-xs font-bold text-[#A3E635] uppercase tracking-wider">
@@ -77,7 +77,7 @@ export const AboutPage: React.FC = () => {
               Biz subtitrlarni qanday yaratamiz?
             </h3>
             <p className="text-xs sm:text-sm text-gray-400 mt-2">
-              Shunchaki avtomat tarjima emas, balki AI kuchi va inson tahririyatining uyg‘unligi.
+              Shunchaki quruq tarjima emas, balki chuqur badiiy va adabiy tahririyat mehnati.
             </p>
           </div>
 

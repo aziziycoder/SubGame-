@@ -84,7 +84,7 @@ export const Navbar: React.FC = () => {
                     Sub<span className="text-[#A3E635]">Game</span>
                   </span>
                   <span className="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#A3E635]/15 text-[#A3E635] border border-[#A3E635]/30">
-                    AI Sub
+                    UZB SUB
                   </span>
                 </div>
                 <span className="text-[11px] text-gray-400 hidden sm:block">

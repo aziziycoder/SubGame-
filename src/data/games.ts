@@ -45,7 +45,7 @@ export const GAMES_DATA: Game[] = [
     subtitleSize: '28.6 MB',
     subtitleDownloadUrl: '#download-requiem-sub',
     subtitlePrice: 'Bepul',
-    subtitleTranslationType: 'AI + Qo‘lda tekshirilgan',
+    subtitleTranslationType: 'Professional adabiy tarjima',
     installationGuide: [
       {
         step: 1,
@@ -93,7 +93,7 @@ export const GAMES_DATA: Game[] = [
       additionalNotes: '1080p 60 FPS va ultra grafik sozlamalari uchun tavsiya qilinadi.'
     },
     isFeatured: true,
-    tags: ['Hit o‘yin', 'Tarixiy', 'Boy syujet', 'AI Tarjima']
+    tags: ['Hit o‘yin', 'Tarixiy', 'Boy syujet', 'O‘zbekcha subtitr']
   },
   {
     id: 'a-plague-tale-innocence',
@@ -143,7 +143,7 @@ export const GAMES_DATA: Game[] = [
     subtitleSize: '14.2 MB',
     subtitleDownloadUrl: '#download-innocence-sub',
     subtitlePrice: 'Bepul',
-    subtitleTranslationType: 'AI yordamida (Kontekstual tahrirlangan)',
+    subtitleTranslationType: 'To‘liq adabiy tahrirlangan',
     installationGuide: [
       {
         step: 1,
@@ -189,7 +189,7 @@ export const GAMES_DATA: Game[] = [
       additionalNotes: '1080p 60 FPS sifatli tajriba uchun.'
     },
     isFeatured: true,
-    tags: ['Klassika', 'Yil o‘yini nomzodi', 'Inkvizitsiya', 'AI Tarjima']
+    tags: ['Klassika', 'Yil o‘yini nomzodi', 'Inkvizitsiya', 'O‘zbekcha subtitr']
   }
 ];
 

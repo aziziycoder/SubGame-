@@ -171,7 +171,7 @@ export const HeroSection: React.FC = () => {
                 <div className="w-5 h-5 rounded-full bg-[#A3E635]/20 text-[#A3E635] flex items-center justify-center shrink-0">
                   <Check className="w-3.5 h-3.5" />
                 </div>
-                <span>AI + Tahririyat tekshiruvi</span>
+                <span>Professional tahririyat</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded-full bg-[#A3E635]/20 text-[#A3E635] flex items-center justify-center shrink-0">

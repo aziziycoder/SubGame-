@@ -9,8 +9,8 @@ export const FAQS_DATA: FAQItem[] = [
   {
     id: 'faq-1',
     category: 'Tarjima sifati',
-    question: 'AI yordamida tarjima qilingan subtitrlar qanchalik sifatli?',
-    answer: 'Biz oddiy tarjima vositalaridan emas, balki videoo‘yinlar konteksti, qahramonlarning xarakteri va o‘zbek tilining tabiiy so‘zlashuv mezonlariga moslashtirilgan ilg‘or AI modellaridan foydalanamiz. Shuningdek, tarjimadan so‘ng o‘yin terminlari, nomlar va frazalar qo‘lda tekshirilib, o‘yin ichida sinovdan o‘tkaziladi.'
+    question: 'O‘zbekcha subtitrlar qanchalik sifatli va aniq tarjima qilingan?',
+    answer: 'Biz videoo‘yinlar konteksti, qahramonlarning xarakteri va o‘zbek tilining tabiiy so‘zlashuv mezonlariga katta e’tibor qaratamiz. O‘yin terminlari, nomlar va frazalar sinchkovlik bilan tekshirilib, o‘yin ichida to‘liq sinovdan o‘tkaziladi.'
   },
   {
     id: 'faq-2',

@@ -1,5 +1,4 @@
-import React from 'react';
-import { Languages, Cpu, CheckCircle, Flame } from 'lucide-react';
+import { Languages, Sparkles, CheckCircle, Flame } from 'lucide-react';
 
 export const WhyUsSection: React.FC = () => {
   const advantages = [
@@ -11,11 +10,11 @@ export const WhyUsSection: React.FC = () => {
       badge: 'Mahalliy madaniyat',
     },
     {
-      icon: Cpu,
-      title: 'AI yordamida tarjima',
+      icon: Sparkles,
+      title: 'Sifatli adabiy tarjima',
       description:
-        'Eng so‘nggi neyrotarmoqlar yordamida kontekstni saqlagan holda tarjima qilinadi. Har bir o‘yinda sifat va tekshiruv holati ochiq ko‘rsatiladi.',
-      badge: 'Neyrotarmoq + Tahrir',
+        'O‘yinlar konteksti, qahramonlarning hissiyotlari va davr muhiti saqlangan holda badiiy mahorat bilan tarjima qilinadi.',
+      badge: 'Adabiy tahrir',
     },
     {
       icon: CheckCircle,
