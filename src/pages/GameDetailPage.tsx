@@ -1,0 +1,647 @@
+import React, { useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { GAMES_DATA } from '../data/games';
+import { SubtitleStatusBadge } from '../components/common/Badge';
+import { Lightbox } from '../components/common/Lightbox';
+import { ReportIssueModal } from '../components/home/ReportIssueModal';
+import { useFavorites } from '../context/FavoritesContext';
+import {
+  Download,
+  ExternalLink,
+  Heart,
+  Monitor,
+  CheckCircle2,
+  AlertTriangle,
+  FolderOpen,
+  Copy,
+  Check,
+  ArrowLeft,
+  Share2,
+  Sparkles,
+  Info
+} from 'lucide-react';
+
+export const GameDetailPage: React.FC = () => {
+  const { slug } = useParams<{ slug: string }>();
+  const game = GAMES_DATA.find((g) => g.slug === slug);
+
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [downloadSuccessModal, setDownloadSuccessModal] = useState(false);
+  const [copiedPath, setCopiedPath] = useState<string | null>(null);
+  const [shared, setShared] = useState(false);
+
+  if (!game) {
+    return (
+      <div className="min-h-screen pt-32 pb-20 flex flex-col items-center justify-center text-center px-4 bg-[#0B0D12]">
+        <div className="w-16 h-16 rounded-2xl bg-[#1A1F2A] border border-[#2A3245] flex items-center justify-center text-rose-500 mb-4">
+          <AlertTriangle className="w-8 h-8" />
+        </div>
+        <h1 className="text-3xl font-extrabold text-white mb-2">O‘yin topilmadi</h1>
+        <p className="text-gray-400 mb-6 max-w-md">
+          Siz qidirayotgan o‘yin sahifasi mavjud emas yoki manzili o‘zgargan bo‘lishi mumkin.
+        </p>
+        <Link
+          to="/games"
+          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-bold text-sm"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Katalogga qaytish</span>
+        </Link>
+      </div>
+    );
+  }
+
+  const favorited = isFavorite(game.id);
+
+  const handleCopyPath = (path: string) => {
+    navigator.clipboard.writeText(path);
+    setCopiedPath(path);
+    setTimeout(() => setCopiedPath(null), 2000);
+  };
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `${game.title} - O‘zbekcha subtitr | SubGame`,
+        url: window.location.href,
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      setShared(true);
+      setTimeout(() => setShared(false), 2000);
+    }
+  };
+
+  const handleDownloadSubtitle = () => {
+    if (game.subtitleStatus !== 'Tayyor') return;
+    setDownloadSuccessModal(true);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0B0D12] text-white">
+      {/* A. Hero Section with Backdrop Artwork */}
+      <section className="relative min-h-[640px] flex items-end pt-28 sm:pt-32 pb-12 overflow-hidden border-b border-[#2A3245]">
+        {/* Backdrop Image extending behind navbar */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src={game.heroImage}
+            alt={game.title}
+            className="w-full h-full object-cover object-center filter brightness-[0.68] contrast-110 scale-105"
+          />
+          {/* Smooth bottom blend */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D12] via-[#0B0D12]/45 to-transparent" />
+          {/* Left gradient for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0B0D12]/90 via-[#0B0D12]/50 to-transparent" />
+          {/* Top subtle shade behind navbar */}
+          <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#0B0D12]/70 via-[#0B0D12]/30 to-transparent pointer-events-none" />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-xs text-gray-400 mb-6">
+            <Link to="/" className="hover:text-white transition-colors">Bosh sahifa</Link>
+            <span>/</span>
+            <Link to="/games" className="hover:text-white transition-colors">O‘yinlar</Link>
+            <span>/</span>
+            <span className="text-[#A3E635] font-medium">{game.title}</span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+            {/* Left Cover Poster (3 cols) */}
+            <div className="hidden lg:block lg:col-span-3">
+              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border-2 border-[#2A3245] shadow-2xl bg-[#141821]">
+                <img
+                  src={game.cover}
+                  alt={game.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+
+            {/* Main Info (9 cols) */}
+            <div className="lg:col-span-9 space-y-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <SubtitleStatusBadge status={game.subtitleStatus} size="md" />
+                <span className="text-xs font-mono text-gray-300 bg-[#141821] px-3 py-1 rounded-full border border-[#2A3245]">
+                  {game.releaseYear}
+                </span>
+                <span className="text-xs text-gray-400 bg-[#141821] px-3 py-1 rounded-full border border-[#2A3245]">
+                  {game.developer}
+                </span>
+              </div>
+
+              <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+                {game.title}
+              </h1>
+
+              <p className="text-sm sm:text-base text-gray-300 leading-relaxed max-w-3xl">
+                {game.shortDescription}
+              </p>
+
+              {/* Genre Pills */}
+              <div className="flex flex-wrap gap-2 pt-1">
+                {game.genres.map((g) => (
+                  <span
+                    key={g}
+                    className="text-xs px-3 py-1 rounded-lg bg-[#141821] text-gray-300 border border-[#2A3245]"
+                  >
+                    {g}
+                  </span>
+                ))}
+              </div>
+
+              {/* Primary Action Buttons Bar */}
+              <div className="pt-4 flex flex-wrap items-center gap-3">
+                {game.subtitleStatus === 'Tayyor' ? (
+                  <button
+                    onClick={handleDownloadSubtitle}
+                    className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-sm sm:text-base hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow"
+                  >
+                    <Download className="w-5 h-5" />
+                    <span>Subtitrni yuklab olish (Bepul)</span>
+                  </button>
+                ) : (
+                  <div className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30 text-sm font-semibold">
+                    <Sparkles className="w-4 h-4" />
+                    <span>Subtitr tayyorlanmoqda ({game.subtitleStatus})</span>
+                  </div>
+                )}
+
+                {/* Favorite Button */}
+                <button
+                  onClick={() => toggleFavorite(game.id)}
+                  aria-label="Sevimlilar"
+                  className={`p-3.5 rounded-xl border transition-all ${
+                    favorited
+                      ? 'bg-rose-500/20 text-rose-500 border-rose-500/40'
+                      : 'bg-[#141821] text-gray-300 hover:text-white border-[#2A3245] hover:border-gray-500'
+                  }`}
+                >
+                  <Heart className={`w-5 h-5 ${favorited ? 'fill-rose-500' : ''}`} />
+                </button>
+
+                {/* Share Button */}
+                <button
+                  onClick={handleShare}
+                  aria-label="Ulashish"
+                  className="p-3.5 rounded-xl bg-[#141821] border border-[#2A3245] text-gray-300 hover:text-white hover:border-gray-500 transition-colors relative"
+                >
+                  {shared ? <Check className="w-5 h-5 text-[#A3E635]" /> : <Share2 className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content Layout */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          {/* Main Body (8 cols) */}
+          <div className="lg:col-span-8 space-y-12">
+            {/* B. About the Game */}
+            <section className="bg-[#141821] rounded-2xl p-6 sm:p-8 border border-[#2A3245]">
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">
+                O‘yin haqida
+              </h2>
+              <div className="text-sm sm:text-base text-gray-300 leading-relaxed space-y-4">
+                <p>{game.fullDescription}</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-[#2A3245]/60 text-xs text-gray-400">
+                  <div>
+                    <span className="block text-gray-500">Ishlab chiquvchi</span>
+                    <strong className="text-white text-sm">{game.developer}</strong>
+                  </div>
+                  <div>
+                    <span className="block text-gray-500">Nashriyotchi</span>
+                    <strong className="text-white text-sm">{game.publisher}</strong>
+                  </div>
+                  <div>
+                    <span className="block text-gray-500">Chiqarilgan sana</span>
+                    <strong className="text-white text-sm">{game.releaseYear}-yil</strong>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* C. Screenshots Gallery */}
+            <section className="bg-[#141821] rounded-2xl p-6 sm:p-8 border border-[#2A3245]">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-bold text-white">
+                    O‘yin skrinshotlari
+                  </h2>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Kattalashtirib ko‘rish uchun rasm ustiga bosing
+                  </p>
+                </div>
+                <span className="text-xs font-mono text-[#A3E635] bg-[#A3E635]/10 px-2.5 py-1 rounded border border-[#A3E635]/20">
+                  {game.screenshots.length} ta rasm
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {game.screenshots.map((src, index) => (
+                  <div
+                    key={index}
+                    onClick={() => {
+                      setActiveImageIndex(index);
+                      setLightboxOpen(true);
+                    }}
+                    className="group relative aspect-[16/9] rounded-xl overflow-hidden cursor-pointer border border-[#2A3245] hover:border-[#A3E635] transition-all duration-300"
+                  >
+                    <img
+                      src={src}
+                      alt={`${game.title} skrinshot ${index + 1}`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <span className="text-xs font-bold text-white bg-black/60 px-3 py-1.5 rounded-lg border border-white/20 backdrop-blur-sm">
+                        Kattalashtirish
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* E. Uzbek Subtitle In-Depth Details */}
+            <section className="bg-[#141821] rounded-2xl p-6 sm:p-8 border border-[#2A3245]">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-white">
+                  O‘zbekcha subtitr haqida
+                </h2>
+                <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div className="p-4 rounded-xl bg-[#0B0D12] border border-[#2A3245]">
+                  <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">
+                    Subtitr tili
+                  </span>
+                  <strong className="text-sm text-white font-medium">
+                    {game.subtitleLanguage}
+                  </strong>
+                </div>
+
+                <div className="p-4 rounded-xl bg-[#0B0D12] border border-[#2A3245]">
+                  <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">
+                    Tarjima turi
+                  </span>
+                  <strong className="text-sm text-[#A3E635] font-medium flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4" />
+                    {game.subtitleTranslationType}
+                  </strong>
+                </div>
+
+                <div className="p-4 rounded-xl bg-[#0B0D12] border border-[#2A3245]">
+                  <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">
+                    Versiya va Sana
+                  </span>
+                  <strong className="text-sm text-white font-medium">
+                    {game.subtitleVersion} (Yangilangan: {game.subtitleLastUpdated})
+                  </strong>
+                </div>
+
+                <div className="p-4 rounded-xl bg-[#0B0D12] border border-[#2A3245]">
+                  <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">
+                    Fayl formati va Hajmi
+                  </span>
+                  <strong className="text-sm text-white font-medium">
+                    {game.subtitleFormat} • {game.subtitleSize || 'Kichik'}
+                  </strong>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-[#1A1F2A] border border-[#2A3245] space-y-2 mb-6">
+                <div className="flex items-center gap-2 text-xs font-bold text-gray-300 uppercase tracking-wider">
+                  <CheckCircle2 className="w-4 h-4 text-[#A3E635]" />
+                  <span>Moslik (Compatibility)</span>
+                </div>
+                <p className="text-sm text-gray-300">
+                  {game.subtitleCompatibility}
+                </p>
+              </div>
+
+              {game.knownIssues && game.knownIssues.length > 0 && (
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 space-y-1.5">
+                  <div className="flex items-center gap-2 font-bold uppercase tracking-wider">
+                    <AlertTriangle className="w-4 h-4" />
+                    <span>Ma‘lum xatolar va cheklovlar</span>
+                  </div>
+                  <ul className="list-disc list-inside space-y-1 text-gray-300">
+                    {game.knownIssues.map((issue, idx) => (
+                      <li key={idx}>{issue}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </section>
+
+            {/* G. Step-by-Step Installation Guide */}
+            <section className="bg-[#141821] rounded-2xl p-6 sm:p-8 border border-[#2A3245]">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-bold text-white">
+                    O‘rnatish qo‘llanmasi
+                  </h2>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Fayllarni to‘g‘ri joylashtirish bo‘yicha bosqichma-bosqich yo‘riqnoma
+                  </p>
+                </div>
+                <FolderOpen className="w-6 h-6 text-[#A3E635]" />
+              </div>
+
+              <div className="space-y-6">
+                {game.installationGuide.map((step) => (
+                  <div
+                    key={step.step}
+                    className="flex gap-4 p-5 rounded-xl bg-[#0B0D12] border border-[#2A3245]"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-[#A3E635]/20 text-[#A3E635] flex items-center justify-center font-bold text-sm shrink-0 border border-[#A3E635]/40">
+                      {step.step}
+                    </div>
+                    <div className="space-y-2 flex-1">
+                      <h4 className="text-base font-bold text-white">
+                        {step.title}
+                      </h4>
+                      <p className="text-sm text-gray-300 leading-relaxed">
+                        {step.description}
+                      </p>
+
+                      {step.pathOrCommand && (
+                        <div className="mt-2 flex items-center justify-between bg-[#141821] p-2.5 rounded-lg border border-[#2A3245] text-xs font-mono text-gray-300">
+                          <code className="truncate mr-2">{step.pathOrCommand}</code>
+                          <button
+                            onClick={() => handleCopyPath(step.pathOrCommand!)}
+                            className="p-1.5 rounded hover:bg-[#1A1F2A] text-gray-400 hover:text-white transition-colors shrink-0"
+                            title="Nusxa olish"
+                          >
+                            {copiedPath === step.pathOrCommand ? (
+                              <Check className="w-3.5 h-3.5 text-[#A3E635]" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                        </div>
+                      )}
+
+                      {step.note && (
+                        <p className="text-xs text-amber-400/90 italic pt-1">
+                          {step.note}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-[#2A3245]/60 flex items-center justify-between">
+                <span className="text-xs text-gray-400">
+                  O‘rnatishda xatolik yuz berdimi?
+                </span>
+                <button
+                  onClick={() => setIsReportModalOpen(true)}
+                  className="text-xs text-amber-400 hover:underline font-semibold flex items-center gap-1"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  <span>Xatolik haqida xabar bering</span>
+                </button>
+              </div>
+            </section>
+
+            {/* D. Verified System Requirements */}
+            <section className="bg-[#141821] rounded-2xl p-6 sm:p-8 border border-[#2A3245]">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-bold text-white">
+                    Tizim talablari (PC)
+                  </h2>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Rasmiy tekshirilgan texnik ma‘lumotlar
+                  </p>
+                </div>
+                <Monitor className="w-6 h-6 text-gray-400" />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Minimum */}
+                <div className="bg-[#0B0D12] p-5 rounded-xl border border-[#2A3245] space-y-3.5">
+                  <div className="flex items-center justify-between border-b border-[#2A3245] pb-2">
+                    <h3 className="font-bold text-white text-sm">Minimal talablar</h3>
+                    <span className="text-[11px] text-gray-400">720p / 30 FPS</span>
+                  </div>
+
+                  <div className="text-xs space-y-2.5">
+                    <div>
+                      <span className="text-gray-500 block">Operatsion tizim</span>
+                      <span className="text-gray-200">{game.minimumRequirements.os}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">Protsessor</span>
+                      <span className="text-gray-200">{game.minimumRequirements.processor}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">Operativ xotira (RAM)</span>
+                      <span className="text-gray-200">{game.minimumRequirements.memory}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">Videokarta (GPU)</span>
+                      <span className="text-gray-200">{game.minimumRequirements.graphics}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">DirectX</span>
+                      <span className="text-gray-200">{game.minimumRequirements.directX}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">Bo‘sh disk maydoni</span>
+                      <span className="text-gray-200">{game.minimumRequirements.storage}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Recommended */}
+                <div className="bg-[#0B0D12] p-5 rounded-xl border border-[#A3E635]/30 space-y-3.5 shadow-accent-glow">
+                  <div className="flex items-center justify-between border-b border-[#2A3245] pb-2">
+                    <h3 className="font-bold text-[#A3E635] text-sm">Tavsiya etilgan</h3>
+                    <span className="text-[11px] text-[#A3E635]">1080p / 60 FPS</span>
+                  </div>
+
+                  <div className="text-xs space-y-2.5">
+                    <div>
+                      <span className="text-gray-500 block">Operatsion tizim</span>
+                      <span className="text-gray-200">{game.recommendedRequirements.os}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">Protsessor</span>
+                      <span className="text-gray-200">{game.recommendedRequirements.processor}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">Operativ xotira (RAM)</span>
+                      <span className="text-gray-200">{game.recommendedRequirements.memory}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">Videokarta (GPU)</span>
+                      <span className="text-gray-200">{game.recommendedRequirements.graphics}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">DirectX</span>
+                      <span className="text-gray-200">{game.recommendedRequirements.directX}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">Bo‘sh disk maydoni</span>
+                      <span className="text-gray-200">{game.recommendedRequirements.storage}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Right Sidebar: Store & Actions (4 cols) */}
+          <div className="lg:col-span-4 space-y-6">
+            {/* Download Subtitle Card */}
+            <div className="bg-gradient-to-b from-[#1A1F2A] to-[#141821] rounded-2xl p-6 border-2 border-[#A3E635]/50 shadow-card-glow space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#A3E635] uppercase tracking-wider">
+                  Lokalizatsiya to‘plami
+                </span>
+                <span className="text-xs px-2 py-0.5 rounded bg-[#A3E635]/20 text-[#A3E635] font-bold">
+                  {game.subtitlePrice}
+                </span>
+              </div>
+
+              <h3 className="text-lg font-bold text-white">
+                O‘zbekcha subtitrni yuklab olish
+              </h3>
+
+              <p className="text-xs text-gray-300 leading-relaxed">
+                {game.priceNote}
+              </p>
+
+              {game.subtitleStatus === 'Tayyor' ? (
+                <button
+                  onClick={handleDownloadSubtitle}
+                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-sm hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Subtitrni yuklab olish ({game.subtitleSize || 'ZIP'})</span>
+                </button>
+              ) : (
+                <button
+                  disabled
+                  className="w-full py-3.5 px-4 rounded-xl bg-gray-800 text-gray-400 font-semibold text-sm cursor-not-allowed"
+                >
+                  Hozircha tekshirilmoqda
+                </button>
+              )}
+
+              <div className="text-[11px] text-gray-400 text-center">
+                Yuklab olish fayli virus va zararlardan toza tekshirilgan.
+              </div>
+            </div>
+
+            {/* Official Store Purchase Card */}
+            <div className="bg-[#141821] rounded-2xl p-6 border border-[#2A3245] space-y-4">
+              <h3 className="text-base font-bold text-white">
+                O‘yinni sotib olish (Litsenziya)
+              </h3>
+              <p className="text-xs text-gray-400 leading-relaxed">
+                Subtitrdan foydalanish uchun o‘yinning o‘zi kompyuteringizda o‘rnatilgan bo‘lishi lozim. O‘yinni quyidagi rasmiy do‘konlardan xarid qilishingiz mumkin:
+              </p>
+
+              <div className="space-y-2.5">
+                {game.officialStoreLinks.map((store) => (
+                  <a
+                    key={store.name}
+                    href={store.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 rounded-xl bg-[#0B0D12] border border-[#2A3245] hover:border-gray-400 text-gray-200 hover:text-white transition-colors text-sm"
+                  >
+                    <div className="flex items-center gap-2 font-medium">
+                      <span>{store.name} rasmiy sahifasi</span>
+                    </div>
+                    <ExternalLink className="w-4 h-4 text-gray-400" />
+                  </a>
+                ))}
+              </div>
+
+              <div className="text-[11px] text-gray-500 pt-2 border-t border-[#2A3245]/60 flex items-center gap-1.5">
+                <Info className="w-3.5 h-3.5 shrink-0" />
+                <span>O‘yin narxi mintaqa va joriy chegirmalarga ko‘ra do‘konda belgilanadi.</span>
+              </div>
+            </div>
+
+            {/* Support and Report Card */}
+            <div className="bg-[#141821] rounded-2xl p-6 border border-[#2A3245] space-y-3">
+              <h4 className="text-sm font-bold text-white">
+                Yordam kerakmi?
+              </h4>
+              <p className="text-xs text-gray-400 leading-relaxed">
+                Subtitrni o‘rnatishda qiyinchilik bo‘lsa yoki matnda grammatik xato topsangiz, bizga xabar bering.
+              </p>
+              <button
+                onClick={() => setIsReportModalOpen(true)}
+                className="w-full py-2.5 px-4 rounded-xl bg-[#1A1F2A] hover:bg-[#222938] text-amber-400 border border-amber-500/30 text-xs font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                <AlertTriangle className="w-4 h-4" />
+                <span>Xatolik haqida xabar berish</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Lightbox for Screenshots */}
+      <Lightbox
+        isOpen={lightboxOpen}
+        images={game.screenshots}
+        currentIndex={activeImageIndex}
+        onClose={() => setLightboxOpen(false)}
+        onNext={() => setActiveImageIndex((prev) => (prev + 1) % game.screenshots.length)}
+        onPrev={() => setActiveImageIndex((prev) => (prev - 1 + game.screenshots.length) % game.screenshots.length)}
+        onSelectIndex={(idx) => setActiveImageIndex(idx)}
+        title={game.title}
+      />
+
+      {/* Report Modal */}
+      <ReportIssueModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        preselectedGameId={game.id}
+      />
+
+      {/* Download Success Simulation Modal */}
+      {downloadSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-[#141821] border border-[#2A3245] rounded-2xl max-w-md w-full p-6 text-center space-y-4 shadow-modal">
+            <div className="w-14 h-14 rounded-full bg-[#A3E635]/20 text-[#A3E635] flex items-center justify-center mx-auto">
+              <Check className="w-7 h-7" />
+            </div>
+            <h3 className="text-xl font-bold text-white">
+              Subtitr fayli tayyor!
+            </h3>
+            <p className="text-xs text-gray-300 leading-relaxed">
+              <strong>{game.title}</strong> o‘zbekcha subtitr paketi ({game.subtitleVersion}) yuklanmoqda.
+              Arxivni ochib, sahifadagi o‘rnatish qo‘llanmasiga rioya qiling.
+            </p>
+            <div className="p-3 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-left text-xs font-mono text-gray-300">
+              Format: {game.subtitleFormat}
+              <br />
+              Hajm: {game.subtitleSize}
+            </div>
+            <button
+              onClick={() => setDownloadSuccessModal(false)}
+              className="w-full py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-bold text-sm hover:bg-[#84CC16]"
+            >
+              Tushundim
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
