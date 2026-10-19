@@ -185,14 +185,24 @@ export const HeroSection: React.FC = () => {
           {/* Interactive Hero Showcase Card (Col 8-12) */}
           <div className="lg:col-span-5 space-y-4">
             <div className="relative rounded-2xl bg-[#141821] border border-[#2A3245] hover:border-[#A3E635]/50 transition-all duration-500 shadow-2xl overflow-hidden group">
-              {/* Highlight badge on showcase */}
-              <div className="absolute top-3.5 right-3.5 z-30 px-3 py-1 rounded-full bg-[#A3E635] text-[#0B0D12] text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5 shadow-accent-glow">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>{active.highlightTag}</span>
+              {/* Card Header Bar: Badges placed outside the image so art and logos are 100% visible */}
+              <div className="flex items-center justify-between px-4 py-2.5 bg-[#1A1F2A] border-b border-[#2A3245]">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold text-[#A3E635] bg-[#0B0D12] px-2.5 py-1 rounded-md border border-[#A3E635]/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#A3E635] animate-pulse" />
+                  {active.cardTag}
+                </span>
+
+                <div className="px-3 py-1 rounded-full bg-[#A3E635] text-[#0B0D12] text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1.5 shadow-accent-glow">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>{active.highlightTag}</span>
+                </div>
               </div>
 
-              {/* Full Game Header Image (Unobstructed & Clean) */}
-              <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#0B0D12]">
+              {/* Full Game Header Image (100% Uncropped, Exact 460:215 Steam Ratio) */}
+              <div
+                className="relative w-full bg-[#0B0D12] overflow-hidden"
+                style={{ aspectRatio: '460 / 215' }}
+              >
                 {HERO_SLIDES.map((slide, index) => {
                   const isCurrent = currentSlide === index;
                   return (
@@ -200,26 +210,16 @@ export const HeroSection: React.FC = () => {
                       key={slide.id}
                       src={slide.cardImage}
                       alt={`${slide.title} Banner`}
-                      className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ${
+                      className={`absolute inset-0 w-full h-full object-contain transition-all duration-700 ${
                         isCurrent ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
                       }`}
                     />
                   );
                 })}
-
-                {/* Subtle soft gradient at the very bottom of the image for seamless card blend */}
-                <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#141821] to-transparent z-20 pointer-events-none" />
-
-                {/* Subtitle Ready Badge on the image */}
-                <div className="absolute bottom-2.5 left-3.5 z-30">
-                  <span className="inline-block text-[11px] font-mono font-bold text-[#A3E635] bg-[#0B0D12]/85 px-2.5 py-1 rounded-md border border-[#A3E635]/30 backdrop-blur-sm">
-                    {active.cardTag}
-                  </span>
-                </div>
               </div>
 
-              {/* Clean Content Area Below The Image (No overlapping with artwork) */}
-              <div className="p-4 sm:p-5 space-y-2.5 bg-[#141821]">
+              {/* Clean Content Area Below The Image */}
+              <div className="p-4 sm:p-5 space-y-2.5 bg-[#141821] border-t border-[#2A3245]">
                 <div className="flex items-center justify-between gap-2">
                   <h3 className="text-lg sm:text-xl font-bold text-white transition-all duration-300">
                     {active.title}
