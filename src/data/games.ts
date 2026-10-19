@@ -195,14 +195,16 @@ export const GAMES_DATA: Game[] = [
     id: 'a-plague-tale-legacy',
     slug: 'a-plague-tale-legacy',
     title: 'A Plague Tale: Legacy',
-    cover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/library_600x900.jpg',
-    cardImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/header.jpg',
-    heroImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_1429300fd4c86bac7a5abfd31c3e14a4115bf641.1920x1080.jpg',
+    cover: '/images/legacy/cover.jpg',
+    cardImage: '/images/legacy/header.jpg',
+    heroImage: '/images/legacy/hero.jpg',
     screenshots: [
-      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_1429300fd4c86bac7a5abfd31c3e14a4115bf641.1920x1080.jpg',
-      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_a8ce48e34efa5b0bbb4fbe6efa601ed7a33f6c23.1920x1080.jpg',
-      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_3a36ec0873d4c9be584c99a2a62a41e712bb5e6a.1920x1080.jpg',
-      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_9cbcd6b81cc32ecf75b36f40b92157da78a19598.1920x1080.jpg'
+      '/images/legacy/ss_1.jpg',
+      '/images/legacy/ss_2.jpg',
+      '/images/legacy/ss_3.jpg',
+      '/images/legacy/ss_4.jpg',
+      '/images/legacy/ss_5.jpg',
+      '/images/legacy/ss_6.jpg'
     ],
     shortDescription: 'Mashhur A Plague Tale olamining yangi sahifasi. Jasur kontrabandachi Sofiya (Sophia) ning Requiem voqealaridan 15 yil avvalgi xavfli, jangovar va sirli sarguzashtlari.',
     fullDescription: 'Resonance: A Plague Tale Legacy — Asobo Studio va Focus Entertainment tomonidan yaratilgan yangi rasmiy sarguzasht. O‘yin A Plague Tale: Requiem voqealaridan 15 yil oldin bo‘lib o‘tadi va bosh qahramon sifatida jasur kontrabandachi ayol Sofiya (Sophia) gavdalanadi. U afsonaviy Minotavr oroli (Krit)ga yo‘l olib, o‘zining o‘tmishidan qochishga va qadimiy Makula la‘natining sirli ildizlarini ochishga intiladi. Yangilangan jang mexanikasi (xanjarlar, qilichlar, parriylar) va ekshn-sarguzasht uslubi bilan boyitilgan ushbu o‘yin uchun o‘zbekcha subtitrlar tez kunda SubGame platformasida taqdim etiladi.',
@@ -214,8 +216,8 @@ export const GAMES_DATA: Game[] = [
     officialStoreLinks: [
       {
         name: 'Steam',
-        url: 'https://store.steampowered.com/developer/AsoboStudio',
-        priceNote: 'Rasmiy do‘konlarda e‘lon qilingan'
+        url: 'https://store.steampowered.com/app/2713000/Resonance_A_Plague_Tale_Legacy/',
+        priceNote: 'Steam rasmiy do‘koni sahifasi'
       }
     ],
     price: 'Tez kunda',
