@@ -184,21 +184,22 @@ export const HeroSection: React.FC = () => {
 
           {/* Interactive Hero Showcase Card (Col 8-12) */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="relative rounded-2xl bg-gradient-to-b from-[#1A1F2A] to-[#141821] p-1 border border-[#2A3245] hover:border-[#A3E635]/50 transition-all duration-500 shadow-2xl group">
+            <div className="relative rounded-2xl bg-[#141821] border border-[#2A3245] hover:border-[#A3E635]/50 transition-all duration-500 shadow-2xl overflow-hidden group">
               {/* Highlight badge on showcase */}
-              <div className="absolute -top-3.5 right-6 z-20 px-3 py-1 rounded-full bg-[#A3E635] text-[#0B0D12] text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5 shadow-accent-glow">
+              <div className="absolute top-3.5 right-3.5 z-30 px-3 py-1 rounded-full bg-[#A3E635] text-[#0B0D12] text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5 shadow-accent-glow">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>{active.highlightTag}</span>
               </div>
 
-              <div className="relative rounded-xl overflow-hidden aspect-[16/10]">
+              {/* Full Game Header Image (Unobstructed & Clean) */}
+              <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#0B0D12]">
                 {HERO_SLIDES.map((slide, index) => {
                   const isCurrent = currentSlide === index;
                   return (
                     <img
                       key={slide.id}
                       src={slide.cardImage}
-                      alt={`${slide.title} Poster`}
+                      alt={`${slide.title} Banner`}
                       className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ${
                         isCurrent ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
                       }`}
@@ -206,30 +207,43 @@ export const HeroSection: React.FC = () => {
                   );
                 })}
 
-                <div className="absolute inset-0 z-20 bg-gradient-to-t from-[#0B0D12] via-[#0B0D12]/50 to-transparent" />
+                {/* Subtle soft gradient at the very bottom of the image for seamless card blend */}
+                <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#141821] to-transparent z-20 pointer-events-none" />
 
-                <div className="absolute bottom-4 left-4 right-4 z-30 space-y-2">
-                  <span className="inline-block text-xs font-mono font-bold text-[#A3E635] bg-[#0B0D12]/80 px-2 py-0.5 rounded border border-[#A3E635]/30">
+                {/* Subtitle Ready Badge on the image */}
+                <div className="absolute bottom-2.5 left-3.5 z-30">
+                  <span className="inline-block text-[11px] font-mono font-bold text-[#A3E635] bg-[#0B0D12]/85 px-2.5 py-1 rounded-md border border-[#A3E635]/30 backdrop-blur-sm">
                     {active.cardTag}
                   </span>
-                  <h3 className="text-xl font-bold text-white transition-all duration-300">
+                </div>
+              </div>
+
+              {/* Clean Content Area Below The Image (No overlapping with artwork) */}
+              <div className="p-4 sm:p-5 space-y-2.5 bg-[#141821]">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-lg sm:text-xl font-bold text-white transition-all duration-300">
                     {active.title}
                   </h3>
-                  <p className="text-xs text-gray-300 line-clamp-2 transition-all duration-300">
-                    {active.cardDescription}
-                  </p>
-                  <div className="pt-2 flex items-center justify-between">
-                    <span className="text-xs text-gray-400 font-mono">
-                      {active.version}
-                    </span>
-                    <Link
-                      to={`/games/${active.slug}`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#A3E635] text-[#0B0D12] text-xs font-bold hover:bg-[#84CC16] transition-colors group/btn"
-                    >
-                      <span>Sahifaga o‘tish</span>
-                      <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
-                    </Link>
-                  </div>
+                  <span className="text-[11px] font-mono text-gray-400 bg-[#0B0D12] px-2 py-0.5 rounded border border-[#2A3245] shrink-0">
+                    {active.version}
+                  </span>
+                </div>
+
+                <p className="text-xs text-gray-300 line-clamp-2 leading-relaxed transition-all duration-300">
+                  {active.cardDescription}
+                </p>
+
+                <div className="pt-2 flex items-center justify-between border-t border-[#2A3245]/60">
+                  <span className="text-xs text-gray-400">
+                    To‘liq o‘zbekcha subtitr
+                  </span>
+                  <Link
+                    to={`/games/${active.slug}`}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#A3E635] text-[#0B0D12] text-xs font-bold hover:bg-[#84CC16] transition-colors group/btn shadow-accent-glow"
+                  >
+                    <span>Sahifaga o‘tish</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
+                  </Link>
                 </div>
               </div>
             </div>
