@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sub-game.vercel.app/sitemap.xml
