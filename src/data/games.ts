@@ -190,6 +190,81 @@ export const GAMES_DATA: Game[] = [
     },
     isFeatured: true,
     tags: ['Klassika', 'Yil o‘yini nomzodi', 'Inkvizitsiya', 'O‘zbekcha subtitr']
+  },
+  {
+    id: 'a-plague-tale-3',
+    slug: 'a-plague-tale-3',
+    title: 'A Plague Tale 3',
+    cover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/library_600x900.jpg',
+    cardImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/header.jpg',
+    heroImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_a8ce48e34efa5b0bbb4fbe6efa601ed7a33f6c23.1920x1080.jpg',
+    screenshots: [
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_a8ce48e34efa5b0bbb4fbe6efa601ed7a33f6c23.1920x1080.jpg',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_3a36ec0873d4c9be584c99a2a62a41e712bb5e6a.1920x1080.jpg',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_1429300fd4c86bac7a5abfd31c3e14a4115bf641.1920x1080.jpg',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_9cbcd6b81cc32ecf75b36f40b92157da78a19598.1920x1080.jpg'
+    ],
+    shortDescription: 'Afsonaviy Plague Tale seriyasining intizorlik bilan kutilayotgan uchinchi qismi. Yangi qahramonlar, qadimiy la‘nat sirlari va omon qolish uchun yangi kurash.',
+    fullDescription: 'A Plague Tale: Innocence va A Plague Tale: Requiem voqealaridan so‘ng, Asobo Studio tomonidan yaratilayotgan franchayzaning navbatdagi epik qismi. Dunyo bo‘ylab millionlab geymerlar qalbini zabt etgan ushbu afsonaviy hikoya yangi qahramonlar, takomillashtirilgan jang mexanikasi va chuqur hissiy voqealari bilan qaytmoqda. SubGame jamoasi o‘yin rasmiy taqdim etilishi bilan birinchilardan bo‘lib to‘liq o‘zbekcha subtitrlarni tayyorlab taqdim etishni rejalashtirgan.',
+    releaseYear: 2026,
+    developer: 'Asobo Studio',
+    publisher: 'Focus Entertainment',
+    genres: ['Sarguzasht', 'Action', 'Stealth', 'Dramatik hikoya'],
+    platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S'],
+    officialStoreLinks: [
+      {
+        name: 'Steam',
+        url: 'https://store.steampowered.com/developer/AsoboStudio',
+        priceNote: 'Rasmiy anonsdan so‘ng e‘lon qilinadi'
+      }
+    ],
+    price: 'Tez kunda',
+    priceNote: 'O‘yin rasmiy sotuvga chiqishi bilan uning o‘zbekcha subtitri SubGame platformasida bepul taqdim etiladi.',
+    subtitleStatus: 'Tez kunda',
+    subtitleLanguage: 'O‘zbekcha (Lotin)',
+    subtitleVersion: 'v1.0 (Tez kunda)',
+    subtitleLastUpdated: 'Kutilmoqda',
+    subtitleCompatibility: 'Steam, Epic Games va PC platformalari',
+    subtitleFormat: 'ZIP (.locres matn lokalizatsiyasi)',
+    subtitleSize: 'Kutilmoqda',
+    subtitleDownloadUrl: '',
+    subtitlePrice: 'Tez kunda',
+    subtitleTranslationType: 'Kutilmoqda (Adabiy tahrir)',
+    installationGuide: [
+      {
+        step: 1,
+        title: 'O‘yin anonsi va chiqarilishi',
+        description: 'Asobo Studio tomonidan o‘yin rasman taqdim etilishi kutilmoqda.'
+      },
+      {
+        step: 2,
+        title: 'Subtitr tayyorlanishi',
+        description: 'O‘yin chiqarilishi bilan SubGame jamoasi o‘zbekcha subtitrlarni tezkorlik bilan mahalliylashtiradi va saytga yuklaydi.'
+      }
+    ],
+    knownIssues: [
+      'O‘yin hozirda ishlab chiqish bosqichida.'
+    ],
+    minimumRequirements: {
+      os: 'Windows 10 / 11 (64-bit)',
+      processor: 'Intel Core i5 (10-avlod) / AMD Ryzen 5',
+      memory: '16 GB RAM',
+      graphics: 'GeForce RTX 2060 / Radeon RX 5600 XT',
+      directX: 'Versiya 12',
+      storage: '60 GB bo‘sh joy',
+      additionalNotes: 'Tizim talablari rasmiy anonsdan so‘ng yangilanadi.'
+    },
+    recommendedRequirements: {
+      os: 'Windows 11 (64-bit)',
+      processor: 'Intel Core i7 (12-avlod) / AMD Ryzen 7',
+      memory: '16 GB RAM',
+      graphics: 'GeForce RTX 3070 / Radeon RX 6700 XT',
+      directX: 'Versiya 12',
+      storage: 'SSD (Tezkor xotira tavsiya etiladi)',
+      additionalNotes: 'Ultra grafik sozlamalari va nurlar treysingi (Ray Tracing) uchun.'
+    },
+    isFeatured: true,
+    tags: ['Premyera', 'Kutilmoqda', 'Hit o‘yin', 'Tez kunda']
   }
 ];
 
@@ -204,5 +279,6 @@ export const GENRES = [
 
 export const SUBTITLE_STATUSES: { label: string; value: string }[] = [
   { label: 'Barcha holatlar', value: 'Barchasi' },
-  { label: 'Tayyor (Yuklab olish mumkin)', value: 'Tayyor' }
+  { label: 'Tayyor (Yuklab olish mumkin)', value: 'Tayyor' },
+  { label: 'Tez kunda (Kutilmoqda)', value: 'Tez kunda' }
 ];

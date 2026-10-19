@@ -56,6 +56,15 @@ export const SubtitleStatusBadge: React.FC<SubtitleStatusBadgeProps> = ({
           <span>Rejada</span>
         </span>
       );
+    case 'Tez kunda':
+      return (
+        <span
+          className={`inline-flex items-center rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 backdrop-blur-sm ${sizeClasses}`}
+        >
+          {showIcon && <Clock className="w-3.5 h-3.5 shrink-0 animate-pulse" />}
+          <span>Tez kunda</span>
+        </span>
+      );
     default:
       return null;
   }

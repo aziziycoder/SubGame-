@@ -1,4 +1,4 @@
-export type SubtitleStatus = 'Tayyor' | 'Tekshirilmoqda' | 'Ishlab chiqilmoqda' | 'Rejada';
+export type SubtitleStatus = 'Tayyor' | 'Tekshirilmoqda' | 'Ishlab chiqilmoqda' | 'Rejada' | 'Tez kunda';
 
 export interface SystemRequirements {
   os: string;

@@ -18,6 +18,7 @@ import {
   ArrowLeft,
   Share2,
   Sparkles,
+  Clock,
   Info
 } from 'lucide-react';
 
@@ -549,9 +550,10 @@ export const GameDetailPage: React.FC = () => {
               ) : (
                 <button
                   disabled
-                  className="w-full py-3.5 px-4 rounded-xl bg-gray-800 text-gray-400 font-semibold text-sm cursor-not-allowed"
+                  className="w-full py-3.5 px-4 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-400 font-semibold text-sm cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  Hozircha tekshirilmoqda
+                  <Clock className="w-4 h-4 animate-pulse" />
+                  <span>{game.subtitleStatus === 'Tez kunda' ? 'Tez kunda taqdim etiladi' : 'Hozircha tekshirilmoqda'}</span>
                 </button>
               )}
 
