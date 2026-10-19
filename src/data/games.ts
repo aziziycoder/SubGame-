@@ -109,7 +109,9 @@ export const GAMES_DATA: Game[] = [
       '/images/innocence/uzbek_sub_3.png',
       '/images/innocence/uzbek_sub_4.jpg',
       'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/752590/ss_8775c109d7303faf8aa94c532905107b75064d48.1920x1080.jpg',
-      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/752590/ss_8433438bf03b7f524e6cf3ac81e99e96be2188c8.1920x1080.jpg'
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/752590/ss_8433438bf03b7f524e6cf3ac81e99e96be2188c8.1920x1080.jpg',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/752590/ss_a1025722ac0dce88a3e63e88a34352fb73a403db.1920x1080.jpg',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/752590/ss_d61367be06a8f92ca4331e58bd51dc1b45c9984a.1920x1080.jpg'
     ],
     shortDescription: '1349-yil. Fransiyada vabo epidemiyasi va inkvizitsiya avjida. Yosh Amitsiya va uning ukasi Gyugo shafqatsiz taqdir changalida omon qolish uchun jangga kirishadilar.',
     fullDescription: 'Tarixning eng qorong‘i davrlaridan biri bo‘lgan Yuz yillik urush davridagi Fransiyaga sayohat qiling. Inkivizitsiya askarlari tomonidan quvg‘in qilingan va hech qachon to‘ymaydigan kalamushlar to‘dasi bilan o‘ralgan Amitsiya va Gyugo bir-birlarini tushunishni va ishonishni o‘rganadilar. Qiyinchiliklarga qaramay, ular bu zolim dunyoda omon qolish va o‘z taqdirlari ortidagi sirni ochish uchun kurashadilar.',
