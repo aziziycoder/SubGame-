@@ -74,13 +74,11 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2.5 group shrink-0">
-              <div className="w-10 h-10 rounded-xl overflow-hidden border border-[#A3E635]/40 flex items-center justify-center bg-[#141821] shadow-accent-glow group-hover:scale-105 transition-transform">
-                <img
-                  src="/images/logo_concept_doppi.jpg"
-                  alt="SubGame Logo"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              <img
+                src="/images/logo_doppi.png"
+                alt="SubGame Logo"
+                className="w-10 h-10 object-contain drop-shadow-[0_0_12px_rgba(163,230,53,0.35)] group-hover:scale-110 transition-transform duration-300"
+              />
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span className="text-xl font-extrabold tracking-tight text-white group-hover:text-[#A3E635] transition-colors">
