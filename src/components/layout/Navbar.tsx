@@ -103,7 +103,7 @@ export const Navbar: React.FC = () => {
 
             {/* Right Actions */}
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-              {/* Suggest Game Button */}
+              {/* Suggest Game Button (Desktop) */}
               <button
                 onClick={() => setIsSuggestModalOpen(true)}
                 title="Yangi o‘yin taklif qilish"
@@ -113,11 +113,11 @@ export const Navbar: React.FC = () => {
                 <span>Subtitr taklif qilish</span>
               </button>
 
-              {/* Favorites Link */}
+              {/* Favorites Link (Desktop only, hidden on mobile) */}
               <Link
                 to="/favorites"
                 title="Sevimlilar"
-                className="relative p-2 rounded-xl bg-[#141821] border border-[#2A3245] text-gray-300 hover:text-white hover:border-gray-500 transition-colors"
+                className="hidden sm:inline-flex relative p-2 rounded-xl bg-[#141821] border border-[#2A3245] text-gray-300 hover:text-white hover:border-gray-500 transition-colors"
               >
                 <Heart className="w-4 h-4" />
                 {favoritesCount > 0 && (
@@ -127,15 +127,15 @@ export const Navbar: React.FC = () => {
                 )}
               </Link>
 
-              {/* Telegram Channel Button */}
+              {/* Telegram Channel Button (Desktop only, hidden on mobile) */}
               <a
                 href={SITE_CONFIG.telegramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-sky-500/15 text-sky-400 border border-sky-500/30 hover:bg-sky-500/25 transition-all text-xs font-semibold cursor-pointer shadow-sm hover:shadow-sky-500/20"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-sky-500/15 text-sky-400 border border-sky-500/30 hover:bg-sky-500/25 transition-all text-xs font-semibold cursor-pointer shadow-sm hover:shadow-sky-500/20"
               >
                 <Send className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Telegram</span>
+                <span>Telegram</span>
               </a>
 
               {/* Mobile menu toggle */}
@@ -187,6 +187,16 @@ export const Navbar: React.FC = () => {
                   </span>
                 )}
               </Link>
+
+              <a
+                href={SITE_CONFIG.telegramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-sky-400 bg-sky-500/10 hover:bg-sky-500/20"
+              >
+                <Send className="w-4 h-4" />
+                <span>Telegram kanalimiz</span>
+              </a>
 
               <button
                 onClick={() => {
