@@ -11,8 +11,7 @@ interface HeroSlide {
   headlineHighlight: string;
   headlineSuffix: string;
   description: string;
-  bgImageDesktop: string;
-  bgImageMobile: string;
+  bgImage: string;
   cardImage: string;
   cardTag: string;
   highlightTag: string;
@@ -31,10 +30,8 @@ const HERO_SLIDES: HeroSlide[] = [
     headlineSuffix: ' his qil.',
     description:
       'Amitsiya va Gyugoning vabo epidemiyasidagi ta‘sirli dramasi endi to‘liq o‘zbek tilida. Qora kalamushlar to‘dasi va taqdir sinovlariga qarshi kurash.',
-    bgImageDesktop:
+    bgImage:
       'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_9cbcd6b81cc32ecf75b36f40b92157da78a19598.1920x1080.jpg',
-    bgImageMobile:
-      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/library_600x900_2x.jpg',
     cardImage:
       'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/header.jpg',
     cardTag: 'O‘ZBEKCHA SUBTITR TAYYOR',
@@ -53,10 +50,8 @@ const HERO_SLIDES: HeroSlide[] = [
     headlineSuffix: ' changalida.',
     description:
       '1349-yil, Yuz yillik urush davridagi Fransiya. Amitsiya va uning kichik ukasi Gyugoning afsonaviy birinchi sayohati o‘zbekcha tarjimada.',
-    bgImageDesktop:
+    bgImage:
       'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/752590/ss_8433438bf03b7f524e6cf3ac81e99e96be2188c8.1920x1080.jpg',
-    bgImageMobile:
-      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/752590/library_600x900_2x.jpg',
     cardImage:
       'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/752590/header.jpg',
     cardTag: 'O‘ZBEKCHA SUBTITR TAYYOR',
@@ -92,8 +87,8 @@ export const HeroSection: React.FC = () => {
   const active = HERO_SLIDES[currentSlide];
 
   return (
-    <section className="relative min-h-[85vh] sm:min-h-[90vh] flex items-center justify-center pt-20 sm:pt-28 pb-12 sm:pb-16 overflow-hidden select-none">
-      {/* Background Cinematic Art with responsive mobile/desktop source & cross-fade */}
+    <section className="relative min-h-[85vh] sm:min-h-[90vh] flex items-center justify-center pt-24 sm:pt-28 pb-12 sm:pb-16 overflow-hidden select-none">
+      {/* Background Cinematic Art with cross-fade animation */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {HERO_SLIDES.map((slide, index) => {
           const isCurrent = currentSlide === index;
@@ -104,24 +99,21 @@ export const HeroSection: React.FC = () => {
                 isCurrent ? 'opacity-100 z-0' : 'opacity-0 -z-10 pointer-events-none'
               }`}
             >
-              <picture className="w-full h-full block">
-                <source media="(min-width: 640px)" srcSet={slide.bgImageDesktop} />
-                <img
-                  src={slide.bgImageMobile}
-                  alt={`${slide.title} fon rasmi`}
-                  className={`w-full h-full object-cover object-top sm:object-center filter brightness-[0.52] sm:brightness-[0.65] contrast-110 transition-transform duration-1000 ease-out ${
-                    isCurrent ? 'scale-105' : 'scale-100'
-                  }`}
-                />
-              </picture>
+              <img
+                src={slide.bgImage}
+                alt={`${slide.title} fon rasmi`}
+                className={`w-full h-full object-cover object-center filter brightness-[0.6] contrast-110 transition-transform duration-1000 ease-out ${
+                  isCurrent ? 'scale-105' : 'scale-100'
+                }`}
+              />
             </div>
           );
         })}
 
-        {/* Cinematic Vignette Gradients tuned for mobile portrait and desktop */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D12] via-[#0B0D12]/75 to-[#0B0D12]/30 sm:via-[#0B0D12]/50 sm:to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0D12]/95 via-[#0B0D12]/50 to-transparent hidden sm:block" />
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#0B0D12]/80 via-[#0B0D12]/30 to-transparent pointer-events-none" />
+        {/* Cinematic Vignette Gradients */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D12] via-[#0B0D12]/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0D12]/90 via-[#0B0D12]/40 to-transparent hidden sm:block" />
+        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#0B0D12]/80 via-[#0B0D12]/30 to-transparent pointer-events-none" />
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#A3E635]/10 rounded-full blur-3xl pointer-events-none" />
       </div>
 

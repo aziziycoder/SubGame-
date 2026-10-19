@@ -36,6 +36,18 @@ export const Navbar: React.FC = () => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
   const navLinks = [
     { name: 'Bosh sahifa', path: '/', icon: Home },
     { name: 'O‘yinlar', path: '/games', icon: Layers },
@@ -51,8 +63,10 @@ export const Navbar: React.FC = () => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-          isScrolled
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isMobileMenuOpen
+            ? 'bg-[#0B0D12] border-b border-[#2A3245] py-3.5 shadow-2xl'
+            : isScrolled
             ? 'bg-[#0B0D12]/80 backdrop-blur-md border-b border-[#2A3245]/80 py-3 shadow-xl'
             : 'bg-gradient-to-b from-[#0B0D12]/70 via-[#0B0D12]/20 to-transparent py-4'
         }`}
@@ -142,18 +156,18 @@ export const Navbar: React.FC = () => {
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Menyu"
-                className="p-2 rounded-xl lg:hidden bg-[#141821] border border-[#2A3245] text-gray-300 hover:text-white"
+                className="p-2 rounded-xl lg:hidden bg-[#141821] border border-[#2A3245] text-gray-200 hover:text-white cursor-pointer"
               >
-                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {isMobileMenuOpen ? <X className="w-5 h-5 text-white" /> : <Menu className="w-5 h-5" />}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile Fullscreen Solid Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden bg-[#0B0D12]/98 border-b border-[#2A3245] px-4 pt-3 pb-6 animate-in slide-in-from-top-4 duration-200">
-            <nav className="flex flex-col space-y-1.5">
+          <div className="lg:hidden fixed inset-x-0 top-[65px] bottom-0 bg-[#0B0D12] z-50 px-5 py-6 overflow-y-auto flex flex-col justify-between border-t border-[#2A3245] animate-in fade-in duration-200">
+            <nav className="flex flex-col space-y-2.5">
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const active = isActive(link.path);
@@ -161,13 +175,14 @@ export const Navbar: React.FC = () => {
                   <Link
                     key={link.path}
                     to={link.path}
-                    className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-base font-semibold transition-all ${
                       active
-                        ? 'bg-[#A3E635] text-[#0B0D12] font-semibold'
-                        : 'text-gray-300 hover:bg-[#141821]'
+                        ? 'bg-[#A3E635] text-[#0B0D12] shadow-accent-glow'
+                        : 'text-gray-200 hover:text-white bg-[#141821] border border-[#2A3245]'
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-5 h-5" />
                     <span>{link.name}</span>
                   </Link>
                 );
@@ -175,14 +190,15 @@ export const Navbar: React.FC = () => {
 
               <Link
                 to="/favorites"
-                className="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium text-gray-300 hover:bg-[#141821]"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center justify-between px-4 py-3 rounded-xl text-base font-semibold text-gray-200 bg-[#141821] border border-[#2A3245]"
               >
-                <div className="flex items-center gap-3">
-                  <Heart className="w-4 h-4 text-rose-500" />
+                <div className="flex items-center gap-3.5">
+                  <Heart className="w-5 h-5 text-rose-500" />
                   <span>Sevimlilar ro‘yxati</span>
                 </div>
                 {favoritesCount > 0 && (
-                  <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 text-xs font-bold">
+                  <span className="px-2.5 py-0.5 rounded-full bg-rose-500 text-white text-xs font-bold">
                     {favoritesCount}
                   </span>
                 )}
@@ -192,23 +208,25 @@ export const Navbar: React.FC = () => {
                 href={SITE_CONFIG.telegramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-sky-400 bg-sky-500/10 hover:bg-sky-500/20"
+                className="flex items-center gap-3.5 px-4 py-3 rounded-xl text-base font-semibold text-sky-400 bg-sky-500/10 border border-sky-500/25"
               >
-                <Send className="w-4 h-4" />
+                <Send className="w-5 h-5" />
                 <span>Telegram kanalimiz</span>
               </a>
+            </nav>
 
+            <div className="pt-6 pb-4">
               <button
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   setIsSuggestModalOpen(true);
                 }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-[#A3E635] bg-[#A3E635]/10 hover:bg-[#A3E635]/20 mt-2"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-sm font-bold text-[#A3E635] bg-[#A3E635]/10 border border-[#A3E635]/30 hover:bg-[#A3E635]/20 cursor-pointer"
               >
                 <Sparkles className="w-4 h-4" />
                 <span>O‘zbekcha subtitr taklif qilish</span>
               </button>
-            </nav>
+            </div>
           </div>
         )}
       </header>
