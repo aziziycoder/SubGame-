@@ -39,18 +39,18 @@ export const GAMES_DATA: Game[] = [
     subtitleStatus: 'Tayyor',
     subtitleLanguage: 'O‘zbekcha (Lotin)',
     subtitleVersion: 'v1.0.2',
-    subtitleLastUpdated: '2025-02-15',
+    subtitleLastUpdated: '2026-10-20',
     subtitleCompatibility: 'Steam, Epic Games Store va PC Game Pass (v1.6.0+)',
-    subtitleFormat: 'ZIP (.locres matn lokalizatsiyasi paketi)',
-    subtitleSize: '28.6 MB',
-    subtitleDownloadUrl: '#download-requiem-sub',
+    subtitleFormat: '.pc lokalizatsiya fayli (tt01.pc)',
+    subtitleSize: '1.9 MB',
+    subtitleDownloadUrl: '/downloads/requiem/tt01.pc',
     subtitlePrice: 'Bepul',
     subtitleTranslationType: 'Professional adabiy tarjima',
     installationGuide: [
       {
         step: 1,
-        title: 'Subtitr arxivini yuklab oling',
-        description: 'Ushbu sahifadagi "Subtitrni yuklab olish" tugmasi orqali o‘zbekcha lokalizatsiya ZIP arxivini shaxsiy kompyuteringizga saqlang.'
+        title: 'tt01.pc subtitr faylini yuklab oling',
+        description: 'Ushbu sahifadagi "Subtitrni yuklab olish" tugmasi orqali A Plague Tale: Requiem uchun tt01.pc o‘zbekcha lokalizatsiya faylini shaxsiy kompyuteringizga saqlang.'
       },
       {
         step: 2,
@@ -60,14 +60,14 @@ export const GAMES_DATA: Game[] = [
       },
       {
         step: 3,
-        title: 'Fayllarni almashtirish (yoki qo‘shish)',
-        description: 'Yuklab olingan arxiv ichidagi `Content` yoki `Localization` papkasini o‘yinning asosiy papkasiga ko‘chirib o‘tkazing va kerak bo‘lsa almashtirishni tasdiqlang.',
-        note: 'Eslatma: Har ehtimolga qarshi asl inglizcha til faylining zaxira (backup) nusxasini saqlab qo‘yish tavsiya etiladi.'
+        title: 'tt01.pc faylini nusxalang va almashtiring',
+        description: 'Yuklab olingan tt01.pc faylini o‘yin o‘rnatilgan papkaga ko‘chirib o‘tkazing va mavjud fayl ustiga almashtirishni ("Replace the file in the destination") tasdiqlang.',
+        note: 'Eslatma: Har ehtimolga qarshi asl inglizcha tt01.pc faylining zaxira (backup) nusxasini saqlab qo‘yish tavsiya etiladi.'
       },
       {
         step: 4,
         title: 'O‘yinda subtitrni faollashtiring',
-        description: 'O‘yinni ishga tushiring. "Sozlamalar (Settings)" -> "Audio/Grafika" -> "Subtitrlar (Subtitles)" bo‘limidan subtitrni yoqing.'
+        description: 'O‘yinni ishga tushiring. "Sozlamalar (Settings)" -> "Audio/Grafika" -> "Subtitrlar (Subtitles)" bo‘limidan subtitrni yoqing va o‘zbekcha dialoglardan bahramand bo‘ling!'
       }
     ],
     knownIssues: [
@@ -141,7 +141,7 @@ export const GAMES_DATA: Game[] = [
     subtitleCompatibility: 'Steam, Epic Games Store, GOG va barcha PC nashrlari',
     subtitleFormat: '.pc lokalizatsiya fayli (tt01.pc)',
     subtitleSize: '1.1 MB',
-    subtitleDownloadUrl: '/downloads/tt01.pc',
+    subtitleDownloadUrl: '/downloads/innocence/tt01.pc',
     subtitlePrice: 'Bepul',
     subtitleTranslationType: 'To‘liq adabiy tahrirlangan',
     installationGuide: [
