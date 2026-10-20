@@ -137,34 +137,35 @@ export const GAMES_DATA: Game[] = [
     subtitleStatus: 'Tayyor',
     subtitleLanguage: 'O‘zbekcha (Lotin)',
     subtitleVersion: 'v1.2.0',
-    subtitleLastUpdated: '2025-01-20',
-    subtitleCompatibility: 'Steam, Epic Games Store va GOG PC nashrlari',
-    subtitleFormat: 'ZIP (.loc va matn fayllari)',
-    subtitleSize: '14.2 MB',
-    subtitleDownloadUrl: '#download-innocence-sub',
+    subtitleLastUpdated: '2026-10-20',
+    subtitleCompatibility: 'Steam, Epic Games Store, GOG va barcha PC nashrlari',
+    subtitleFormat: '.pc lokalizatsiya fayli (tt01.pc)',
+    subtitleSize: '1.1 MB',
+    subtitleDownloadUrl: '/downloads/tt01.pc',
     subtitlePrice: 'Bepul',
     subtitleTranslationType: 'To‘liq adabiy tahrirlangan',
     installationGuide: [
       {
         step: 1,
-        title: 'Subtitr faylini yuklab oling',
-        description: 'Tegishli tugmani bosib Innocence o‘yini uchun o‘zbekcha subtitr ZIP faylini yuklab oling.'
+        title: 'tt01.pc subtitr faylini yuklab oling',
+        description: 'Ushbu sahifadagi "Subtitrni yuklab olish" tugmasi orqali tt01.pc o‘zbekcha lokalizatsiya faylini kompyuteringizga saqlang.'
       },
       {
         step: 2,
-        title: 'O‘yin o‘rnatilgan papkani toping',
-        description: 'O‘yin joylashgan bosh papkaga o‘ting.',
-        pathOrCommand: 'C:/Program Files (x86)/Steam/steamapps/common/A Plague Tale Innocence/'
+        title: 'O‘yin o‘rnatilgan papkani oching',
+        description: 'Steam kutubxonasida "A Plague Tale: Innocence" ustiga o‘ng tugmani bosing -> "Boshqarish (Manage)" -> "Lokal fayllarni ko‘rish (Browse local files)" bo‘limini tanlang.',
+        pathOrCommand: 'SteamLibrary/steamapps/common/A Plague Tale Innocence/'
       },
       {
         step: 3,
-        title: 'Arxivni ochish va nusxalash',
-        description: 'Arxiv ichidagi fayllarni o‘yin o‘rnatilgan papkadagi mos papkalarga nusxalang. Fayllarni almashtirish so‘ralsa, "Ha (Yes)" deb belgilang.'
+        title: 'tt01.pc faylini nusxalang va almashtiring',
+        description: 'Yuklab olingan tt01.pc faylini o‘yin o‘rnatilgan papkaga ko‘chirib o‘tkazing va mavjud fayl ustiga almashtirishni ("Replace the file in the destination") tasdiqlang.',
+        note: 'Eslatma: Asl inglizcha tt01.pc faylining zaxira nusxasini (backup) saqlab qo‘yishingiz mumkin.'
       },
       {
         step: 4,
-        title: 'O‘yinda tilni sozlash',
-        description: 'O‘yinga kiring, Options -> Audio -> Subtitles yoqilganligini tekshiring va tilni Inglizcha/O‘zbekcha sifatida tanlang.'
+        title: 'O‘yinda subtitrni faollashtiring',
+        description: 'O‘yinga kiring, "Sozlamalar (Options)" -> "Audio" -> "Subtitrlar (Subtitles)" bo‘limidan subtitrlarni yoqing va o‘zbekcha dialoglardan bahramand bo‘ling!'
       }
     ],
     knownIssues: [

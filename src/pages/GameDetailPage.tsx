@@ -78,6 +78,14 @@ export const GameDetailPage: React.FC = () => {
 
   const handleDownloadSubtitle = () => {
     if (game.subtitleStatus !== 'Tayyor') return;
+    if (game.subtitleDownloadUrl && game.subtitleDownloadUrl.startsWith('/')) {
+      const link = document.createElement('a');
+      link.href = game.subtitleDownloadUrl;
+      link.setAttribute('download', game.subtitleDownloadUrl.split('/').pop() || 'subtitr');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
     setDownloadSuccessModal(true);
   };
 
@@ -679,23 +687,37 @@ export const GameDetailPage: React.FC = () => {
               <Check className="w-7 h-7" />
             </div>
             <h3 className="text-xl font-bold text-white">
-              Subtitr fayli tayyor!
+              Subtitr fayli yuklanmoqda!
             </h3>
             <p className="text-xs text-gray-300 leading-relaxed">
-              <strong>{game.title}</strong> o‘zbekcha subtitr paketi ({game.subtitleVersion}) yuklanmoqda.
-              Arxivni ochib, sahifadagi o‘rnatish qo‘llanmasiga rioya qiling.
+              <strong>{game.title}</strong> o‘zbekcha subtitr fayli ({game.subtitleVersion}) kompyuteringizga yuklanmoqda.
+              Faylni o‘rnatish uchun sahifadagi bosqichma-bosqich qo‘llanmaga rioya qiling.
             </p>
-            <div className="p-3 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-left text-xs font-mono text-gray-300">
-              Format: {game.subtitleFormat}
-              <br />
-              Hajm: {game.subtitleSize}
+            <div className="p-3 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-left text-xs font-mono text-gray-300 space-y-1">
+              <div>Format: <span className="text-[#A3E635]">{game.subtitleFormat}</span></div>
+              <div>Hajm: <span className="text-white">{game.subtitleSize}</span></div>
+              {game.subtitleDownloadUrl && game.subtitleDownloadUrl.startsWith('/') && (
+                <div>Fayl nomi: <span className="text-white font-bold">{game.subtitleDownloadUrl.split('/').pop()}</span></div>
+              )}
             </div>
-            <button
-              onClick={() => setDownloadSuccessModal(false)}
-              className="w-full py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-bold text-sm hover:bg-[#84CC16] cursor-pointer"
-            >
-              Tushundim
-            </button>
+            <div className="flex gap-2">
+              {game.subtitleDownloadUrl && game.subtitleDownloadUrl.startsWith('/') && (
+                <a
+                  href={game.subtitleDownloadUrl}
+                  download={game.subtitleDownloadUrl.split('/').pop()}
+                  className="flex-1 py-2.5 rounded-xl bg-[#1A1F2A] hover:bg-[#2A3245] border border-[#2A3245] text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Download className="w-4 h-4 text-[#A3E635]" />
+                  <span>Qayta yuklash</span>
+                </a>
+              )}
+              <button
+                onClick={() => setDownloadSuccessModal(false)}
+                className="flex-1 py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-bold text-sm hover:bg-[#84CC16] cursor-pointer"
+              >
+                Tushundim
+              </button>
+            </div>
           </div>
         </div>
       )}
