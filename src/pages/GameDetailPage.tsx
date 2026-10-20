@@ -18,7 +18,6 @@ import {
   ArrowLeft,
   Share2,
   Sparkles,
-  Clock,
   Play,
   Info
 } from 'lucide-react';
@@ -606,10 +605,16 @@ export const GameDetailPage: React.FC = () => {
               ) : (
                 <button
                   disabled
-                  className="w-full py-3.5 px-4 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-400 font-semibold text-sm cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-4 rounded-xl bg-sky-500/10 border border-sky-500/25 text-sky-400 font-semibold text-sm cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  <Clock className="w-4 h-4 animate-pulse" />
-                  <span>{game.subtitleStatus === 'Tez kunda' ? 'Tez kunda taqdim etiladi' : 'Hozircha tekshirilmoqda'}</span>
+                  <Sparkles className="w-4 h-4 animate-pulse" />
+                  <span>
+                    {game.subtitleStatus === 'Tez kunda'
+                      ? 'Tez kunda taqdim etiladi'
+                      : game.subtitleStatus === 'Jarayonda'
+                      ? 'Tarjima jarayonda'
+                      : 'Hozircha tekshirilmoqda'}
+                  </span>
                 </button>
               )}
 

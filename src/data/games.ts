@@ -269,6 +269,81 @@ export const GAMES_DATA: Game[] = [
     },
     isFeatured: true,
     tags: ['Premyera', 'Kutilmoqda', 'Sofiya', 'Tez kunda']
+  },
+  {
+    id: 'outward-2',
+    slug: 'outward-2',
+    title: 'Outward 2',
+    cover: '/images/outward2/cover.jpg',
+    cardImage: '/images/outward2/header.jpg',
+    heroImage: '/images/outward2/hero.jpg',
+    screenshots: [
+      '/images/outward2/ss_1.jpg',
+      '/images/outward2/ss_2.jpg',
+      '/images/outward2/ss_3.jpg',
+      '/images/outward2/ss_4.jpg'
+    ],
+    shortDescription: 'Mashhur hardcore RPG ning uzoq kutilgan davomi. Sehr-jodu, xavfli maxluqlar, omon qolish sinovlari va unutilmas sarguzashtlarga boy ochiq dunyo.',
+    fullDescription: 'Outward 2 — Nine Dots Studio tomonidan yaratilayotgan betakror hardcore Action-RPG o‘yini. Birinchi qismning barcha o‘ziga xos jihatlari — xalta ko‘tarib sayohat qilish, murakkab va jiddiy sehr tizimi, tabiat injiqliklari va jarohatlar bilan omon qolish sinovlari yangilangan ilg‘or grafik dvigatel va takomillashgan jang mexanikasi bilan qaytmoqda. Bu yerda siz tanlangan qahramon emassiz, balki o‘z yo‘lini o‘zi tanlaydigan oddiy sayohatchisiz. Har bir harakatingiz va qaroringiz o‘yin olamiga jiddiy ta‘sir ko‘rsatadi. SubGame jamoasi ayni paytda Outward 2 o‘yinining to‘liq o‘zbekcha subtitrlari ustida faol ish olib bormoqda.',
+    releaseYear: 2026,
+    developer: 'Nine Dots Studio',
+    publisher: 'Nine Dots Publishing',
+    genres: ['RPG', 'Omon qolish', 'Sarguzasht', 'Action'],
+    platforms: ['PC'],
+    officialStoreLinks: [
+      {
+        name: 'Steam',
+        url: 'https://store.steampowered.com/app/2849490/Outward_2/',
+        priceNote: 'Steam rasmiy sahifasi'
+      }
+    ],
+    price: 'Tez kunda',
+    priceNote: 'O‘yin rasmiy sotuvga chiqqach Steam orqali xarid qilinadi. O‘zbekcha subtitr esa SubGame platformasida bepul taqdim etiladi.',
+    subtitleStatus: 'Jarayonda',
+    subtitleLanguage: 'O‘zbekcha (Lotin)',
+    subtitleVersion: 'v0.5 (Jarayonda)',
+    subtitleLastUpdated: '2026-10-20',
+    subtitleCompatibility: 'Steam va barcha PC nashrlari',
+    subtitleFormat: 'Matn lokalizatsiyasi paketi',
+    subtitleSize: 'Tayyorlanmoqda',
+    subtitleDownloadUrl: '',
+    subtitlePrice: 'Bepul',
+    subtitleTranslationType: 'Tarjima va tahrir jarayonida',
+    installationGuide: [
+      {
+        step: 1,
+        title: 'Tarjima va mahalliylashtirish jarayoni',
+        description: 'Lokalizatorlarimiz matnlar va dialoglarni o‘zbek tiliga tarjima qilib, o‘yin ichida sinovdan o‘tkazmoqda.'
+      },
+      {
+        step: 2,
+        title: 'Yuklab olish va o‘rnatish',
+        description: 'Subtitr tayyor bo‘lishi bilanoq ushbu sahifada yuklab olish havolasi va o‘rnatish qo‘llanmasi e‘lon qilinadi.'
+      }
+    ],
+    knownIssues: [
+      'O‘yin va o‘zbekcha subtitr ayni vaqtda faol tayyorlanish jarayonida.'
+    ],
+    minimumRequirements: {
+      os: 'Windows 10 (64-bit)',
+      processor: 'Intel Core i5-6600K / AMD Ryzen 5 1600',
+      memory: '16 GB RAM',
+      graphics: 'GeForce GTX 1060 / Radeon RX 580',
+      directX: 'Versiya 12',
+      storage: '40 GB bo‘sh joy',
+      additionalNotes: 'Minimal 1080p 30 FPS sozlamalari uchun.'
+    },
+    recommendedRequirements: {
+      os: 'Windows 11 (64-bit)',
+      processor: 'Intel Core i7-10700K / AMD Ryzen 7 3700X',
+      memory: '16 GB RAM',
+      graphics: 'GeForce RTX 3060 / Radeon RX 6600 XT',
+      directX: 'Versiya 12',
+      storage: 'SSD tavsiya etiladi (40 GB)',
+      additionalNotes: '1080p 60 FPS yuqori sifatli tajriba uchun.'
+    },
+    isFeatured: true,
+    tags: ['RPG', 'Omon qolish', 'Jarayonda', 'Yangi']
   }
 ];
 
@@ -277,6 +352,8 @@ export const GENRES = [
   'Sarguzasht',
   'Action',
   'Stealth',
+  'RPG',
+  'Omon qolish',
   'Dramatik hikoya',
   'Tarixiy drama'
 ];
@@ -284,5 +361,6 @@ export const GENRES = [
 export const SUBTITLE_STATUSES: { label: string; value: string }[] = [
   { label: 'Barcha holatlar', value: 'Barchasi' },
   { label: 'Tayyor (Yuklab olish mumkin)', value: 'Tayyor' },
+  { label: 'Jarayonda (Ishlanmoqda)', value: 'Jarayonda' },
   { label: 'Tez kunda (Kutilmoqda)', value: 'Tez kunda' }
 ];

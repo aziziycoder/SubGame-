@@ -38,13 +38,14 @@ export const SubtitleStatusBadge: React.FC<SubtitleStatusBadgeProps> = ({
           <span>Tekshirilmoqda</span>
         </span>
       );
+    case 'Jarayonda':
     case 'Ishlab chiqilmoqda':
       return (
         <span
           className={`inline-flex items-center rounded-full bg-sky-500/15 text-sky-400 border border-sky-500/30 backdrop-blur-sm ${sizeClasses}`}
         >
-          {showIcon && <Sparkles className="w-3.5 h-3.5 shrink-0" />}
-          <span>Ishlab chiqilmoqda</span>
+          {showIcon && <Sparkles className="w-3.5 h-3.5 shrink-0 animate-pulse" />}
+          <span>Jarayonda</span>
         </span>
       );
     case 'Rejada':
