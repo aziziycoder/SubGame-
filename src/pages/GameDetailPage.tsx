@@ -19,6 +19,7 @@ import {
   Share2,
   Sparkles,
   Clock,
+  Play,
   Info
 } from 'lucide-react';
 
@@ -192,6 +193,17 @@ export const GameDetailPage: React.FC = () => {
                   </a>
                 )}
 
+                {/* Gameplay Video Quick Link Button */}
+                {game.gameplayVideoUrl && (
+                  <a
+                    href="#gameplay-video"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-red-600/15 hover:bg-red-600/25 text-red-400 border border-red-500/30 hover:border-red-500/60 font-bold text-sm sm:text-base transition-all"
+                  >
+                    <Play className="w-4 h-4 fill-red-400" />
+                    <span>Geympley videosi</span>
+                  </a>
+                )}
+
                 <div className="flex items-center gap-2.5">
                   {/* Favorite Button */}
                   <button
@@ -251,6 +263,42 @@ export const GameDetailPage: React.FC = () => {
                 </div>
               </div>
             </section>
+
+            {/* Gameplay Video Section */}
+            {game.gameplayVideoUrl && (
+              <section id="gameplay-video" className="bg-[#141821] rounded-2xl p-5 sm:p-8 border border-[#2A3245] space-y-4 scroll-mt-24 shadow-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <div className="inline-flex items-center gap-1.5 text-xs font-bold text-red-400 uppercase tracking-wider mb-1">
+                      <Play className="w-3.5 h-3.5 fill-red-400" />
+                      <span>Eksklyuziv Gameplay</span>
+                    </div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-white">
+                      O‘zbekcha tildagi geympley
+                    </h2>
+                  </div>
+                  <a
+                    href="https://youtu.be/L9M9aAjH02Y?si=SnEluyKMpHpDnBlX"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-xl bg-red-600/15 hover:bg-red-600/25 text-red-400 border border-red-500/30 transition-all w-fit"
+                  >
+                    <span>YouTube’da ko‘rish</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+
+                <div className="relative aspect-video w-full rounded-xl overflow-hidden border border-[#2A3245] bg-black shadow-2xl">
+                  <iframe
+                    src={game.gameplayVideoUrl}
+                    title={`${game.title} O‘zbekcha tildagi geympley`}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    className="w-full h-full border-0"
+                  />
+                </div>
+              </section>
+            )}
 
             {/* C. Screenshots Gallery (2x2 on mobile for compact viewing) */}
             <section className="bg-[#141821] rounded-2xl p-5 sm:p-8 border border-[#2A3245]">

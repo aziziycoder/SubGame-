@@ -199,6 +199,7 @@ export const GAMES_DATA: Game[] = [
     cover: '/images/legacy/cover.jpg',
     cardImage: '/images/legacy/header.jpg',
     heroImage: '/images/legacy/hero.jpg',
+    gameplayVideoUrl: 'https://www.youtube.com/embed/L9M9aAjH02Y',
     screenshots: [
       '/images/legacy/ss_1.jpg',
       '/images/legacy/ss_2.jpg',

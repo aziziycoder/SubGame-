@@ -32,6 +32,7 @@ export interface Game {
   cardImage?: string;
   heroImage: string;
   torrentUrl?: string;
+  gameplayVideoUrl?: string;
   screenshots: string[];
   shortDescription: string;
   fullDescription: string;
