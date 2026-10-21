@@ -62,7 +62,7 @@ export const LauncherPage: React.FC = () => {
             </span>
             <span className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#141821] border border-[#2A3245]">
               <Cpu className="w-3.5 h-3.5 text-sky-400" />
-              Hajmi: ~86 MB (Portativ)
+              Hajmi: ~95 MB (Portativ)
             </span>
             <span className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#141821] border border-[#2A3245]">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
