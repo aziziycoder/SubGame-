@@ -266,6 +266,7 @@ export const GAMES_DATA: Game[] = [
     cover: '/images/outward2/cover.jpg',
     cardImage: '/images/outward2/header.jpg',
     heroImage: '/images/outward2/hero.jpg',
+    torrentUrl: 'https://itorrents-igruha.org/16725-outward-2.html',
     screenshots: [
       '/images/outward2/ss_1.jpg',
       '/images/outward2/ss_2.jpg',
