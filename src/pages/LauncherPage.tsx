@@ -6,7 +6,6 @@ import {
   Cpu,
   CheckCircle2,
   AlertTriangle,
-  Play,
   KeyRound,
   Sparkles,
   Monitor
@@ -43,7 +42,7 @@ export const LauncherPage: React.FC = () => {
             Subtitr fayllarini qo‘lda ko‘chirib yurishga chek qo‘ying! Rasmiy Launcher orqali o‘zbekcha tarjimalarni 1 bosishda o‘rnating, litsenziyalarni boshqaring va o‘yinlarni to‘g‘ridan-to‘g‘ri ishga tushiring.
           </p>
 
-          {/* Download & Launch Actions */}
+          {/* Download Action */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
             <a
               href="/downloads/SubGame-Launcher.exe"
@@ -52,14 +51,6 @@ export const LauncherPage: React.FC = () => {
             >
               <Download className="w-5 h-5" />
               <span>Launcherni yuklab olish (.exe)</span>
-            </a>
-
-            <a
-              href="subgame://open"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-[#141821] hover:bg-[#1A1F2A] text-gray-200 border border-[#2A3245] hover:border-[#A3E635]/50 font-bold text-sm transition-all"
-            >
-              <Play className="w-4 h-4 text-[#A3E635] fill-current" />
-              <span>Launcherni ochish (Kompyuterda)</span>
             </a>
           </div>
 

@@ -151,22 +151,13 @@ export const GameDetailPage: React.FC = () => {
               {/* Primary Action Buttons Bar */}
               <div className="pt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 {game.subtitleStatus === 'Tayyor' ? (
-                  <>
-                    <Link
-                      to="/launcher"
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-sm sm:text-base hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
-                    >
-                      <Download className="w-5 h-5" />
-                      <span>Launcherni yuklab olish (.exe)</span>
-                    </Link>
-                    <a
-                      href={`subgame://open?game=${game.slug}`}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-[#141821] hover:bg-[#1A1F2A] text-[#A3E635] border border-[#A3E635]/40 hover:border-[#A3E635] font-bold text-sm sm:text-base transition-all"
-                    >
-                      <Play className="w-4 h-4 fill-current text-[#A3E635]" />
-                      <span>Launcherda ochish</span>
-                    </a>
-                  </>
+                  <Link
+                    to="/launcher"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-sm sm:text-base hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
+                  >
+                    <Download className="w-5 h-5" />
+                    <span>Launcherni yuklab olish (.exe)</span>
+                  </Link>
                 ) : (
                   <div className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30 text-sm font-semibold">
                     <Sparkles className="w-4 h-4" />
@@ -592,7 +583,7 @@ export const GameDetailPage: React.FC = () => {
               </p>
 
               {game.subtitleStatus === 'Tayyor' ? (
-                <div className="flex flex-col gap-2.5 pt-1">
+                <div className="pt-1">
                   <Link
                     to="/launcher"
                     className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-sm hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
@@ -600,14 +591,6 @@ export const GameDetailPage: React.FC = () => {
                     <Download className="w-4 h-4" />
                     <span>Launcherni yuklab olish (.exe)</span>
                   </Link>
-
-                  <a
-                    href={`subgame://open?game=${game.slug}`}
-                    className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#0B0D12] hover:bg-white/5 text-gray-200 border border-[#2A3245] text-xs font-semibold transition-all"
-                  >
-                    <Play className="w-3.5 h-3.5 text-[#A3E635] fill-current" />
-                    <span>Launcherda ochish (subgame://)</span>
-                  </a>
                 </div>
               ) : (
                 <button
