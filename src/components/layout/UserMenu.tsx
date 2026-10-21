@@ -210,6 +210,16 @@ export const UserMenu: React.FC = () => {
             </p>
           </div>
 
+          {/* Connect Launcher Quick Action */}
+          <Link
+            to="/connect"
+            onClick={() => setIsOpen(false)}
+            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#A3E635]/15 hover:bg-[#A3E635]/25 text-[#A3E635] border border-[#A3E635]/30 text-xs font-bold transition-all"
+          >
+            <Laptop className="w-3.5 h-3.5" />
+            <span>Launcherni ulash</span>
+          </Link>
+
           {/* Logout Button */}
           <button
             onClick={() => {
