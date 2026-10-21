@@ -325,7 +325,7 @@ export const GameDetailPage: React.FC = () => {
                     </h2>
                   </div>
                   <a
-                    href="https://youtu.be/L9M9aAjH02Y?si=SnEluyKMpHpDnBlX"
+                    href={game.gameplayVideoUrl.replace('/embed/', '/watch?v=')}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-xl bg-red-600/15 hover:bg-red-600/25 text-red-400 border border-red-500/30 transition-all w-fit"

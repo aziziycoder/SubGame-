@@ -8,6 +8,7 @@ export const GAMES_DATA: Game[] = [
     cover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/library_600x900.jpg',
     cardImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/header.jpg',
     heroImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_9cbcd6b81cc32ecf75b36f40b92157da78a19598.1920x1080.jpg',
+    gameplayVideoUrl: 'https://www.youtube.com/embed/3PTwPKnUYnY',
     torrentUrl: 'https://itorrents-igruha.org/7079-a-plague-tale-requiem.html',
     screenshots: [
       'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_9cbcd6b81cc32ecf75b36f40b92157da78a19598.1920x1080.jpg',
