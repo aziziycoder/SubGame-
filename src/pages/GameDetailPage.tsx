@@ -23,7 +23,8 @@ import {
   Info,
   KeyRound,
   ShieldCheck,
-  Laptop
+  Laptop,
+  X
 } from 'lucide-react';
 
 export const GameDetailPage: React.FC = () => {
@@ -210,19 +211,13 @@ export const GameDetailPage: React.FC = () => {
                       <span>{isClaiming ? 'Biriktirilmoqda...' : 'Litsenziyani akkauntga biriktirish'}</span>
                     </button>
                   ) : (
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                      <Link
-                        to="/launcher"
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-sm sm:text-base hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
-                      >
-                        <Download className="w-5 h-5" />
-                        <span>Launcherni yuklab olish (.exe)</span>
-                      </Link>
-                      <div className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-xs font-bold">
-                        <CheckCircle2 className="w-4 h-4 shrink-0" />
-                        <span>Litsenziya faol: Launcherda oching</span>
-                      </div>
-                    </div>
+                    <Link
+                      to="/launcher"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-sm sm:text-base hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
+                    >
+                      <Download className="w-5 h-5" />
+                      <span>Launcherni yuklab olish (.exe)</span>
+                    </Link>
                   )
                 ) : (
                   <div className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30 text-sm font-semibold">
@@ -648,13 +643,6 @@ export const GameDetailPage: React.FC = () => {
                 Subtitrlar xavfsiz va faqat sizning Google akkauntingiz orqali <strong>1 ta kompyuterga</strong> avtomatik bog‘lanadi. Boshqa kompyuterlarga nusxalashdan himoyalangan.
               </p>
 
-              {claimSuccess && (
-                <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-xs text-emerald-400 font-semibold flex items-center gap-2 animate-in fade-in">
-                  <CheckCircle2 className="w-4 h-4 shrink-0" />
-                  <span>Tabriklaymiz! Litsenziya akkauntingizga biriktirildi.</span>
-                </div>
-              )}
-
               {game.subtitleStatus === 'Tayyor' ? (
                 <div className="space-y-3 pt-1">
                   {!user ? (
@@ -855,6 +843,28 @@ export const GameDetailPage: React.FC = () => {
         preselectedGameId={game.id}
       />
 
+      {/* Floating Corner Toast Notification */}
+      {claimSuccess && (
+        <div className="fixed top-24 right-4 sm:right-8 z-50 max-w-sm w-full p-4 rounded-2xl bg-[#141821] border border-[#A3E635]/60 shadow-2xl shadow-black/90 flex items-start gap-3.5 animate-in slide-in-from-top-4 fade-in duration-300">
+          <div className="w-9 h-9 rounded-xl bg-[#A3E635]/20 text-[#A3E635] flex items-center justify-center shrink-0 mt-0.5">
+            <CheckCircle2 className="w-5 h-5" />
+          </div>
+          <div className="flex-1 pr-1">
+            <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
+              Litsenziya faollashtirildi!
+            </h4>
+            <p className="text-xs text-gray-300 mt-1 leading-relaxed">
+              <strong>{game.title}</strong> o‘yini akkauntingizga biriktirildi. SubGame Launcher orqali o‘ynashingiz mumkin.
+            </p>
+          </div>
+          <button
+            onClick={() => setClaimSuccess(false)}
+            className="text-gray-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
     </div>
   );
