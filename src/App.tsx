@@ -10,6 +10,7 @@ import { GameDetailPage } from './pages/GameDetailPage';
 import { GuidePage } from './pages/GuidePage';
 import { AboutPage } from './pages/AboutPage';
 import { FavoritesPage } from './pages/FavoritesPage';
+import { LauncherPage } from './pages/LauncherPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { SuggestGameModal } from './components/home/SuggestGameModal';
 import { ReportIssueModal } from './components/home/ReportIssueModal';
@@ -33,6 +34,7 @@ export const App: React.FC = () => {
               <Route path="/games" element={<CatalogPage />} />
               <Route path="/games/:slug" element={<GameDetailPage />} />
               <Route path="/guide" element={<GuidePage />} />
+              <Route path="/launcher" element={<LauncherPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/favorites" element={<FavoritesPage />} />
               <Route path="*" element={<NotFoundPage />} />

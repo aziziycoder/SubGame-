@@ -11,7 +11,8 @@ import {
   BookOpen,
   Info,
   Layers,
-  Home
+  Home,
+  Monitor
 } from 'lucide-react';
 import { SuggestGameModal } from '../home/SuggestGameModal';
 
@@ -50,6 +51,7 @@ export const Navbar: React.FC = () => {
   const navLinks = [
     { name: 'Bosh sahifa', path: '/', icon: Home },
     { name: 'O‘yinlar', path: '/games', icon: Layers },
+    { name: 'Launcher', path: '/launcher', icon: Monitor },
     { name: 'Qo‘llanma', path: '/guide', icon: BookOpen },
     { name: 'Biz haqimizda', path: '/about', icon: Info },
   ];
