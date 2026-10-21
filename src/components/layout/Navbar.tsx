@@ -98,7 +98,7 @@ export const Navbar: React.FC = () => {
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-1 bg-[#141821]/80 px-3 py-1.5 rounded-full border border-[#2A3245]/60 backdrop-blur-md shrink-0">
+            <nav className="hidden lg:flex items-center gap-1 bg-[#141821]/80 px-2.5 py-1 rounded-full border border-[#2A3245]/60 backdrop-blur-md shrink-0">
               {navLinks.map((link) => {
                 const active = isActive(link.path);
                 const Icon = link.icon;
@@ -106,13 +106,13 @@ export const Navbar: React.FC = () => {
                   <Link
                     key={link.path}
                     to={link.path}
-                    className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs md:text-sm font-medium transition-all ${
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
                       active
                         ? 'bg-[#A3E635] text-[#0B0D12] font-semibold shadow-accent-glow'
                         : 'text-gray-300 hover:text-white hover:bg-white/5'
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-3.5 h-3.5" />
                     <span>{link.name}</span>
                   </Link>
                 );
@@ -120,24 +120,24 @@ export const Navbar: React.FC = () => {
             </nav>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <div className="flex items-center gap-2 shrink-0">
               {/* Google Auth User Menu */}
               <UserMenu />
 
-              {/* Suggest Game Button (Desktop) */}
+              {/* Suggest Game Button (Visible on wide screens) */}
               <button
                 onClick={() => setIsSuggestModalOpen(true)}
                 title="Yangi o‘yin taklif qilish"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#141821] hover:bg-[#1A1F2A] text-gray-200 border border-[#2A3245] hover:border-[#A3E635]/50 transition-colors"
+                className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#141821] hover:bg-[#1A1F2A] text-gray-200 border border-[#2A3245] hover:border-[#A3E635]/50 transition-colors cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5 text-[#A3E635]" />
-                <span>Subtitr taklif qilish</span>
+                <span>Taklif qilish</span>
               </button>
 
-              {/* Favorites Link (Desktop only, hidden on mobile) */}
+              {/* Favorites Link (Desktop only) */}
               <Link
                 to="/favorites"
-                title="Sevimlilar"
+                title="Sevimlilar ro‘yxati"
                 className="hidden sm:inline-flex relative p-2 rounded-xl bg-[#141821] border border-[#2A3245] text-gray-300 hover:text-white hover:border-gray-500 transition-colors"
               >
                 <Heart className="w-4 h-4" />
@@ -148,15 +148,15 @@ export const Navbar: React.FC = () => {
                 )}
               </Link>
 
-              {/* Telegram Channel Button (Desktop only, hidden on mobile) */}
+              {/* Telegram Channel Icon Button */}
               <a
                 href={SITE_CONFIG.telegramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-sky-500/15 text-sky-400 border border-sky-500/30 hover:bg-sky-500/25 transition-all text-xs font-semibold cursor-pointer shadow-sm hover:shadow-sky-500/20"
+                title="Telegram kanalimiz"
+                className="hidden sm:inline-flex items-center justify-center p-2 rounded-xl bg-sky-500/15 text-sky-400 border border-sky-500/30 hover:bg-sky-500/25 transition-all text-xs font-semibold cursor-pointer shadow-sm hover:shadow-sky-500/20"
               >
-                <Send className="w-3.5 h-3.5" />
-                <span>Telegram</span>
+                <Send className="w-4 h-4" />
               </a>
 
               {/* Mobile menu toggle */}
