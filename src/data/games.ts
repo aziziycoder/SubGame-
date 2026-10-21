@@ -211,7 +211,7 @@ export const GAMES_DATA: Game[] = [
         priceNote: 'Steam rasmiy do‘koni sahifasi'
       }
     ],
-    price: 'Tekin',
+    price: 'Tez kunda',
     priceNote: 'O‘yin va o‘zbekcha subtitr SubGame platformasida bepul taqdim etiladi.',
     subtitleStatus: 'Tez kunda',
     subtitleLanguage: 'O‘zbekcha (Lotin)',
