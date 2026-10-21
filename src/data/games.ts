@@ -286,32 +286,38 @@ export const GAMES_DATA: Game[] = [
         priceNote: 'Steam rasmiy sahifasi'
       }
     ],
-    price: 'Tez kunda',
+    price: 'Do‘konda tekshirish',
     priceNote: 'O‘yin rasmiy sotuvga chiqqach Steam orqali xarid qilinadi. O‘zbekcha subtitr esa SubGame platformasida bepul taqdim etiladi.',
-    subtitleStatus: 'Jarayonda',
+    subtitleStatus: 'Tayyor',
     subtitleLanguage: 'O‘zbekcha (Lotin)',
-    subtitleVersion: 'v0.5 (Jarayonda)',
-    subtitleLastUpdated: '2026-10-20',
-    subtitleCompatibility: 'Steam va barcha PC nashrlari',
-    subtitleFormat: 'Matn lokalizatsiyasi paketi',
-    subtitleSize: 'Tayyorlanmoqda',
-    subtitleDownloadUrl: '',
+    subtitleVersion: 'v1.0.0',
+    subtitleLastUpdated: '2026-10-21',
+    subtitleCompatibility: 'Steam Playtest va barcha PC nashrlari',
+    subtitleFormat: 'SubGame Launcher himoyalangan lokalizatsiyasi (.pak)',
+    subtitleSize: '1.5 MB',
+    subtitleDownloadUrl: '/launcher',
     subtitlePrice: 'Bepul',
-    subtitleTranslationType: 'Tarjima va tahrir jarayonida',
+    subtitleTranslationType: 'To‘liq o‘zbekcha interfeys va dialoglar',
     installationGuide: [
       {
         step: 1,
-        title: 'Tarjima va mahalliylashtirish jarayoni',
-        description: 'Lokalizatorlarimiz matnlar va dialoglarni o‘zbek tiliga tarjima qilib, o‘yin ichida sinovdan o‘tkazmoqda.'
+        title: 'SubGame Launcherni oching',
+        description: 'Kompyuteringizda SubGame Launcherni ishga tushiring.'
       },
       {
         step: 2,
-        title: 'Yuklab olish va o‘rnatish',
-        description: 'Subtitr tayyor bo‘lishi bilanoq ushbu sahifada yuklab olish havolasi va o‘rnatish qo‘llanmasi e‘lon qilinadi.'
+        title: 'O‘yin ijro faylini (otw2_ue.exe) tanlang',
+        description: 'Outward 2 kartasidagi "O‘ynash" tugmasini bosing va o‘rnatilgan papkadagi otw2_ue.exe faylini ko‘rsating.',
+        pathOrCommand: 'Outward.2.Playtest/otw2_ue.exe'
+      },
+      {
+        step: 3,
+        title: 'O‘yinni boshlash',
+        description: '"O‘yinni boshlash" tugmasini bosing. SubGame o‘zbekcha subtitr paketini avtomatik ulaydi va o‘yin to‘liq o‘zbek tilida ochiladi!'
       }
     ],
     knownIssues: [
-      'O‘yin va o‘zbekcha subtitr ayni vaqtda faol tayyorlanish jarayonida.'
+      'O‘yin dialoglarida to‘liq ovozli aktyorlik mavjud emas (original o‘yin dizayni bo‘yicha dialoglar faqat matnli subtitr ko‘rinishida ishlaydi).'
     ],
     minimumRequirements: {
       os: 'Windows 10 (64-bit)',
@@ -332,7 +338,7 @@ export const GAMES_DATA: Game[] = [
       additionalNotes: '1080p 60 FPS yuqori sifatli tajriba uchun.'
     },
     isFeatured: true,
-    tags: ['RPG', 'Omon qolish', 'Jarayonda', 'Yangi']
+    tags: ['RPG', 'Omon qolish', 'Tayyor', 'Yangi', 'O‘zbekcha subtitr']
   }
 ];
 
