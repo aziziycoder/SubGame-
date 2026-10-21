@@ -41,33 +41,27 @@ export const GAMES_DATA: Game[] = [
     subtitleVersion: 'v1.0.2',
     subtitleLastUpdated: '2026-10-20',
     subtitleCompatibility: 'Steam, Epic Games Store va PC Game Pass (v1.6.0+)',
-    subtitleFormat: '.pc lokalizatsiya fayli (tt01.pc)',
+    subtitleFormat: 'SubGame Launcher himoyalangan lokalizatsiyasi',
     subtitleSize: '1.9 MB',
-    subtitleDownloadUrl: '/downloads/requiem/tt01.pc',
+    subtitleDownloadUrl: '/launcher',
     subtitlePrice: 'Bepul',
     subtitleTranslationType: 'Professional adabiy tarjima',
     installationGuide: [
       {
         step: 1,
-        title: 'tt01.pc subtitr faylini yuklab oling',
-        description: 'Ushbu sahifadagi "Subtitrni yuklab olish" tugmasi orqali A Plague Tale: Requiem uchun tt01.pc o‘zbekcha lokalizatsiya faylini shaxsiy kompyuteringizga saqlang.'
+        title: 'SubGame Launcherni yuklab oling',
+        description: 'Ushbu sahifadagi "Launcherni yuklab olish" tugmasi orqali dasturni kompyuteringizga saqlang. O‘rnatish talab etilmaydi.'
       },
       {
         step: 2,
-        title: 'O‘yin o‘rnatilgan papkani oching',
-        description: 'Steam kutubxonasida A Plague Tale: Requiem ustiga o‘ng tugmani bosing -> "Boshqarish (Manage)" -> "Lokal fayllarni ko‘rish (Browse local files)" bo‘limini tanlang.',
-        pathOrCommand: 'SteamLibrary/steamapps/common/APlagueTaleRequiem/'
+        title: 'O‘yin ijro faylini (.exe) tanlang',
+        description: 'Launcherni oching, A Plague Tale: Requiem kartasidagi "O‘ynash" tugmasini bosing va o‘rnatilgan papkadagi APlagueTaleRequiem_x64.exe faylini ko‘rsating.',
+        pathOrCommand: 'SteamLibrary/steamapps/common/APlagueTaleRequiem/APlagueTaleRequiem_x64.exe'
       },
       {
         step: 3,
-        title: 'tt01.pc faylini nusxalang va almashtiring',
-        description: 'Yuklab olingan tt01.pc faylini o‘yin o‘rnatilgan papkaga ko‘chirib o‘tkazing va mavjud fayl ustiga almashtirishni ("Replace the file in the destination") tasdiqlang.',
-        note: 'Eslatma: Har ehtimolga qarshi asl inglizcha tt01.pc faylining zaxira (backup) nusxasini saqlab qo‘yish tavsiya etiladi.'
-      },
-      {
-        step: 4,
-        title: 'O‘yinda subtitrni faollashtiring',
-        description: 'O‘yinni ishga tushiring. "Sozlamalar (Settings)" -> "Audio/Grafika" -> "Subtitrlar (Subtitles)" bo‘limidan subtitrni yoqing va o‘zbekcha dialoglardan bahramand bo‘ling!'
+        title: 'Litsenziyani kiriting va o‘ynang',
+        description: 'Litsenziya kalitini kiriting va "O‘yinni boshlash" tugmasini bosing. Subtitrlar avtomatik ulanadi va o‘yin o‘zbek tilida ochiladi!'
       }
     ],
     knownIssues: [
@@ -139,33 +133,27 @@ export const GAMES_DATA: Game[] = [
     subtitleVersion: 'v1.2.0',
     subtitleLastUpdated: '2026-10-20',
     subtitleCompatibility: 'Steam, Epic Games Store, GOG va barcha PC nashrlari',
-    subtitleFormat: '.pc lokalizatsiya fayli (tt01.pc)',
+    subtitleFormat: 'SubGame Launcher himoyalangan lokalizatsiyasi',
     subtitleSize: '1.1 MB',
-    subtitleDownloadUrl: '/downloads/innocence/tt01.pc',
+    subtitleDownloadUrl: '/launcher',
     subtitlePrice: 'Bepul',
     subtitleTranslationType: 'To‘liq adabiy tahrirlangan',
     installationGuide: [
       {
         step: 1,
-        title: 'tt01.pc subtitr faylini yuklab oling',
-        description: 'Ushbu sahifadagi "Subtitrni yuklab olish" tugmasi orqali tt01.pc o‘zbekcha lokalizatsiya faylini kompyuteringizga saqlang.'
+        title: 'SubGame Launcherni yuklab oling',
+        description: 'Saytimizdan SubGame Launcher (.exe) dasturini yuklab oling. O‘rnatish shart emas, to‘g‘ridan-to‘g‘ri ochiladi.'
       },
       {
         step: 2,
-        title: 'O‘yin o‘rnatilgan papkani oching',
-        description: 'Steam kutubxonasida "A Plague Tale: Innocence" ustiga o‘ng tugmani bosing -> "Boshqarish (Manage)" -> "Lokal fayllarni ko‘rish (Browse local files)" bo‘limini tanlang.',
-        pathOrCommand: 'SteamLibrary/steamapps/common/A Plague Tale Innocence/'
+        title: 'O‘yin ijro faylini (.exe) tanlang',
+        description: 'Launcherdan A Plague Tale: Innocence o‘yinini oching va kompyuteringizdagi APlagueTaleInnocence_x64.exe faylini ko‘rsating.',
+        pathOrCommand: 'SteamLibrary/steamapps/common/A Plague Tale Innocence/APlagueTaleInnocence_x64.exe'
       },
       {
         step: 3,
-        title: 'tt01.pc faylini nusxalang va almashtiring',
-        description: 'Yuklab olingan tt01.pc faylini o‘yin o‘rnatilgan papkaga ko‘chirib o‘tkazing va mavjud fayl ustiga almashtirishni ("Replace the file in the destination") tasdiqlang.',
-        note: 'Eslatma: Asl inglizcha tt01.pc faylining zaxira nusxasini (backup) saqlab qo‘yishingiz mumkin.'
-      },
-      {
-        step: 4,
-        title: 'O‘yinda subtitrni faollashtiring',
-        description: 'O‘yinga kiring, "Sozlamalar (Options)" -> "Audio" -> "Subtitrlar (Subtitles)" bo‘limidan subtitrlarni yoqing va o‘zbekcha dialoglardan bahramand bo‘ling!'
+        title: '1 bosishda o‘zbek tilida o‘ynang',
+        description: 'Faollashtirish kalitini kiriting va "O‘yinni boshlash" tugmasini bosing. Subtitrlar avtomatik ulanadi!'
       }
     ],
     knownIssues: [

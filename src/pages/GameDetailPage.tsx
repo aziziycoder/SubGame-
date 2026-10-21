@@ -30,7 +30,6 @@ export const GameDetailPage: React.FC = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [downloadSuccessModal, setDownloadSuccessModal] = useState(false);
   const [copiedPath, setCopiedPath] = useState<string | null>(null);
   const [shared, setShared] = useState(false);
 
@@ -76,18 +75,6 @@ export const GameDetailPage: React.FC = () => {
     }
   };
 
-  const handleDownloadSubtitle = () => {
-    if (game.subtitleStatus !== 'Tayyor') return;
-    if (game.subtitleDownloadUrl && game.subtitleDownloadUrl.startsWith('/')) {
-      const link = document.createElement('a');
-      link.href = game.subtitleDownloadUrl;
-      link.setAttribute('download', game.subtitleDownloadUrl.split('/').pop() || 'subtitr');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-    setDownloadSuccessModal(true);
-  };
 
   return (
     <div className="min-h-screen bg-[#0B0D12] text-white">
@@ -164,28 +151,28 @@ export const GameDetailPage: React.FC = () => {
               {/* Primary Action Buttons Bar */}
               <div className="pt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 {game.subtitleStatus === 'Tayyor' ? (
-                  <button
-                    onClick={handleDownloadSubtitle}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-sm sm:text-base hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
-                  >
-                    <Download className="w-5 h-5" />
-                    <span>Subtitrni yuklab olish (Bepul)</span>
-                  </button>
+                  <>
+                    <Link
+                      to="/launcher"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-sm sm:text-base hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
+                    >
+                      <Download className="w-5 h-5" />
+                      <span>Launcherni yuklab olish (.exe)</span>
+                    </Link>
+                    <a
+                      href={`subgame://open?game=${game.slug}`}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-[#141821] hover:bg-[#1A1F2A] text-[#A3E635] border border-[#A3E635]/40 hover:border-[#A3E635] font-bold text-sm sm:text-base transition-all"
+                    >
+                      <Play className="w-4 h-4 fill-current text-[#A3E635]" />
+                      <span>Launcherda ochish</span>
+                    </a>
+                  </>
                 ) : (
                   <div className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30 text-sm font-semibold">
                     <Sparkles className="w-4 h-4" />
                     <span>Subtitr tayyorlanmoqda ({game.subtitleStatus})</span>
                   </div>
                 )}
-
-                {/* SubGame Launcher Fast Action Button */}
-                <Link
-                  to="/launcher"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-[#141821] hover:bg-[#1A1F2A] text-[#A3E635] border border-[#A3E635]/40 hover:border-[#A3E635] font-bold text-sm sm:text-base transition-all"
-                >
-                  <Monitor className="w-4 h-4" />
-                  <span>Launcherda o‘ynash</span>
-                </Link>
 
                 {/* Torrent Igruha Fast Download Button */}
                 {game.torrentUrl && (
@@ -584,11 +571,12 @@ export const GameDetailPage: React.FC = () => {
 
           {/* Right Sidebar: Store & Actions (4 cols on desktop) */}
           <div className="lg:col-span-4 space-y-6">
-            {/* Download Subtitle Card */}
+            {/* SubGame Launcher Integration Card */}
             <div className="bg-gradient-to-b from-[#1A1F2A] to-[#141821] rounded-2xl p-5 sm:p-6 border-2 border-[#A3E635]/50 shadow-card-glow space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-[#A3E635] uppercase tracking-wider">
-                  Lokalizatsiya to‘plami
+                <span className="text-xs font-bold text-[#A3E635] uppercase tracking-wider flex items-center gap-1.5">
+                  <Monitor className="w-4 h-4" />
+                  SubGame Launcher
                 </span>
                 <span className="text-xs px-2 py-0.5 rounded bg-[#A3E635]/20 text-[#A3E635] font-bold">
                   {game.subtitlePrice}
@@ -596,21 +584,31 @@ export const GameDetailPage: React.FC = () => {
               </div>
 
               <h3 className="text-base sm:text-lg font-bold text-white">
-                O‘zbekcha subtitrni yuklab olish
+                Launcher orqali o‘ynash
               </h3>
 
               <p className="text-xs text-gray-300 leading-relaxed">
-                {game.priceNote}
+                Subtitrlar xavfsiz va qulay tarzda faqat <strong>SubGame Launcher</strong> orqali avtomatik o‘rnatiladi va ishga tushiriladi. Qo‘lda fayl ko‘chirib yurish shart emas!
               </p>
 
               {game.subtitleStatus === 'Tayyor' ? (
-                <button
-                  onClick={handleDownloadSubtitle}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-sm hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Subtitrni yuklab olish ({game.subtitleSize || 'ZIP'})</span>
-                </button>
+                <div className="flex flex-col gap-2.5 pt-1">
+                  <Link
+                    to="/launcher"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-sm hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Launcherni yuklab olish (.exe)</span>
+                  </Link>
+
+                  <a
+                    href={`subgame://open?game=${game.slug}`}
+                    className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#0B0D12] hover:bg-white/5 text-gray-200 border border-[#2A3245] text-xs font-semibold transition-all"
+                  >
+                    <Play className="w-3.5 h-3.5 text-[#A3E635] fill-current" />
+                    <span>Launcherda ochish (subgame://)</span>
+                  </a>
+                </div>
               ) : (
                 <button
                   disabled
@@ -628,46 +626,7 @@ export const GameDetailPage: React.FC = () => {
               )}
 
               <div className="text-[11px] text-gray-400 text-center">
-                Yuklab olish fayli virus va zararlardan toza tekshirilgan.
-              </div>
-            </div>
-
-            {/* SubGame Launcher Integration Card */}
-            <div className="bg-gradient-to-b from-[#141821] to-[#1A1F2A] rounded-2xl p-5 border border-[#A3E635]/40 hover:border-[#A3E635] transition-all space-y-3 shadow-lg">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-[#A3E635] uppercase tracking-wider flex items-center gap-1.5">
-                  <Monitor className="w-3.5 h-3.5" />
-                  Avtomatik O‘rnatish
-                </span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-[#A3E635]/20 text-[#A3E635] font-bold">
-                  Tavsiya etiladi
-                </span>
-              </div>
-
-              <h4 className="text-sm font-bold text-white">
-                SubGame Launcher orqali o‘ynang
-              </h4>
-
-              <p className="text-xs text-gray-300 leading-relaxed">
-                Fayllarni qo‘lda ko‘chirib yurish shart emas! SubGame Launcher subtitrlarni avtomatik o‘yinga kiritadi.
-              </p>
-
-              <div className="flex flex-col gap-2 pt-1">
-                <Link
-                  to="/launcher"
-                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#A3E635] hover:bg-[#84CC16] text-[#0B0D12] text-xs font-extrabold shadow-sm shadow-[#A3E635]/30 transition-all"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Launcherni yuklab olish (.exe)</span>
-                </Link>
-
-                <a
-                  href={`subgame://open?game=${game.slug}`}
-                  className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-[#0B0D12] hover:bg-white/5 text-gray-300 border border-[#2A3245] text-xs font-medium transition-all"
-                >
-                  <Play className="w-3 h-3 text-[#A3E635] fill-current" />
-                  <span>Launcherda ochish (subgame://)</span>
-                </a>
+                SubGame Launcher virus va zararlardan toza tekshirilgan.
               </div>
             </div>
 
@@ -780,48 +739,7 @@ export const GameDetailPage: React.FC = () => {
         preselectedGameId={game.id}
       />
 
-      {/* Download Success Simulation Modal */}
-      {downloadSuccessModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#141821] border border-[#2A3245] rounded-2xl max-w-sm sm:max-w-md w-full p-5 sm:p-6 text-center space-y-4 shadow-modal">
-            <div className="w-14 h-14 rounded-full bg-[#A3E635]/20 text-[#A3E635] flex items-center justify-center mx-auto">
-              <Check className="w-7 h-7" />
-            </div>
-            <h3 className="text-xl font-bold text-white">
-              Subtitr fayli yuklanmoqda!
-            </h3>
-            <p className="text-xs text-gray-300 leading-relaxed">
-              <strong>{game.title}</strong> o‘zbekcha subtitr fayli ({game.subtitleVersion}) kompyuteringizga yuklanmoqda.
-              Faylni o‘rnatish uchun sahifadagi bosqichma-bosqich qo‘llanmaga rioya qiling.
-            </p>
-            <div className="p-3 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-left text-xs font-mono text-gray-300 space-y-1">
-              <div>Format: <span className="text-[#A3E635]">{game.subtitleFormat}</span></div>
-              <div>Hajm: <span className="text-white">{game.subtitleSize}</span></div>
-              {game.subtitleDownloadUrl && game.subtitleDownloadUrl.startsWith('/') && (
-                <div>Fayl nomi: <span className="text-white font-bold">{game.subtitleDownloadUrl.split('/').pop()}</span></div>
-              )}
-            </div>
-            <div className="flex gap-2">
-              {game.subtitleDownloadUrl && game.subtitleDownloadUrl.startsWith('/') && (
-                <a
-                  href={game.subtitleDownloadUrl}
-                  download={game.subtitleDownloadUrl.split('/').pop()}
-                  className="flex-1 py-2.5 rounded-xl bg-[#1A1F2A] hover:bg-[#2A3245] border border-[#2A3245] text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                >
-                  <Download className="w-4 h-4 text-[#A3E635]" />
-                  <span>Qayta yuklash</span>
-                </a>
-              )}
-              <button
-                onClick={() => setDownloadSuccessModal(false)}
-                className="flex-1 py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-bold text-sm hover:bg-[#84CC16] cursor-pointer"
-              >
-                Tushundim
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };
