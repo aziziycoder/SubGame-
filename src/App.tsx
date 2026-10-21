@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import { FavoritesProvider } from './context/FavoritesContext';
 import { ScrollToTop } from './components/common/ScrollToTop';
 import { Navbar } from './components/layout/Navbar';
@@ -20,8 +21,9 @@ export const App: React.FC = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   return (
-    <FavoritesProvider>
-      <BrowserRouter>
+    <AuthProvider>
+      <FavoritesProvider>
+        <BrowserRouter>
         <ScrollToTop />
         <div className="min-h-screen bg-[#0B0D12] text-[#F5F7FA] flex flex-col font-sans selection:bg-[#A3E635] selection:text-[#0B0D12]">
           {/* Main Top Navigation */}
@@ -60,6 +62,7 @@ export const App: React.FC = () => {
         </div>
       </BrowserRouter>
     </FavoritesProvider>
+    </AuthProvider>
   );
 };
 

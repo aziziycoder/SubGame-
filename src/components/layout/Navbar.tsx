@@ -15,6 +15,7 @@ import {
   Monitor
 } from 'lucide-react';
 import { SuggestGameModal } from '../home/SuggestGameModal';
+import { UserMenu } from './UserMenu';
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -120,6 +121,9 @@ export const Navbar: React.FC = () => {
 
             {/* Right Actions */}
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              {/* Google Auth User Menu */}
+              <UserMenu />
+
               {/* Suggest Game Button (Desktop) */}
               <button
                 onClick={() => setIsSuggestModalOpen(true)}

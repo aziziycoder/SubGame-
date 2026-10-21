@@ -5,6 +5,7 @@ import { SubtitleStatusBadge } from '../components/common/Badge';
 import { Lightbox } from '../components/common/Lightbox';
 import { ReportIssueModal } from '../components/home/ReportIssueModal';
 import { useFavorites } from '../context/FavoritesContext';
+import { useAuth } from '../context/AuthContext';
 import {
   Download,
   ExternalLink,
@@ -19,7 +20,10 @@ import {
   Share2,
   Sparkles,
   Play,
-  Info
+  Info,
+  KeyRound,
+  ShieldCheck,
+  Laptop
 } from 'lucide-react';
 
 export const GameDetailPage: React.FC = () => {
@@ -27,6 +31,9 @@ export const GameDetailPage: React.FC = () => {
   const game = GAMES_DATA.find((g) => g.slug === slug);
 
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { user, isLicenseClaimed, claimLicense, getGameLicense, signInWithGoogle } = useAuth();
+  const [isClaiming, setIsClaiming] = useState(false);
+  const [claimSuccess, setClaimSuccess] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -55,6 +62,23 @@ export const GameDetailPage: React.FC = () => {
   }
 
   const favorited = isFavorite(game.id);
+  const hasLicense = isLicenseClaimed(game.id);
+  const license = getGameLicense(game.id);
+
+  const handleClaimLicense = async () => {
+    setIsClaiming(true);
+    try {
+      const res = await claimLicense(game.id, game.title, game.slug);
+      if (res.success) {
+        setClaimSuccess(true);
+        setTimeout(() => setClaimSuccess(false), 5000);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsClaiming(false);
+    }
+  };
 
   const handleCopyPath = (path: string) => {
     navigator.clipboard.writeText(path);
@@ -151,13 +175,55 @@ export const GameDetailPage: React.FC = () => {
               {/* Primary Action Buttons Bar */}
               <div className="pt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 {game.subtitleStatus === 'Tayyor' ? (
-                  <Link
-                    to="/launcher"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-sm sm:text-base hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
-                  >
-                    <Download className="w-5 h-5" />
-                    <span>Launcherni yuklab olish (.exe)</span>
-                  </Link>
+                  !user ? (
+                    <button
+                      onClick={signInWithGoogle}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-white hover:bg-gray-100 text-[#0B0D12] font-extrabold text-sm sm:text-base transition-all hover:scale-[1.02] shadow-lg cursor-pointer"
+                    >
+                      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                        <path
+                          fill="#4285F4"
+                          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                        />
+                        <path
+                          fill="#34A853"
+                          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                        />
+                        <path
+                          fill="#FBBC05"
+                          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                        />
+                        <path
+                          fill="#EA4335"
+                          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                        />
+                      </svg>
+                      <span>Google orqali litsenziya olish (Bepul)</span>
+                    </button>
+                  ) : !hasLicense ? (
+                    <button
+                      onClick={handleClaimLicense}
+                      disabled={isClaiming}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-sm sm:text-base hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer disabled:opacity-60"
+                    >
+                      <KeyRound className="w-5 h-5" />
+                      <span>{isClaiming ? 'Biriktirilmoqda...' : 'Litsenziyani akkauntga biriktirish'}</span>
+                    </button>
+                  ) : (
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                      <Link
+                        to="/launcher"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-sm sm:text-base hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
+                      >
+                        <Download className="w-5 h-5" />
+                        <span>Launcherni yuklab olish (.exe)</span>
+                      </Link>
+                      <div className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-xs font-bold">
+                        <CheckCircle2 className="w-4 h-4 shrink-0" />
+                        <span>Litsenziya faol: Launcherda oching</span>
+                      </div>
+                    </div>
+                  )
                 ) : (
                   <div className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30 text-sm font-semibold">
                     <Sparkles className="w-4 h-4" />
@@ -566,8 +632,8 @@ export const GameDetailPage: React.FC = () => {
             <div className="bg-gradient-to-b from-[#1A1F2A] to-[#141821] rounded-2xl p-5 sm:p-6 border-2 border-[#A3E635]/50 shadow-card-glow space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-[#A3E635] uppercase tracking-wider flex items-center gap-1.5">
-                  <Monitor className="w-4 h-4" />
-                  SubGame Launcher
+                  <ShieldCheck className="w-4 h-4" />
+                  DRM Himoyalangan Litsenziya
                 </span>
                 <span className="text-xs px-2 py-0.5 rounded bg-[#A3E635]/20 text-[#A3E635] font-bold">
                   {game.subtitlePrice}
@@ -575,22 +641,89 @@ export const GameDetailPage: React.FC = () => {
               </div>
 
               <h3 className="text-base sm:text-lg font-bold text-white">
-                Launcher orqali o‘ynash
+                1 Akkaunt = 1 Qurilma
               </h3>
 
               <p className="text-xs text-gray-300 leading-relaxed">
-                Subtitrlar xavfsiz va qulay tarzda faqat <strong>SubGame Launcher</strong> orqali avtomatik o‘rnatiladi va ishga tushiriladi. Qo‘lda fayl ko‘chirib yurish shart emas!
+                Subtitrlar xavfsiz va faqat sizning Google akkauntingiz orqali <strong>1 ta kompyuterga</strong> avtomatik bog‘lanadi. Boshqa kompyuterlarga nusxalashdan himoyalangan.
               </p>
 
+              {claimSuccess && (
+                <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-xs text-emerald-400 font-semibold flex items-center gap-2 animate-in fade-in">
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  <span>Tabriklaymiz! Litsenziya akkauntingizga biriktirildi.</span>
+                </div>
+              )}
+
               {game.subtitleStatus === 'Tayyor' ? (
-                <div className="pt-1">
-                  <Link
-                    to="/launcher"
-                    className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-sm hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>Launcherni yuklab olish (.exe)</span>
-                  </Link>
+                <div className="space-y-3 pt-1">
+                  {!user ? (
+                    <button
+                      onClick={signInWithGoogle}
+                      className="w-full flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl bg-white hover:bg-gray-100 text-[#0B0D12] font-extrabold text-xs transition-all shadow-md cursor-pointer"
+                    >
+                      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                        <path
+                          fill="#4285F4"
+                          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                        />
+                        <path
+                          fill="#34A853"
+                          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                        />
+                        <path
+                          fill="#FBBC05"
+                          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                        />
+                        <path
+                          fill="#EA4335"
+                          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                        />
+                      </svg>
+                      <span>Google bilan kirish va litsenziya olish</span>
+                    </button>
+                  ) : !hasLicense ? (
+                    <button
+                      onClick={handleClaimLicense}
+                      disabled={isClaiming}
+                      className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-xs hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer disabled:opacity-60"
+                    >
+                      <KeyRound className="w-4 h-4" />
+                      <span>{isClaiming ? 'Biriktirilmoqda...' : 'Bepul litsenziyani faollashtirish'}</span>
+                    </button>
+                  ) : (
+                    <div className="space-y-2.5">
+                      <div className="p-3 rounded-xl bg-[#0B0D12] border border-[#2A3245] space-y-1.5 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-400">Holat:</span>
+                          <span className="text-emerald-400 font-bold flex items-center gap-1">
+                            <CheckCircle2 className="w-3.5 h-3.5" /> Akkauntga biriktirilgan
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-400">Qurilma (HWID):</span>
+                          <span className="text-gray-300 font-mono text-[11px]">
+                            {license?.hwid ? (
+                              <span className="text-[#A3E635] flex items-center gap-1">
+                                <Laptop className="w-3 h-3" />
+                                {license.boundDeviceName || `${license.hwid.substring(0, 10)}...`}
+                              </span>
+                            ) : (
+                              <span className="text-amber-400">Launcherni kuting</span>
+                            )}
+                          </span>
+                        </div>
+                      </div>
+
+                      <Link
+                        to="/launcher"
+                        className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-xs hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
+                      >
+                        <Download className="w-4 h-4" />
+                        <span>Launcherni yuklab olish (.exe)</span>
+                      </Link>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <button
