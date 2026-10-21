@@ -101,7 +101,7 @@ export const GameCard: React.FC<GameCardProps> = ({ game, priority = false }) =>
         <div className="pt-4 mt-4 border-t border-[#2A3245]/60 flex items-center justify-between">
           <div className="flex flex-col">
             <span className="text-[11px] text-gray-400">O‘yin narxi:</span>
-            <span className="text-xs font-medium text-gray-200">
+            <span className={`text-xs font-semibold ${game.price === 'Tekin' || game.price === 'Bepul' ? 'text-[#A3E635]' : 'text-gray-200'}`}>
               {game.price}
             </span>
           </div>

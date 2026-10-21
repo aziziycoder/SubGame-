@@ -35,11 +35,11 @@ export const GAMES_DATA: Game[] = [
         priceNote: 'Epic Games rasmiy do‘koni'
       }
     ],
-    price: 'Do‘konda tekshirish',
-    priceNote: 'O‘yin narxi rasmiy platformalarda alohida belgilanadi. O‘zbekcha subtitr esa SubGame loyihasi tomonidan bepul taqdim etiladi.',
+    price: 'Tekin',
+    priceNote: 'O‘yin va o‘zbekcha subtitr SubGame platformasida bepul taqdim etiladi.',
     subtitleStatus: 'Tayyor',
     subtitleLanguage: 'O‘zbekcha (Lotin)',
-    subtitleVersion: 'v1.0.2',
+    subtitleVersion: 'v1.0.0',
     subtitleLastUpdated: '2026-10-20',
     subtitleCompatibility: 'Steam, Epic Games Store va PC Game Pass (v1.6.0+)',
     subtitleFormat: 'SubGame Launcher himoyalangan lokalizatsiyasi',
@@ -127,11 +127,11 @@ export const GAMES_DATA: Game[] = [
         priceNote: 'DRM-free versiyasi'
       }
     ],
-    price: 'Do‘konda tekshirish',
-    priceNote: 'O‘yin rasmiy do‘konlardan xarid qilinadi. O‘zbekcha subtitr to‘plami bepul yuklab olinadi.',
+    price: 'Tekin',
+    priceNote: 'O‘yin va o‘zbekcha subtitr SubGame platformasida bepul taqdim etiladi.',
     subtitleStatus: 'Tayyor',
     subtitleLanguage: 'O‘zbekcha (Lotin)',
-    subtitleVersion: 'v1.2.0',
+    subtitleVersion: 'v1.0.0',
     subtitleLastUpdated: '2026-10-20',
     subtitleCompatibility: 'Steam, Epic Games Store, GOG va barcha PC nashrlari',
     subtitleFormat: 'SubGame Launcher himoyalangan lokalizatsiyasi',
@@ -211,17 +211,17 @@ export const GAMES_DATA: Game[] = [
         priceNote: 'Steam rasmiy do‘koni sahifasi'
       }
     ],
-    price: 'Tez kunda',
-    priceNote: 'O‘yin rasmiy sotuvga chiqishi bilan uning o‘zbekcha subtitri SubGame platformasida bepul taqdim etiladi.',
+    price: 'Tekin',
+    priceNote: 'O‘yin va o‘zbekcha subtitr SubGame platformasida bepul taqdim etiladi.',
     subtitleStatus: 'Tez kunda',
     subtitleLanguage: 'O‘zbekcha (Lotin)',
-    subtitleVersion: 'v1.0 (Tez kunda)',
+    subtitleVersion: 'v1.0.0',
     subtitleLastUpdated: 'Kutilmoqda',
     subtitleCompatibility: 'Steam, Epic Games va PC platformalari',
     subtitleFormat: 'ZIP (.locres matn lokalizatsiyasi)',
     subtitleSize: 'Kutilmoqda',
     subtitleDownloadUrl: '',
-    subtitlePrice: 'Tez kunda',
+    subtitlePrice: 'Bepul',
     subtitleTranslationType: 'Kutilmoqda (Adabiy tahrir)',
     installationGuide: [
       {
@@ -286,8 +286,8 @@ export const GAMES_DATA: Game[] = [
         priceNote: 'Steam rasmiy sahifasi'
       }
     ],
-    price: 'Do‘konda tekshirish',
-    priceNote: 'O‘yin rasmiy sotuvga chiqqach Steam orqali xarid qilinadi. O‘zbekcha subtitr esa SubGame platformasida bepul taqdim etiladi.',
+    price: 'Tekin',
+    priceNote: 'O‘yin va o‘zbekcha subtitr SubGame platformasida bepul taqdim etiladi.',
     subtitleStatus: 'Tayyor',
     subtitleLanguage: 'O‘zbekcha (Lotin)',
     subtitleVersion: 'v1.0.0',
