@@ -174,12 +174,12 @@ export const GameDetailPage: React.FC = () => {
               </div>
 
               {/* Primary Action Buttons Bar */}
-              <div className="pt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <div className="pt-3 flex flex-wrap items-center gap-2 sm:gap-2.5">
                 {game.subtitleStatus === 'Tayyor' ? (
                   !user ? (
                     <button
                       onClick={signInWithGoogle}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-white hover:bg-gray-100 text-[#0B0D12] font-extrabold text-sm sm:text-base transition-all hover:scale-[1.02] shadow-lg cursor-pointer"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-gray-100 text-[#0B0D12] font-bold text-xs sm:text-sm transition-all hover:scale-[1.02] shadow-md cursor-pointer whitespace-nowrap h-10 sm:h-10.5"
                     >
                       <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                         <path
@@ -199,44 +199,44 @@ export const GameDetailPage: React.FC = () => {
                           d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                         />
                       </svg>
-                      <span>Google orqali litsenziya olish (Bepul)</span>
+                      <span>Google orqali litsenziya olish</span>
                     </button>
                   ) : !hasLicense ? (
                     <button
                       onClick={handleClaimLicense}
                       disabled={isClaiming}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-sm sm:text-base hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer disabled:opacity-60"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-bold text-xs sm:text-sm hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer disabled:opacity-60 whitespace-nowrap h-10 sm:h-10.5"
                     >
-                      <KeyRound className="w-5 h-5" />
-                      <span>{isClaiming ? 'Biriktirilmoqda...' : 'Litsenziyani akkauntga biriktirish'}</span>
+                      <KeyRound className="w-4 h-4" />
+                      <span>{isClaiming ? 'Biriktirilmoqda...' : 'Litsenziyani biriktirish'}</span>
                     </button>
                   ) : (
                     <Link
                       to="/launcher"
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-sm sm:text-base hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-bold text-xs sm:text-sm hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer whitespace-nowrap h-10 sm:h-10.5"
                     >
-                      <Download className="w-5 h-5" />
-                      <span>Launcherni yuklab olish (.exe)</span>
+                      <Download className="w-4 h-4" />
+                      <span>Launcherni yuklab olish</span>
                     </Link>
                   )
                 ) : (
-                  <div className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30 text-sm font-semibold">
+                  <div className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30 text-xs sm:text-sm font-semibold whitespace-nowrap h-10 sm:h-10.5">
                     <Sparkles className="w-4 h-4" />
                     <span>Subtitr tayyorlanmoqda ({game.subtitleStatus})</span>
                   </div>
                 )}
 
-                {/* Torrent Igruha Fast Download Button */}
+                {/* Torrent Download Button */}
                 {game.torrentUrl && (
                   <a
                     href={game.torrentUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/60 font-bold text-sm sm:text-base transition-all"
+                    className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1A202C] text-gray-200 hover:text-white border border-[#2A3245] hover:border-emerald-500/50 font-semibold text-xs sm:text-sm transition-all whitespace-nowrap h-10 sm:h-10.5"
                   >
-                    <Download className="w-4 h-4" />
-                    <span>O‘yinni yuklab olish (Torrent Igruha)</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
+                    <Download className="w-4 h-4 text-emerald-400" />
+                    <span>O‘yinni yuklash (Torrent)</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
                   </a>
                 )}
 
@@ -244,36 +244,35 @@ export const GameDetailPage: React.FC = () => {
                 {game.gameplayVideoUrl && (
                   <a
                     href="#gameplay-video"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-red-600/15 hover:bg-red-600/25 text-red-400 border border-red-500/30 hover:border-red-500/60 font-bold text-sm sm:text-base transition-all"
+                    className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1A202C] text-gray-200 hover:text-white border border-[#2A3245] hover:border-red-500/50 font-semibold text-xs sm:text-sm transition-all whitespace-nowrap h-10 sm:h-10.5"
                   >
-                    <Play className="w-4 h-4 fill-red-400" />
+                    <Play className="w-3.5 h-3.5 fill-red-400 text-red-400" />
                     <span>Geympley videosi</span>
                   </a>
                 )}
 
-                <div className="flex items-center gap-2.5">
-                  {/* Favorite Button */}
+                {/* Favorite & Share Buttons */}
+                <div className="flex items-center gap-2">
                   <button
                     onClick={() => toggleFavorite(game.id)}
                     aria-label="Sevimlilar"
-                    className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-3 sm:p-3.5 rounded-xl border transition-all cursor-pointer ${
+                    title="Sevimlilarga qo'shish"
+                    className={`h-10 sm:h-10.5 w-10 sm:w-10.5 flex items-center justify-center rounded-xl border transition-all cursor-pointer ${
                       favorited
                         ? 'bg-rose-500/20 text-rose-500 border-rose-500/40'
-                        : 'bg-[#141821] text-gray-300 hover:text-white border-[#2A3245] hover:border-gray-500'
+                        : 'bg-[#141821] text-gray-300 hover:text-white border-[#2A3245] hover:border-gray-500 hover:bg-[#1A202C]'
                     }`}
                   >
-                    <Heart className={`w-5 h-5 ${favorited ? 'fill-rose-500' : ''}`} />
-                    <span className="sm:hidden text-xs font-semibold">Sevimlilar</span>
+                    <Heart className={`w-4 h-4 ${favorited ? 'fill-rose-500' : ''}`} />
                   </button>
 
-                  {/* Share Button */}
                   <button
                     onClick={handleShare}
                     aria-label="Ulashish"
-                    className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-3 sm:p-3.5 rounded-xl bg-[#141821] border border-[#2A3245] text-gray-300 hover:text-white hover:border-gray-500 transition-colors cursor-pointer"
+                    title="Ulashish"
+                    className="h-10 sm:h-10.5 w-10 sm:w-10.5 flex items-center justify-center rounded-xl bg-[#141821] border border-[#2A3245] text-gray-300 hover:text-white hover:border-gray-500 hover:bg-[#1A202C] transition-colors cursor-pointer"
                   >
-                    {shared ? <Check className="w-5 h-5 text-[#A3E635]" /> : <Share2 className="w-5 h-5" />}
-                    <span className="sm:hidden text-xs font-semibold">{shared ? 'Nusxalandi' : 'Ulashish'}</span>
+                    {shared ? <Check className="w-4 h-4 text-[#A3E635]" /> : <Share2 className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
