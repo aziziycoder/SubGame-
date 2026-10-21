@@ -226,20 +226,6 @@ export const GameDetailPage: React.FC = () => {
                   </div>
                 )}
 
-                {/* Torrent Download Button */}
-                {game.torrentUrl && (
-                  <a
-                    href={game.torrentUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1A202C] text-gray-200 hover:text-white border border-[#2A3245] hover:border-emerald-500/50 font-semibold text-xs sm:text-sm transition-all whitespace-nowrap h-10 sm:h-10.5"
-                  >
-                    <Download className="w-4 h-4 text-emerald-400" />
-                    <span>O‘yinni yuklash (Torrent)</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
-                  </a>
-                )}
-
                 {/* Gameplay Video Quick Link Button */}
                 {game.gameplayVideoUrl && (
                   <a
