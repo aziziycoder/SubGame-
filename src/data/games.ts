@@ -436,6 +436,92 @@ export const GAMES_DATA: Game[] = [
     targetFileName: 're_chunk_000.pak.patch_001.pak',
     targetRelativeDir: '',
     keyPrefix: 'SUB-RE2R',
+  },
+  {
+    id: 'level-devil',
+    slug: 'level-devil',
+    title: 'Level Devil',
+    cover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3242750/library_600x900.jpg',
+    cardImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3242750/header.jpg',
+    heroImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3242750/ss_80c54b48272b6414ebbf107542431ef23cf56940.1920x1080.jpg',
+    gameplayVideoUrl: 'https://www.youtube.com/embed/8F2jP8Lq26M',
+    torrentUrl: '',
+    screenshots: [
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3242750/ss_80c54b48272b6414ebbf107542431ef23cf56940.1920x1080.jpg',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3242750/ss_6b68d09cde1e96696607644b105e86be3950277a.1920x1080.jpg',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3242750/ss_e871bd7c68014f816963f1af8cd627eb682cf987.1920x1080.jpg',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3242750/ss_c25bd9f5878adf97b91c776cd27e4ffa4736db93.1920x1080.jpg'
+    ],
+    shortDescription: 'Oddiy ko‘ringan, ammo asablarni sinovdan o‘tkazuvchi shafqatsiz va kulgili 2D platformer. Bu yerda har bir qadamda sizni kutilmagan troll-tuzoqlar, harakatlanuvchi tikanlar va qochib ketuvchi eshiklar kutmoqda.',
+    fullDescription: 'Level Devil — bu retro uslubidagi nostandart platformer bo‘lib, unda siz oq-qora dunyoda chiqish eshigiga yetib borishingiz kerak. Lekin bu oson emas! O‘yin doimiy ravishda o‘yinchini aldaydi: pol oyog‘ingiz ostidan kutilmaganda yo‘qoladi, tikanlar siz tomonga uchib keladi, eshiklar sakrab qochadi, boshqaruv tugmalari esa teskari bo‘lib qoladi. Sabr va reflekslarni sinovdan o‘tkazuvchi o‘yin tez kunda SubGame platformasida to‘liq o‘zbek tilida!',
+    releaseYear: 2024,
+    developer: 'Unept',
+    publisher: 'Unept',
+    genres: ['Platformer', 'Sarguzasht'],
+    platforms: ['PC'],
+    officialStoreLinks: [
+      {
+        name: 'Steam',
+        url: 'https://store.steampowered.com/app/3242750/Level_Devil/',
+        priceNote: 'Steam rasmiy do‘koni'
+      }
+    ],
+    price: 'Tez kunda',
+    priceNote: 'O‘yin o‘zbekcha tarjimasi tez kunda SubGame Launcher orqali taqdim etiladi.',
+    subtitleStatus: 'Tez kunda',
+    subtitleLanguage: 'O‘zbekcha (Lotin)',
+    subtitleVersion: 'v1.0.0 (Tez kunda)',
+    subtitleLastUpdated: '2026-10-22',
+    subtitleCompatibility: 'Steam va barcha PC versiyalari',
+    subtitleFormat: 'SubGame Launcher himoyalangan lokalizatsiyasi',
+    subtitleSize: '1.5 MB',
+    subtitleDownloadUrl: '/launcher',
+    subtitlePrice: 'Tez kunda',
+    subtitleTranslationType: 'To‘liq o‘zbekcha interfeys va dunyolar tarjimasi',
+    installationGuide: [
+      {
+        step: 1,
+        title: 'SubGame Launcherni yuklab oling',
+        description: 'Lokalizatsiya tayyor bo‘lishi bilan launcher orqali bir bosishda yuklanadi.'
+      },
+      {
+        step: 2,
+        title: 'Level Devil o‘yinini tanlang',
+        description: 'Launcher katalogidan Level Devil kartasini topib, "O‘rnatish" tugmasini bosing.'
+      },
+      {
+        step: 3,
+        title: 'O‘zbek tilida o‘ynang',
+        description: 'O‘yin ishga tushgach, barcha dunyo va menyu nomlari to‘liq o‘zbek tilida ochiladi.'
+      }
+    ],
+    knownIssues: [
+      'Lokalizatsiya hozirda yakuniy test va tayyorgarlik bosqichida.'
+    ],
+    minimumRequirements: {
+      os: 'Windows 7 / 8 / 10 / 11 (64-bit)',
+      processor: 'Har qanday 2 yadroli protsessor (2.0 GHz+)',
+      memory: '2 GB RAM',
+      graphics: 'Intel HD Graphics 4000 yoki ekvivalent',
+      directX: 'Versiya 10',
+      storage: '200 MB bo‘sh joy',
+      additionalNotes: 'Har qanday kompyuterda silliq ishlaydi.'
+    },
+    recommendedRequirements: {
+      os: 'Windows 10 / 11 (64-bit)',
+      processor: 'Intel Core i3 / AMD Ryzen 3',
+      memory: '4 GB RAM',
+      graphics: 'NVIDIA GeForce / AMD Radeon',
+      directX: 'Versiya 11',
+      storage: '500 MB bo‘sh joy',
+      additionalNotes: '60+ FPS barqaror gameplay.'
+    },
+    isFeatured: true,
+    tags: ['Tez kunda', 'Platformer', 'Troll', 'Mustaqil o‘yin'],
+    defaultExeName: 'Level Devil.exe',
+    targetFileName: 'Level Devil.exe',
+    targetRelativeDir: '',
+    keyPrefix: 'SUB-LDEV',
   }
 ];
 
@@ -448,7 +534,8 @@ export const GENRES = [
   'Omon qolish',
   'Qo‘rqinchli (Horror)',
   'Dramatik hikoya',
-  'Tarixiy drama'
+  'Tarixiy drama',
+  'Platformer'
 ];
 
 export const SUBTITLE_STATUSES: { label: string; value: string }[] = [
