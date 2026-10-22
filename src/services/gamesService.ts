@@ -3,7 +3,6 @@ import {
   doc,
   getDocs,
   setDoc,
-  updateDoc,
   deleteDoc,
   query,
   orderBy,
@@ -14,6 +13,23 @@ import type { Game } from '../types/game';
 import { GAMES_DATA } from '../data/games';
 
 const GAMES_COLLECTION = 'games';
+
+/**
+ * Remove undefined values so Firestore does not reject the document write.
+ */
+function cleanGameData(data: Record<string, any>): Record<string, any> {
+  const cleaned: Record<string, any> = {};
+  for (const [key, val] of Object.entries(data)) {
+    if (val !== undefined) {
+      if (val && typeof val === 'object' && !Array.isArray(val) && !(val instanceof Date)) {
+        cleaned[key] = cleanGameData(val);
+      } else {
+        cleaned[key] = val;
+      }
+    }
+  }
+  return cleaned;
+}
 
 /**
  * Fetch all games from Firestore.
@@ -83,14 +99,14 @@ export async function createGame(gameData: Game): Promise<{ success: boolean; id
     const docId = gameData.slug || gameData.id || `game_${Date.now()}`;
     const gameRef = doc(db, GAMES_COLLECTION, docId);
 
-    const payload = {
+    const payload = cleanGameData({
       ...gameData,
       id: docId,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
-    };
+    });
 
-    await setDoc(gameRef, payload);
+    await setDoc(gameRef, payload, { merge: true });
     return { success: true, id: docId };
   } catch (error: any) {
     console.error('Error creating game in Firestore:', error);
@@ -100,14 +116,16 @@ export async function createGame(gameData: Game): Promise<{ success: boolean; id
 
 /**
  * Update an existing game in Firestore.
+ * Uses setDoc with merge:true so it succeeds even if document did not exist yet.
  */
 export async function updateGame(id: string, gameData: Partial<Game>): Promise<{ success: boolean; error?: string }> {
   try {
     const gameRef = doc(db, GAMES_COLLECTION, id);
-    await updateDoc(gameRef, {
+    const cleaned = cleanGameData({
       ...gameData,
       updatedAt: serverTimestamp()
     });
+    await setDoc(gameRef, cleaned, { merge: true });
     return { success: true };
   } catch (error: any) {
     console.error('Error updating game in Firestore:', error);
@@ -138,11 +156,12 @@ export async function syncInitialGames(): Promise<{ success: boolean; count: num
     let count = 0;
     for (const game of GAMES_DATA) {
       const gameRef = doc(db, GAMES_COLLECTION, game.id);
-      await setDoc(gameRef, {
+      const payload = cleanGameData({
         ...game,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
-      }, { merge: true });
+      });
+      await setDoc(gameRef, payload, { merge: true });
       count++;
     }
     return { success: true, count };
