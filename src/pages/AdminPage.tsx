@@ -180,9 +180,19 @@ export const AdminPage: React.FC = () => {
       .map((s) => s.trim())
       .filter(Boolean);
 
+    const isUpcoming = formData.subtitleStatus === 'Jarayonda' || formData.subtitleStatus === 'Tez kunda';
+    const computedPrice = isUpcoming ? (formData.price && formData.price !== 'Tekin' ? formData.price : 'Tez kunda') : (formData.price || 'Tekin');
+    const computedSubtitlePrice: 'Bepul' | 'Pullik' | 'Tez kunda' = isUpcoming
+      ? (formData.subtitlePrice && formData.subtitlePrice !== 'Bepul' ? formData.subtitlePrice : 'Tez kunda')
+      : (formData.subtitlePrice || 'Bepul');
+    const computedPriceNote = isUpcoming ? 'O‘yin subtitrlari tayyorlanmoqda, narxi tez kunda e’lon qilinadi.' : (formData.priceNote || 'O‘yin va o‘zbekcha subtitr SubGame platformasida bepul taqdim etiladi.');
+
     const payload: Game = {
       ...initialFormState,
       ...formData,
+      price: computedPrice,
+      subtitlePrice: computedSubtitlePrice,
+      priceNote: computedPriceNote,
       id: editingId || formData.slug!,
       slug: formData.slug!.toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-'),
       genres: parsedGenres.length > 0 ? parsedGenres : ['Sarguzasht'],
@@ -769,13 +779,55 @@ export const AdminPage: React.FC = () => {
                     </label>
                     <select
                       value={formData.subtitleStatus || 'Tayyor'}
-                      onChange={(e) => setFormData({ ...formData, subtitleStatus: e.target.value as SubtitleStatus })}
+                      onChange={(e) => {
+                        const status = e.target.value as SubtitleStatus;
+                        const isUpcoming = status === 'Jarayonda' || status === 'Tez kunda';
+                        setFormData((prev) => ({
+                          ...prev,
+                          subtitleStatus: status,
+                          price: isUpcoming ? 'Tez kunda' : (prev.price === 'Tez kunda' ? 'Tekin' : (prev.price || 'Tekin')),
+                          subtitlePrice: isUpcoming ? 'Tez kunda' : (prev.subtitlePrice === 'Tez kunda' ? 'Bepul' : (prev.subtitlePrice || 'Bepul')),
+                          priceNote: isUpcoming
+                            ? 'O‘yin subtitrlari tayyorlanmoqda, narxi tez kunda e’lon qilinadi.'
+                            : 'O‘yin va o‘zbekcha subtitr SubGame platformasida bepul taqdim etiladi.'
+                        }));
+                      }}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white focus:outline-none focus:border-[#A3E635]"
                     >
                       <option value="Tayyor">Tayyor (Yuklab olish mumkin)</option>
                       <option value="Jarayonda">Jarayonda (Ishlanmoqda)</option>
                       <option value="Tez kunda">Tez kunda (Kutilmoqda)</option>
                     </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-300 mb-1">
+                      O‘yin va subtitr narxi
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <input
+                          type="text"
+                          placeholder="Tekin yoki Tez kunda"
+                          value={formData.price || ''}
+                          onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                          className="w-full px-3 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white font-mono text-xs focus:outline-none focus:border-[#A3E635]"
+                        />
+                        <span className="text-[10px] text-gray-500 mt-0.5 block">Katalogdagi narx</span>
+                      </div>
+                      <div>
+                        <select
+                          value={formData.subtitlePrice || (formData.subtitleStatus === 'Tayyor' ? 'Bepul' : 'Tez kunda')}
+                          onChange={(e) => setFormData({ ...formData, subtitlePrice: e.target.value as 'Bepul' | 'Pullik' | 'Tez kunda' })}
+                          className="w-full px-3 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white focus:outline-none focus:border-[#A3E635]"
+                        >
+                          <option value="Tez kunda">Tez kunda</option>
+                          <option value="Bepul">Bepul</option>
+                          <option value="Pullik">Pullik</option>
+                        </select>
+                        <span className="text-[10px] text-gray-500 mt-0.5 block">Subtitr litsenziya narxi</span>
+                      </div>
+                    </div>
                   </div>
 
                   <div>

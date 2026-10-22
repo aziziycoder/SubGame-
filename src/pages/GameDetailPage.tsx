@@ -626,8 +626,12 @@ export const GameDetailPage: React.FC = () => {
                   <ShieldCheck className="w-4 h-4" />
                   DRM Himoyalangan Litsenziya
                 </span>
-                <span className="text-xs px-2 py-0.5 rounded bg-[#A3E635]/20 text-[#A3E635] font-bold">
-                  {game.subtitlePrice}
+                <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold ${
+                  game.subtitleStatus !== 'Tayyor' || game.subtitlePrice === 'Tez kunda'
+                    ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                    : 'bg-[#A3E635]/20 text-[#A3E635] border border-[#A3E635]/30'
+                }`}>
+                  {game.subtitleStatus !== 'Tayyor' ? 'Tez kunda' : game.subtitlePrice}
                 </span>
               </div>
 

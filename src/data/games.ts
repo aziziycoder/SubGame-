@@ -220,7 +220,7 @@ export const GAMES_DATA: Game[] = [
       }
     ],
     price: 'Tez kunda',
-    priceNote: 'O‘yin va o‘zbekcha subtitr SubGame platformasida bepul taqdim etiladi.',
+    priceNote: 'O‘yin chiqarilishi kutilmoqda, narxi tez kunda e’lon qilinadi.',
     subtitleStatus: 'Tez kunda',
     subtitleLanguage: 'O‘zbekcha (Lotin)',
     subtitleVersion: 'v1.0.0',
@@ -229,7 +229,7 @@ export const GAMES_DATA: Game[] = [
     subtitleFormat: 'ZIP (.locres matn lokalizatsiyasi)',
     subtitleSize: 'Kutilmoqda',
     subtitleDownloadUrl: '',
-    subtitlePrice: 'Bepul',
+    subtitlePrice: 'Tez kunda',
     subtitleTranslationType: 'Kutilmoqda (Adabiy tahrir)',
     installationGuide: [
       {
@@ -385,8 +385,8 @@ export const GAMES_DATA: Game[] = [
         priceNote: 'Steam rasmiy sahifasi'
       }
     ],
-    price: 'Tekin',
-    priceNote: 'O‘zbekcha subtitr SubGame platformasida bepul taqdim etiladi.',
+    price: 'Tez kunda',
+    priceNote: 'O‘yin subtitrlari tayyorlanmoqda, narxi tez kunda e’lon qilinadi.',
     subtitleStatus: 'Jarayonda',
     subtitleLanguage: 'O‘zbekcha (Lotin)',
     subtitleVersion: 'v0.5.0 (Beta)',
@@ -395,7 +395,7 @@ export const GAMES_DATA: Game[] = [
     subtitleFormat: 'SubGame Launcher himoyalangan lokalizatsiyasi (.pak)',
     subtitleSize: '15 MB',
     subtitleDownloadUrl: '/launcher',
-    subtitlePrice: 'Bepul',
+    subtitlePrice: 'Tez kunda',
     subtitleTranslationType: 'To‘liq adabiy o‘zbekcha tarjima',
     installationGuide: [
       {
