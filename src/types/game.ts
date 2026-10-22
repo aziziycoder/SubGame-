@@ -64,6 +64,14 @@ export interface Game {
   recommendedRequirements: SystemRequirements;
   isFeatured: boolean;
   tags?: string[];
+
+  // Launcher integration parameters
+  defaultExeName?: string;
+  targetFileName?: string;
+  targetRelativeDir?: string;
+  keyPrefix?: string;
+  createdAt?: any;
+  updatedAt?: any;
 }
 
 export interface GameSuggestion {

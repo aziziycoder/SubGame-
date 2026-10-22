@@ -17,8 +17,11 @@ import {
 import { auth, db, googleProvider } from '../services/firebase';
 import type { GameLicense } from '../types/auth';
 
+export const ADMIN_EMAILS = ['azizbekgulomovweb@gmail.com'];
+
 interface AuthContextType {
   user: User | null;
+  isAdmin: boolean;
   loading: boolean;
   licenses: Record<string, GameLicense>;
   signInWithGoogle: () => Promise<void>;
@@ -34,6 +37,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [licenses, setLicenses] = useState<Record<string, GameLicense>>({});
+
+  const isAdmin = Boolean(user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase()));
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
@@ -172,6 +177,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider
       value={{
         user,
+        isAdmin,
         loading,
         licenses,
         signInWithGoogle,

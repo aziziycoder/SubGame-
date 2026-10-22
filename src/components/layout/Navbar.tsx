@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { SITE_CONFIG } from '../../config/site';
 import { useFavorites } from '../../context/FavoritesContext';
+import { useAuth } from '../../context/AuthContext';
 import {
   Heart,
   Send,
@@ -12,7 +13,8 @@ import {
   Info,
   Layers,
   Home,
-  Monitor
+  Monitor,
+  Shield
 } from 'lucide-react';
 import { SuggestGameModal } from '../home/SuggestGameModal';
 import { UserMenu } from './UserMenu';
@@ -22,6 +24,7 @@ export const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
   const { favoritesCount } = useFavorites();
+  const { isAdmin } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
@@ -121,6 +124,18 @@ export const Navbar: React.FC = () => {
 
             {/* Right Actions */}
             <div className="flex items-center gap-2 shrink-0">
+              {/* Admin Panel Link */}
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  title="Admin Panel"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#A3E635]/15 text-[#A3E635] border border-[#A3E635]/35 hover:bg-[#A3E635]/25 transition-all shadow-sm"
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                  <span className="hidden md:inline">Admin Panel</span>
+                </Link>
+              )}
+
               {/* Google Auth User Menu */}
               <UserMenu />
 
@@ -194,6 +209,17 @@ export const Navbar: React.FC = () => {
                   </Link>
                 );
               })}
+
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-3.5 px-4 py-3 rounded-xl text-base font-semibold text-[#A3E635] bg-[#A3E635]/10 border border-[#A3E635]/30"
+                >
+                  <Shield className="w-5 h-5 text-[#A3E635]" />
+                  <span>Admin Panel</span>
+                </Link>
+              )}
 
               <Link
                 to="/favorites"

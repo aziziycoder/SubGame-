@@ -1,16 +1,23 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { GAMES_DATA } from '../../data/games';
+import { getGames } from '../../services/gamesService';
+import type { Game } from '../../types/game';
 import { GameCard } from '../game/GameCard';
 import { ArrowRight, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 
 export const FeaturedGames: React.FC = () => {
   const sliderRef = useRef<HTMLDivElement>(null);
+  const [games, setGames] = useState<Game[]>(GAMES_DATA);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [filterTab, setFilterTab] = useState<'all' | 'ready' | 'upcoming'>('all');
 
-  const filteredGames = GAMES_DATA.filter((game) => {
+  useEffect(() => {
+    getGames().then(setGames);
+  }, []);
+
+  const filteredGames = games.filter((game) => {
     if (filterTab === 'ready') return game.subtitleStatus === 'Tayyor';
     if (filterTab === 'upcoming') return game.subtitleStatus !== 'Tayyor';
     return true;
@@ -85,7 +92,7 @@ export const FeaturedGames: React.FC = () => {
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                Barchasi ({GAMES_DATA.length})
+                Barchasi ({games.length})
               </button>
               <button
                 onClick={() => setFilterTab('ready')}

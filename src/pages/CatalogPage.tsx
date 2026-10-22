@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { GAMES_DATA, GENRES, SUBTITLE_STATUSES } from '../data/games';
+import { getGames } from '../services/gamesService';
+import type { Game } from '../types/game';
 import { GameCard } from '../components/game/GameCard';
 import { Search, Filter, RotateCcw, Layers } from 'lucide-react';
 
@@ -8,10 +10,15 @@ export const CatalogPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearch = searchParams.get('q') || '';
 
+  const [games, setGames] = useState<Game[]>(GAMES_DATA);
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [selectedGenre, setSelectedGenre] = useState<string>('Barchasi');
   const [selectedStatus, setSelectedStatus] = useState<string>('Barchasi');
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'title'>('newest');
+
+  useEffect(() => {
+    getGames().then(setGames);
+  }, []);
 
   // Keep query params synced if passed in URL
   useEffect(() => {
@@ -22,7 +29,7 @@ export const CatalogPage: React.FC = () => {
   }, [searchParams]);
 
   const filteredGames = useMemo(() => {
-    return GAMES_DATA.filter((game) => {
+    return games.filter((game) => {
       // Search matching title or developer or short description
       const matchesSearch =
         searchQuery.trim() === '' ||
@@ -45,7 +52,7 @@ export const CatalogPage: React.FC = () => {
       if (sortBy === 'title') return a.title.localeCompare(b.title);
       return 0;
     });
-  }, [searchQuery, selectedGenre, selectedStatus, sortBy]);
+  }, [games, searchQuery, selectedGenre, selectedStatus, sortBy]);
 
   const resetFilters = () => {
     setSearchQuery('');

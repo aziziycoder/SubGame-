@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { GAMES_DATA } from '../data/games';
+import { getGameBySlug } from '../services/gamesService';
+import type { Game } from '../types/game';
 import { SubtitleStatusBadge } from '../components/common/Badge';
 import { Lightbox } from '../components/common/Lightbox';
 import { ReportIssueModal } from '../components/home/ReportIssueModal';
@@ -29,7 +31,16 @@ import {
 
 export const GameDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const game = GAMES_DATA.find((g) => g.slug === slug);
+  const initialGame = GAMES_DATA.find((g) => g.slug === slug);
+  const [game, setGame] = useState<Game | undefined>(initialGame);
+
+  useEffect(() => {
+    if (slug) {
+      getGameBySlug(slug).then((res) => {
+        if (res) setGame(res);
+      });
+    }
+  }, [slug]);
 
   const { isFavorite, toggleFavorite } = useFavorites();
   const { user, isLicenseClaimed, claimLicense, getGameLicense, signInWithGoogle } = useAuth();

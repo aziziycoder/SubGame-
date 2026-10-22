@@ -88,7 +88,11 @@ export const GAMES_DATA: Game[] = [
       additionalNotes: '1080p 60 FPS va ultra grafik sozlamalari uchun tavsiya qilinadi.'
     },
     isFeatured: true,
-    tags: ['Hit o‘yin', 'Tarixiy', 'Boy syujet', 'O‘zbekcha subtitr']
+    tags: ['Hit o‘yin', 'Tarixiy', 'Boy syujet', 'O‘zbekcha subtitr'],
+    defaultExeName: 'APlagueTaleRequiem_x64.exe',
+    targetFileName: 'tt01.pc',
+    targetRelativeDir: 'TRTEXT',
+    keyPrefix: 'SUB-REQU',
   },
   {
     id: 'a-plague-tale-innocence',
@@ -179,7 +183,11 @@ export const GAMES_DATA: Game[] = [
       additionalNotes: '1080p 60 FPS sifatli tajriba uchun.'
     },
     isFeatured: true,
-    tags: ['Klassika', 'Yil o‘yini nomzodi', 'Inkvizitsiya', 'O‘zbekcha subtitr']
+    tags: ['Klassika', 'Yil o‘yini nomzodi', 'Inkvizitsiya', 'O‘zbekcha subtitr'],
+    defaultExeName: 'APlagueTaleInnocence_x64.exe',
+    targetFileName: 'tt01.pc',
+    targetRelativeDir: 'TRTEXT',
+    keyPrefix: 'SUB-INNO',
   },
   {
     id: 'a-plague-tale-legacy',
@@ -257,7 +265,9 @@ export const GAMES_DATA: Game[] = [
       additionalNotes: 'Ultra grafik sozlamalari va nurlar treysingi (Ray Tracing) uchun.'
     },
     isFeatured: true,
-    tags: ['Premyera', 'Kutilmoqda', 'Sofiya', 'Tez kunda']
+    tags: ['Premyera', 'Kutilmoqda', 'Sofiya', 'Tez kunda'],
+    defaultExeName: 'Game.exe',
+    keyPrefix: 'SUB-LEGA',
   },
   {
     id: 'outward-2',
@@ -339,7 +349,11 @@ export const GAMES_DATA: Game[] = [
       additionalNotes: '1080p 60 FPS yuqori sifatli tajriba uchun.'
     },
     isFeatured: true,
-    tags: ['RPG', 'Omon qolish', 'Tayyor', 'Yangi', 'O‘zbekcha subtitr']
+    tags: ['RPG', 'Omon qolish', 'Tayyor', 'Yangi', 'O‘zbekcha subtitr'],
+    defaultExeName: 'otw2_ue.exe',
+    targetFileName: 'otw2_ue-Windows_Uzbek_P.pak',
+    targetRelativeDir: 'otw2_ue/Content/Paks',
+    keyPrefix: 'SUB-OUTW',
   }
 ];
 

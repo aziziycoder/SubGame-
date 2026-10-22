@@ -13,6 +13,8 @@ import { AboutPage } from './pages/AboutPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 import { LauncherPage } from './pages/LauncherPage';
 import { ConnectLauncherPage } from './pages/ConnectLauncherPage';
+import { AdminPage } from './pages/AdminPage';
+import { AdminRoute } from './components/auth/AdminRoute';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { SuggestGameModal } from './components/home/SuggestGameModal';
 import { ReportIssueModal } from './components/home/ReportIssueModal';
@@ -41,6 +43,14 @@ export const App: React.FC = () => {
               <Route path="/connect" element={<ConnectLauncherPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/favorites" element={<FavoritesPage />} />
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute>
+                    <AdminPage />
+                  </AdminRoute>
+                }
+              />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </main>
