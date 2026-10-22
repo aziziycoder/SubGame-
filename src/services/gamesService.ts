@@ -25,21 +25,37 @@ export async function getGames(): Promise<Game[]> {
     const q = query(gamesRef, orderBy('releaseYear', 'desc'));
     const snapshot = await getDocs(q);
 
-    if (snapshot.empty) {
-      console.info('Firestore games collection is empty, using local initial games.');
-      return GAMES_DATA;
+    const firestoreGamesMap = new Map<string, Game>();
+    const seenSlugs = new Set<string>();
+
+    if (!snapshot.empty) {
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data() as Game;
+        const id = docSnap.id;
+        firestoreGamesMap.set(id, {
+          ...data,
+          id
+        });
+        if (data.slug) seenSlugs.add(data.slug);
+        seenSlugs.add(id);
+      });
     }
 
-    const games: Game[] = [];
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data() as Game;
-      games.push({
-        ...data,
-        id: docSnap.id
-      });
-    });
+    // Merge: Include all Firestore games, plus any local GAMES_DATA not yet in Firestore
+    const combinedGames: Game[] = Array.from(firestoreGamesMap.values());
 
-    return games;
+    for (const localGame of GAMES_DATA) {
+      if (!firestoreGamesMap.has(localGame.id) && !seenSlugs.has(localGame.slug) && !seenSlugs.has(localGame.id)) {
+        combinedGames.push(localGame);
+        seenSlugs.add(localGame.id);
+        if (localGame.slug) seenSlugs.add(localGame.slug);
+      }
+    }
+
+    // Sort by releaseYear desc
+    combinedGames.sort((a, b) => (b.releaseYear || 0) - (a.releaseYear || 0));
+
+    return combinedGames;
   } catch (error) {
     console.warn('Failed to fetch games from Firestore, falling back to local data:', error);
     return GAMES_DATA;
