@@ -15,7 +15,8 @@ import {
   Save,
   AlertCircle,
   FileCode,
-  HardDrive
+  HardDrive,
+  ArrowLeft
 } from 'lucide-react';
 import {
   getGames,
@@ -262,37 +263,55 @@ export const AdminPage: React.FC = () => {
   const inProgressGames = games.filter((g) => g.subtitleStatus === 'Jarayonda').length;
 
   return (
-    <div className="min-h-screen bg-[#0B0D12] text-[#F5F7FA] pt-24 sm:pt-28 pb-24">
-      {/* Top Banner / Header */}
-      <div className="border-b border-[#2A3245] bg-[#141821]/50 py-6 mb-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="min-h-screen bg-[#0B0D12] text-[#F5F7FA] pb-24">
+      {/* Dedicated Admin Header (Replaces public navbar on /admin) */}
+      <header className="border-b border-[#2A3245] bg-[#141821] sticky top-0 z-40 shadow-xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-[#A3E635]/15 border border-[#A3E635]/30 text-[#A3E635] flex items-center justify-center font-bold shadow-sm">
-              <Gamepad2 className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">
-                  SubGame Admin Panel
+            <Link to="/" className="flex items-center gap-2.5 group">
+              <img
+                src="/images/logo_doppi.png"
+                alt="SubGame"
+                className="w-10 h-10 object-contain drop-shadow-[0_0_12px_rgba(163,230,53,0.35)] group-hover:scale-105 transition-transform"
+              />
+              <span className="text-xl font-black text-white group-hover:text-[#A3E635] transition-colors">
+                Sub<span className="text-[#A3E635]">Game</span>
+              </span>
+            </Link>
+
+            <span className="h-6 w-px bg-[#2A3245]" />
+
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-[#A3E635]/15 border border-[#A3E635]/30 text-[#A3E635] flex items-center justify-center font-bold">
+                <Gamepad2 className="w-4 h-4" />
+              </div>
+              <div className="flex items-center gap-1.5">
+                <h1 className="text-sm font-black text-white leading-none">
+                  Admin Panel
                 </h1>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#A3E635]/15 text-[#A3E635] border border-[#A3E635]/30">
-                  ADMIN
+                  BOSHQARUV
                 </span>
               </div>
-              <p className="text-xs text-gray-400 mt-0.5">
-                O‘yinlar bazasi va Launcher sozlamalarini boshqarish
-              </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1A1F2A] border border-[#2A3245] text-xs text-gray-300 font-mono">
+            <span className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0B0D12] border border-[#2A3245] text-xs text-gray-300 font-mono">
               <span className="w-2 h-2 rounded-full bg-[#A3E635] animate-pulse" />
               {user?.email}
             </span>
+
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0B0D12] hover:bg-[#1A202C] text-gray-200 hover:text-white border border-[#2A3245] hover:border-[#A3E635]/50 text-xs font-bold transition-all shadow-sm"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Saytga qaytish</span>
+            </Link>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">

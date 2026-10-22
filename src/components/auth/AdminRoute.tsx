@@ -20,7 +20,7 @@ export const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
 
   if (!user) {
     return (
-      <div className="min-h-screen pt-28 pb-20 bg-[#0B0D12] text-white flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0B0D12] text-white flex items-center justify-center px-4">
         <div className="max-w-md w-full p-8 rounded-2xl bg-[#141821] border border-[#2A3245] text-center space-y-6 shadow-2xl">
           <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 mx-auto flex items-center justify-center">
             <ShieldAlert className="w-8 h-8" />
@@ -52,7 +52,7 @@ export const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen pt-28 pb-20 bg-[#0B0D12] text-white flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0B0D12] text-white flex items-center justify-center px-4">
         <div className="max-w-md w-full p-8 rounded-2xl bg-[#141821] border border-red-500/30 text-center space-y-6 shadow-2xl">
           <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 mx-auto flex items-center justify-center">
             <ShieldAlert className="w-8 h-8" />
