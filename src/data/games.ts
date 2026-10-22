@@ -354,6 +354,88 @@ export const GAMES_DATA: Game[] = [
     targetFileName: 'otw2_ue-Windows_Uzbek_P.pak',
     targetRelativeDir: 'otw2_ue/Content/Paks',
     keyPrefix: 'SUB-OUTW',
+  },
+  {
+    id: 'resident-evil-2-remake',
+    slug: 'resident-evil-2-remake',
+    title: 'Resident Evil 2 Remake',
+    cover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/883710/library_600x900.jpg',
+    cardImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/883710/header.jpg',
+    heroImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/883710/ss_1392581cd29817e44099cf05416b70ffb159c58b.1920x1080.jpg',
+    gameplayVideoUrl: 'https://www.youtube.com/embed/u3wS-Q2KBpk',
+    torrentUrl: 'https://itorrents-igruha.org/168-resident-evil-2-remake.html',
+    screenshots: [
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/883710/ss_1392581cd29817e44099cf05416b70ffb159c58b.1920x1080.jpg',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/883710/ss_153bd5afa0b45e74b0242a3805dc29aab9f1685e.1920x1080.jpg',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/883710/ss_cb998634747b70bbcf2dba34a2aef34808d039bf.1920x1080.jpg',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/883710/ss_cd289d2e809b3fcb236a4f193a43a16787c6bc87.1920x1080.jpg',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/883710/ss_bfbd61cde09efcfa36f6bc0b976b1ce5fda77bfe.1920x1080.jpg'
+    ],
+    shortDescription: 'Rakkun-Siti (Raccoon City)dagi dahshatli biologik falokat. Yosh politsiyachi Leon Kennedi va talaba Kler Redfild halokat yoqasidagi zombi to‘la shaharda tirik qolish uchun kurashadi.',
+    fullDescription: '1998-yil sentyabr. Rakkun-Siti shahrida yuz bergan halokatli virus tarqalishi aholini qonga tashna zombilarga aylantiradi. Shaharga birinchi ish kunida kelgan yangi politsiyachi Leon S. Kennedi va bedarak yo‘qolgan akasini qidirayotgan talaba Kler Redfild kutilmaganda dahshatli qabristonga aylangan Rakkun politsiya mahkamasida o‘zlarini ko‘radilar. Capcom kompaniyasining ilg‘or RE Engine dvigatelida qayta yaratilgan o‘yin zamonaviy vizual ko‘rinish, dahshatli atmosfera, cheklangan o‘q-dorilar va murakkab boshqotirmalarni o‘z ichiga oladi. SubGame jamoasi hozirda ushbu durdona o‘yin uchun to‘liq o‘zbekcha subtitrlarni faol tarjima qilmoqda!',
+    releaseYear: 2019,
+    developer: 'Capcom',
+    publisher: 'Capcom',
+    genres: ['Qo‘rqinchli (Horror)', 'Omon qolish', 'Action', 'Zombi'],
+    platforms: ['PC', 'PlayStation 5', 'PlayStation 4', 'Xbox Series X/S', 'Xbox One'],
+    officialStoreLinks: [
+      {
+        name: 'Steam',
+        url: 'https://store.steampowered.com/app/883710/Resident_Evil_2/',
+        priceNote: 'Steam rasmiy sahifasi'
+      }
+    ],
+    price: 'Tekin',
+    priceNote: 'O‘zbekcha subtitr SubGame platformasida bepul taqdim etiladi.',
+    subtitleStatus: 'Jarayonda',
+    subtitleLanguage: 'O‘zbekcha (Lotin)',
+    subtitleVersion: 'v0.5.0 (Beta)',
+    subtitleLastUpdated: '2026-10-22',
+    subtitleCompatibility: 'Steam, Epic Games va barcha PC nashrlari',
+    subtitleFormat: 'SubGame Launcher himoyalangan lokalizatsiyasi (.pak)',
+    subtitleSize: '15 MB',
+    subtitleDownloadUrl: '/launcher',
+    subtitlePrice: 'Bepul',
+    subtitleTranslationType: 'To‘liq adabiy o‘zbekcha tarjima',
+    installationGuide: [
+      {
+        step: 1,
+        title: 'Tarjima jarayoni',
+        description: 'Hozirda SubGame jamoasi tomonidan o‘yin dialoglari, eslatmalar va foydalanuvchi interfeysi matnlari o‘zbek tiliga o‘girilmoqda.'
+      },
+      {
+        step: 2,
+        title: 'Launcherdan 1 bosishda o‘rnatish',
+        description: 'Subtitr tayyor bo‘lishi bilan SubGame Launcherda avtomatik faollashadi va birgina bosish orqali o‘yiningizga ulanadi.'
+      }
+    ],
+    knownIssues: [
+      'Subtitrlar ayni vaqtda faol tarjima va testdan o‘tkazish bosqichida.'
+    ],
+    minimumRequirements: {
+      os: 'Windows 10 (64-bit)',
+      processor: 'Intel Core i5-4460 / AMD FX-6300',
+      memory: '8 GB RAM',
+      graphics: 'NVIDIA GeForce GTX 760 / AMD Radeon R7 260x (2GB)',
+      directX: 'Versiya 11',
+      storage: '26 GB bo‘sh joy',
+      additionalNotes: '1080p 30 FPS sozlamalari uchun.'
+    },
+    recommendedRequirements: {
+      os: 'Windows 10/11 (64-bit)',
+      processor: 'Intel Core i7-3770 / AMD FX-9590',
+      memory: '8 GB RAM',
+      graphics: 'NVIDIA GeForce GTX 1060 / AMD Radeon RX 480 (3GB)',
+      directX: 'Versiya 12',
+      storage: '26 GB bo‘sh joy',
+      additionalNotes: '1080p 60 FPS silliq va sifatli o‘yin tajribasi uchun.'
+    },
+    isFeatured: true,
+    tags: ['Horror', 'Jarayonda', 'Capcom', 'Zombi', 'Leon Kennedy'],
+    defaultExeName: 're2.exe',
+    targetFileName: 're_chunk_000.pak.patch_001.pak',
+    targetRelativeDir: '',
+    keyPrefix: 'SUB-RE2R',
   }
 ];
 
@@ -364,6 +446,7 @@ export const GENRES = [
   'Stealth',
   'RPG',
   'Omon qolish',
+  'Qo‘rqinchli (Horror)',
   'Dramatik hikoya',
   'Tarixiy drama'
 ];
