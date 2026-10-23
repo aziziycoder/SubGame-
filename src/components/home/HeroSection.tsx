@@ -1,96 +1,59 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import type { HeroSlide } from '../../types/slider';
+import { INITIAL_SLIDES } from '../../data/sliders';
+import { getSliders } from '../../services/slidersService';
 
-interface HeroSlide {
-  id: string;
-  slug: string;
-  title: string;
-  badge: string;
-  headlinePrefix: string;
-  headlineHighlight: string;
-  headlineSuffix: string;
-  description: string;
-  bgImage: string;
-  cardImage: string;
-  cardTag: string;
-  highlightTag: string;
-  version: string;
-  cardDescription: string;
-}
-
-const HERO_SLIDES: HeroSlide[] = [
-  {
-    id: 'requiem',
-    slug: 'a-plague-tale-requiem',
-    title: 'A Plague Tale: Requiem',
-    badge: 'Yangi Premyera • v1.0.2',
-    headlinePrefix: 'Har bir hikoyani ',
-    headlineHighlight: 'o‘z tilingda',
-    headlineSuffix: ' his qil.',
-    description:
-      'Amitsiya va Gyugoning vabo epidemiyasidagi ta‘sirli dramasi endi to‘liq o‘zbek tilida. Qora kalamushlar to‘dasi va taqdir sinovlariga qarshi kurash.',
-    bgImage:
-      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/ss_9cbcd6b81cc32ecf75b36f40b92157da78a19598.1920x1080.jpg',
-    cardImage:
-      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/header.jpg',
-    cardTag: 'O‘ZBEKCHA SUBTITR TAYYOR',
-    highlightTag: 'Yangi premyera',
-    version: 'v1.0.2 • PC',
-    cardDescription:
-      'Amitsiya va Gyugoning vabo epidemiyasidagi ta‘sirli dramasi endi to‘liq o‘zbek tilida.',
-  },
-  {
-    id: 'innocence',
-    slug: 'a-plague-tale-innocence',
-    title: 'A Plague Tale: Innocence',
-    badge: 'Afsonaviy Klassika • v1.2.0',
-    headlinePrefix: 'Tarixiy vabo va ',
-    headlineHighlight: 'inkvizitsiya',
-    headlineSuffix: ' changalida.',
-    description:
-      '1349-yil, Yuz yillik urush davridagi Fransiya. Amitsiya va uning kichik ukasi Gyugoning afsonaviy birinchi sayohati o‘zbekcha tarjimada.',
-    bgImage:
-      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/752590/ss_8433438bf03b7f524e6cf3ac81e99e96be2188c8.1920x1080.jpg',
-    cardImage:
-      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/752590/header.jpg',
-    cardTag: 'O‘ZBEKCHA SUBTITR TAYYOR',
-    highlightTag: 'Ommabop afsona',
-    version: 'v1.2.0 • PC',
-    cardDescription:
-      '1349-yil. Fransiyada vabo va inkvizitsiya avjida. Yosh Amitsiya va Gyugoning omon qolish jangi.',
-  },
-];
-
-const SLIDE_INTERVAL_MS = 5000;
+const SLIDE_INTERVAL_MS = 6000;
 
 export const HeroSection: React.FC = () => {
+  const [slides, setSlides] = useState<HeroSlide[]>(INITIAL_SLIDES);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+  useEffect(() => {
+    let mounted = true;
+    getSliders()
+      .then((data) => {
+        if (!mounted) return;
+        const activeSlides = data.filter((s) => s.isActive !== false);
+        if (activeSlides.length > 0) {
+          setSlides(activeSlides);
+        }
+      })
+      .catch((err) => console.warn('Failed to load dynamic slides:', err));
+    return () => {
+      mounted = false;
+    };
   }, []);
 
+  const totalSlides = slides.length || 1;
+
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev + 1) % totalSlides);
+  }, [totalSlides]);
+
   const prevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
-  }, []);
+    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+  }, [totalSlides]);
 
   // Continuous auto-slide timer
   useEffect(() => {
+    if (totalSlides <= 1) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+      setCurrentSlide((prev) => (prev + 1) % totalSlides);
     }, SLIDE_INTERVAL_MS);
 
     return () => clearInterval(timer);
-  }, [currentSlide]);
+  }, [currentSlide, totalSlides]);
 
-  const active = HERO_SLIDES[currentSlide];
+  const active = slides[currentSlide] || slides[0] || INITIAL_SLIDES[0];
 
   return (
     <section className="relative min-h-[85vh] sm:min-h-[90vh] flex items-center justify-center pt-24 sm:pt-28 pb-12 sm:pb-16 overflow-hidden select-none">
       {/* Background Cinematic Art with cross-fade animation */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        {HERO_SLIDES.map((slide, index) => {
+        {slides.map((slide, index) => {
           const isCurrent = currentSlide === index;
           return (
             <div
@@ -203,7 +166,7 @@ export const HeroSection: React.FC = () => {
                 className="relative w-full bg-[#0B0D12] overflow-hidden"
                 style={{ aspectRatio: '460 / 215' }}
               >
-                {HERO_SLIDES.map((slide, index) => {
+                {slides.map((slide, index) => {
                   const isCurrent = currentSlide === index;
                   return (
                     <img
@@ -252,7 +215,7 @@ export const HeroSection: React.FC = () => {
             <div className="flex items-center justify-between px-1 sm:px-2 pt-1">
               {/* Slide Selection Buttons with Animated Progress */}
               <div className="flex items-center gap-2">
-                {HERO_SLIDES.map((slide, index) => {
+                {slides.map((slide, index) => {
                   const isCurrent = currentSlide === index;
                   return (
                     <button

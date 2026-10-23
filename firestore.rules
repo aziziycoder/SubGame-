@@ -27,6 +27,12 @@ service cloud.firestore {
     // Document ID: issueId
     // Fields: title, description, userEmail, createdAt, etc.
     //
+    // Collection: sliders
+    // Document ID: sliderId (e.g. string slug or auto-id)
+    // Fields: id, slug, title, badge, headlinePrefix, headlineHighlight, headlineSuffix,
+    //         description, bgImage, cardImage, cardTag, highlightTag, version, cardDescription,
+    //         order, isActive, createdAt, updatedAt
+    //
     // ===============================================================
 
     // Helper functions
@@ -46,6 +52,12 @@ service cloud.firestore {
 
     // Games catalog: Public read for web visitors and launcher; write only for Admin
     match /games/{gameId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Hero sliders: Public read for web visitors; write only for Admin
+    match /sliders/{sliderId} {
       allow read: if true;
       allow write: if isAdmin();
     }

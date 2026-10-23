@@ -16,7 +16,8 @@ import {
   AlertCircle,
   FileCode,
   HardDrive,
-  ArrowLeft
+  ArrowLeft,
+  Layers
 } from 'lucide-react';
 import {
   getGames,
@@ -27,9 +28,11 @@ import {
 } from '../services/gamesService';
 import type { Game, SubtitleStatus } from '../types/game';
 import { useAuth } from '../context/AuthContext';
+import { SliderManager } from '../components/admin/SliderManager';
 
 export const AdminPage: React.FC = () => {
   const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState<'games' | 'sliders'>('games');
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -376,6 +379,49 @@ export const AdminPage: React.FC = () => {
           </div>
         )}
 
+        {/* Navigation Tabs */}
+        <div className="flex items-center gap-2 border-b border-[#2A3245] pb-2">
+          <button
+            onClick={() => setActiveTab('games')}
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              activeTab === 'games'
+                ? 'bg-[#A3E635] text-[#0B0D12] shadow-accent-glow'
+                : 'text-gray-400 hover:text-white hover:bg-[#141821] border border-transparent'
+            }`}
+          >
+            <Gamepad2 className="w-4 h-4" />
+            <span>O‘yinlar Katalogi</span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                activeTab === 'games' ? 'bg-black/20 text-[#0B0D12]' : 'bg-[#1E2533] text-gray-400'
+              }`}
+            >
+              {totalGames}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('sliders')}
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              activeTab === 'sliders'
+                ? 'bg-[#A3E635] text-[#0B0D12] shadow-accent-glow'
+                : 'text-gray-400 hover:text-white hover:bg-[#141821] border border-transparent'
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+            <span>Bosh Sahifa Slayderlari</span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                activeTab === 'sliders' ? 'bg-black/20 text-[#0B0D12]' : 'bg-[#1E2533] text-gray-400'
+              }`}
+            >
+              Boshqaruv
+            </span>
+          </button>
+        </div>
+
+        {activeTab === 'games' ? (
+          <>
         {/* Action Bar (Search, Filter, Buttons) */}
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
           {/* Search & Filter */}
@@ -547,6 +593,10 @@ export const AdminPage: React.FC = () => {
             </div>
           )}
         </div>
+          </>
+        ) : (
+          <SliderManager games={games} />
+        )}
       </main>
 
       {/* Add / Edit Game Modal */}
