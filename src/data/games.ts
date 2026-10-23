@@ -517,9 +517,9 @@ export const GAMES_DATA: Game[] = [
       additionalNotes: '60+ FPS barqaror gameplay.'
     },
     isFeatured: true,
-    tags: ['Tez kunda', 'Platformer', 'Troll', 'Mustaqil o‘yin'],
+    tags: ['Tayyor', 'Platformer', 'Troll', 'Mustaqil o‘yin'],
     defaultExeName: 'Level Devil.exe',
-    targetFileName: 'Level Devil.exe',
+    targetFileName: '',
     targetRelativeDir: '',
     keyPrefix: 'SUB-LDEV',
   }

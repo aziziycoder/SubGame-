@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   setDoc,
   deleteDoc,
@@ -149,20 +150,23 @@ export async function deleteGame(id: string): Promise<{ success: boolean; error?
 
 /**
  * Seed / Sync initial games from local games.ts into Firestore.
- * Useful for 1-click database initialization from the Admin Panel.
+ * Does not overwrite existing games unless forceOverwrite is true, preserving admin edits.
  */
-export async function syncInitialGames(): Promise<{ success: boolean; count: number; error?: string }> {
+export async function syncInitialGames(forceOverwrite = false): Promise<{ success: boolean; count: number; error?: string }> {
   try {
     let count = 0;
     for (const game of GAMES_DATA) {
       const gameRef = doc(db, GAMES_COLLECTION, game.id);
-      const payload = cleanGameData({
-        ...game,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      });
-      await setDoc(gameRef, payload, { merge: true });
-      count++;
+      const existingSnap = await getDoc(gameRef);
+      if (!existingSnap.exists() || forceOverwrite) {
+        const payload = cleanGameData({
+          ...game,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        await setDoc(gameRef, payload, { merge: true });
+        count++;
+      }
     }
     return { success: true, count };
   } catch (error: any) {

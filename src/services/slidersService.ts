@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   setDoc,
   deleteDoc,
@@ -119,19 +120,23 @@ export async function deleteSlider(id: string): Promise<{ success: boolean; erro
 
 /**
  * Seed / Sync initial sliders from INITIAL_SLIDES into Firestore.
+ * Does not overwrite existing sliders unless forceOverwrite is true, preserving admin edits.
  */
-export async function syncInitialSliders(): Promise<{ success: boolean; count: number; error?: string }> {
+export async function syncInitialSliders(forceOverwrite = false): Promise<{ success: boolean; count: number; error?: string }> {
   try {
     let count = 0;
     for (const slide of INITIAL_SLIDES) {
       const slideRef = doc(db, SLIDERS_COLLECTION, slide.id);
-      const payload = cleanSliderData({
-        ...slide,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      });
-      await setDoc(slideRef, payload, { merge: true });
-      count++;
+      const existingSnap = await getDoc(slideRef);
+      if (!existingSnap.exists() || forceOverwrite) {
+        const payload = cleanSliderData({
+          ...slide,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        await setDoc(slideRef, payload, { merge: true });
+        count++;
+      }
     }
     return { success: true, count };
   } catch (error: any) {

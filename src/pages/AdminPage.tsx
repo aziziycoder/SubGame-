@@ -126,7 +126,7 @@ export const AdminPage: React.FC = () => {
   };
 
   const handleSyncInitial = async () => {
-    if (!window.confirm('Boshlang‘ich o‘yinlar (Innocence, Requiem, Outward 2 va boshqalar) bazaga yuklansinmi?')) {
+    if (!window.confirm('Boshlang‘ich o‘yinlar (Innocence, Requiem, Outward 2, Level Devil) bazaga yuklansinmi? Mavjud o‘yinlaringiz sozlamalari saqlanadi.')) {
       return;
     }
     setSyncing(true);
@@ -134,7 +134,7 @@ export const AdminPage: React.FC = () => {
     try {
       const res = await syncInitialGames();
       if (res.success) {
-        setSyncMessage(`Muvaffaqiyatli! ${res.count} ta o‘yin Firestore bazasiga yuklandi.`);
+        setSyncMessage(`Muvaffaqiyatli! ${res.count} ta yangi o‘yin Firestore bazasiga qo‘shildi.`);
         await loadGames();
       } else {
         setSyncMessage(`Xatolik: ${res.error}`);
@@ -455,10 +455,10 @@ export const AdminPage: React.FC = () => {
               onClick={handleSyncInitial}
               disabled={syncing}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1A202C] text-gray-300 hover:text-white border border-[#2A3245] text-xs sm:text-sm font-semibold transition-all cursor-pointer disabled:opacity-50"
-              title="Statik o‘yinlarni Firestore bazasiga ko‘chirish"
+              title="Mavjud bo‘lmagan boshlang‘ich o‘yinlarni Firestore bazasiga yuklash (mavjudlari saqlanadi)"
             >
               <RefreshCw className={`w-4 h-4 text-[#A3E635] ${syncing ? 'animate-spin' : ''}`} />
-              <span>{syncing ? 'Sinxronlanmoqda...' : 'O‘yinlarni Bazaga Sinxronlash'}</span>
+              <span>{syncing ? 'Yuklanmoqda...' : 'Boshlang‘ich O‘yinlarni Yuklash'}</span>
             </button>
 
             <button
