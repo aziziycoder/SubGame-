@@ -1,6 +1,6 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "downloadUrl": "https://www.subgame.uz/downloads/SubGame-Launcher.exe",
-  "changelog": "Stray to'liq qo'shildi. Avtomatik DRM himoyasi va o'zini-o'zi avto-yangilash (auto-update) tizimi integratsiya qilindi.",
+  "changelog": "O'yinlar kartochkalarida hajm o'rniga narxi ko'rsatildi. Kichik yaxshilanishlar.",
   "releaseDate": "2026-10-23"
 }
