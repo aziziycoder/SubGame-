@@ -5,18 +5,18 @@ export const INITIAL_SLIDES: HeroSlide[] = [
     id: 'level-devil',
     slug: 'level-devil',
     title: 'Level Devil',
-    badge: 'Kutilayotgan Premyera • Tez kunda',
+    badge: 'Yangi Premyera • Tayyor',
     headlinePrefix: 'Asablaringizni sinovdan o‘tkazuvchi ',
     headlineHighlight: 'troll-platformer',
     headlineSuffix: ' o‘zbek tilida.',
     description:
-      'Oddiy ko‘ringan, ammo kutilmagan tuzoqlar va hiylalarga to‘la afsonaviy o‘yin. Tez kunda SubGame platformasida to‘liq o‘zbek tilida taqdim etiladi!',
+      'Oddiy ko‘ringan, ammo kutilmagan tuzoqlar va hiylalarga to‘la afsonaviy o‘yin. Endi SubGame platformasida to‘liq o‘zbek tilida o‘ynang!',
     bgImage:
       'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3242750/ss_80c54b48272b6414ebbf107542431ef23cf56940.1920x1080.jpg',
     cardImage:
       'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3242750/header.jpg',
-    cardTag: 'TEZ KUNDA • O‘ZBEKCHA',
-    highlightTag: 'Qiziqarli troll',
+    cardTag: 'O‘ZBEKCHA SUBTITR TAYYOR',
+    highlightTag: 'To‘liq o‘zbekcha',
     version: 'v1.0.0 • PC',
     cardDescription:
       'Level Devil retro o‘yini — kutilmagan tuzoqlar va harakatlanuvchi tikanlar olamida omon qoling.',

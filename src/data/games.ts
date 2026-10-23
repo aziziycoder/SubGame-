@@ -466,37 +466,37 @@ export const GAMES_DATA: Game[] = [
         priceNote: 'Steam rasmiy do‘koni'
       }
     ],
-    price: 'Tez kunda',
-    priceNote: 'O‘yin o‘zbekcha tarjimasi tez kunda SubGame Launcher orqali taqdim etiladi.',
-    subtitleStatus: 'Tez kunda',
+    price: 'Tekin',
+    priceNote: 'O‘yin va to‘liq o‘zbekcha tarjima SubGame platformasida bepul taqdim etiladi.',
+    subtitleStatus: 'Tayyor',
     subtitleLanguage: 'O‘zbekcha (Lotin)',
-    subtitleVersion: 'v1.0.0 (Tez kunda)',
-    subtitleLastUpdated: '2026-10-22',
+    subtitleVersion: 'v1.0.0',
+    subtitleLastUpdated: '2026-10-23',
     subtitleCompatibility: 'Steam va barcha PC versiyalari',
     subtitleFormat: 'SubGame Launcher himoyalangan lokalizatsiyasi',
     subtitleSize: '1.5 MB',
     subtitleDownloadUrl: '/launcher',
-    subtitlePrice: 'Tez kunda',
+    subtitlePrice: 'Bepul',
     subtitleTranslationType: 'To‘liq o‘zbekcha interfeys va dunyolar tarjimasi',
     installationGuide: [
       {
         step: 1,
         title: 'SubGame Launcherni yuklab oling',
-        description: 'Lokalizatsiya tayyor bo‘lishi bilan launcher orqali bir bosishda yuklanadi.'
+        description: 'SubGame Launcher ilovasini yuklab oling va oching. O‘rnatish talab etilmaydi.'
       },
       {
         step: 2,
         title: 'Level Devil o‘yinini tanlang',
-        description: 'Launcher katalogidan Level Devil kartasini topib, "O‘rnatish" tugmasini bosing.'
+        description: 'Launcher katalogidan Level Devil kartasidagi "O‘ynash" tugmasini bosing va o‘yin papkasidagi Level Devil.exe faylini ko‘rsating.'
       },
       {
         step: 3,
-        title: 'O‘zbek tilida o‘ynang',
-        description: 'O‘yin ishga tushgach, barcha dunyo va menyu nomlari to‘liq o‘zbek tilida ochiladi.'
+        title: 'Bir bosishda o‘zbekcha o‘ynang',
+        description: 'O‘yin ishga tushgach, barcha 32 ta dunyo, menyular va yutuqlar to‘liq o‘zbek tilida ochiladi!'
       }
     ],
     knownIssues: [
-      'Lokalizatsiya hozirda yakuniy test va tayyorgarlik bosqichida.'
+      'Barcha dunyo nomlari va Steam yutuqlari to‘liq o‘zbekchalashtirilgan.'
     ],
     minimumRequirements: {
       os: 'Windows 7 / 8 / 10 / 11 (64-bit)',
