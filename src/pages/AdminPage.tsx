@@ -18,8 +18,12 @@ import {
   HardDrive,
   ArrowLeft,
   Layers,
-  Users
+  Users,
+  UploadCloud,
+  FileCheck
 } from 'lucide-react';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { storage } from '../services/firebase';
 import {
   getGames,
   createGame,
@@ -48,6 +52,60 @@ export const AdminPage: React.FC = () => {
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+
+  // File Upload State
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+
+  const handleSubtitleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const gameSlug = (formData.slug?.trim().toLowerCase() || 'general').replace(/[^a-z0-9-]+/g, '-');
+    setUploadingFile(true);
+    setUploadProgress(0);
+    setUploadError(null);
+
+    try {
+      const fileRef = ref(storage, `subtitles/${gameSlug}/${file.name}`);
+      const uploadTask = uploadBytesResumable(fileRef, file);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+          setUploadProgress(progress);
+        },
+        (error) => {
+          console.error('Upload error:', error);
+          setUploadError('Faylni yuklashda xatolik yuz berdi: ' + error.message);
+          setUploadingFile(false);
+        },
+        async () => {
+          const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+          const formattedSize =
+            file.size >= 1048576
+              ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+              : `${(file.size / 1024).toFixed(1)} KB`;
+
+          setFormData((prev) => ({
+            ...prev,
+            targetFileName: prev.targetFileName || file.name,
+            subtitleSize: formattedSize,
+            subtitleDownloadUrl: downloadUrl,
+          }));
+          setUploadedFileName(file.name);
+          setUploadingFile(false);
+          setUploadProgress(100);
+        }
+      );
+    } catch (err: any) {
+      setUploadError(err.message || 'Yuklashda xatolik');
+      setUploadingFile(false);
+    }
+  };
 
   // Form State
   const initialFormState: Partial<Game> = {
@@ -1008,6 +1066,74 @@ export const AdminPage: React.FC = () => {
                       onChange={(e) => setFormData({ ...formData, keyPrefix: e.target.value.toUpperCase() })}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white font-mono text-xs focus:outline-none focus:border-[#A3E635]"
                     />
+                  </div>
+
+                  {/* Direct File Upload to Cloud Storage */}
+                  <div className="sm:col-span-2 p-4 rounded-2xl bg-[#0B0D12] border border-[#2A3245] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold text-white flex items-center gap-2">
+                        <UploadCloud className="w-4 h-4 text-[#A3E635]" />
+                        <span>Subtitr / Tarjima faylini yuklash (.pak, .pc, .enc, .zip)</span>
+                      </label>
+                      <span className="text-[10px] text-gray-400 font-mono">Firebase Cloud Storage</span>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                      <label className="relative inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#1E2533] hover:bg-[#2A3245] border border-[#2A3245] text-xs font-bold text-white transition-all cursor-pointer">
+                        <UploadCloud className="w-4 h-4 text-[#A3E635]" />
+                        <span>{uploadingFile ? 'Yuklanmoqda...' : 'Faylni tanlang (.pak, .pc)'}</span>
+                        <input
+                          type="file"
+                          accept=".pak,.pc,.enc,.zip,.rar,.json,.txt"
+                          onChange={handleSubtitleFileUpload}
+                          disabled={uploadingFile}
+                          className="sr-only"
+                        />
+                      </label>
+
+                      <div className="flex-1 min-w-0">
+                        {uploadingFile ? (
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between text-[11px] text-gray-400">
+                              <span>Fayl yuklanmoqda...</span>
+                              <span className="font-bold text-[#A3E635]">{uploadProgress}%</span>
+                            </div>
+                            <div className="w-full h-2 bg-[#141821] rounded-full overflow-hidden border border-[#2A3245]">
+                              <div
+                                className="h-full bg-[#A3E635] transition-all duration-300"
+                                style={{ width: `${uploadProgress || 0}%` }}
+                              />
+                            </div>
+                          </div>
+                        ) : uploadedFileName ? (
+                          <div className="flex items-center gap-2 text-xs text-[#A3E635] font-semibold">
+                            <FileCheck className="w-4 h-4 flex-shrink-0" />
+                            <span className="truncate">Yuklandi: {uploadedFileName} ({formData.subtitleSize})</span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-gray-500">
+                            Faylni yuklasangiz, fayl nomi, hajmi va yuklab olish havolasi avtomatik to‘ldiriladi
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {uploadError && (
+                      <p className="text-xs text-red-400 font-medium">{uploadError}</p>
+                    )}
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                        Yuklab olish to‘g‘ridan-to‘g‘ri havolasi (subtitleDownloadUrl)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="https://... (Fayl yuklanganda avtomatik kiritiladi yoki tashqi havola)"
+                        value={formData.subtitleDownloadUrl || ''}
+                        onChange={(e) => setFormData({ ...formData, subtitleDownloadUrl: e.target.value })}
+                        className="w-full px-3.5 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs text-white font-mono focus:outline-none focus:border-[#A3E635]"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
