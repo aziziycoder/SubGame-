@@ -3,12 +3,19 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { HeroSlide } from '../../types/slider';
 import { INITIAL_SLIDES } from '../../data/sliders';
-import { getSliders } from '../../services/slidersService';
+import { getSliders, getCachedSliders } from '../../services/slidersService';
 
 const SLIDE_INTERVAL_MS = 6000;
 
 export const HeroSection: React.FC = () => {
-  const [slides, setSlides] = useState<HeroSlide[]>(INITIAL_SLIDES);
+  const [slides, setSlides] = useState<HeroSlide[]>(() => {
+    const cached = getCachedSliders();
+    if (cached && cached.length > 0) {
+      const active = cached.filter((s) => s.isActive !== false);
+      if (active.length > 0) return active;
+    }
+    return INITIAL_SLIDES;
+  });
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {

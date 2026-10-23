@@ -24,16 +24,18 @@ import {
   createSlider,
   updateSlider,
   deleteSlider,
-  syncInitialSliders
+  syncInitialSliders,
+  getCachedSliders
 } from '../../services/slidersService';
-import { INITIAL_SLIDES } from '../../data/sliders';
 
 interface SliderManagerProps {
   games: Game[];
 }
 
 export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
-  const [sliders, setSliders] = useState<HeroSlide[]>([]);
+  const [sliders, setSliders] = useState<HeroSlide[]>(() => {
+    return getCachedSliders() || [];
+  });
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
@@ -74,7 +76,10 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
       setSliders(sorted);
     } catch (err) {
       console.error('Failed to load sliders:', err);
-      setSliders(INITIAL_SLIDES);
+      const cached = getCachedSliders();
+      if (cached && cached.length > 0) {
+        setSliders(cached);
+      }
     } finally {
       setLoading(false);
     }

@@ -14,6 +14,32 @@ import type { HeroSlide } from '../types/slider';
 import { INITIAL_SLIDES } from '../data/sliders';
 
 const SLIDERS_COLLECTION = 'sliders';
+const CACHE_KEY = 'subgame_cached_sliders';
+
+/**
+ * Get cached slides from localStorage if available.
+ */
+export function getCachedSliders(): HeroSlide[] | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch {}
+  return null;
+}
+
+/**
+ * Save slides to localStorage cache.
+ */
+export function setCachedSliders(slides: HeroSlide[]): void {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(slides));
+  } catch {}
+}
 
 /**
  * Remove undefined values so Firestore does not reject the document write.
@@ -51,12 +77,17 @@ export async function getSliders(): Promise<HeroSlide[]> {
           id: docSnap.id
         });
       });
+      setCachedSliders(slides);
       return slides;
     }
 
+    const cached = getCachedSliders();
+    if (cached) return cached;
     return INITIAL_SLIDES;
   } catch (error) {
     console.warn('Failed to fetch sliders from Firestore, falling back to initial data:', error);
+    const cached = getCachedSliders();
+    if (cached) return cached;
     return INITIAL_SLIDES;
   }
 }
@@ -79,6 +110,14 @@ export async function createSlider(slideData: HeroSlide): Promise<{ success: boo
     });
 
     await setDoc(slideRef, payload, { merge: true });
+    const cached = getCachedSliders() || [];
+    const idx = cached.findIndex((s) => s.id === docId);
+    if (idx >= 0) {
+      cached[idx] = { ...cached[idx], ...payload };
+    } else {
+      cached.push(payload as HeroSlide);
+    }
+    setCachedSliders(cached);
     return { success: true, id: docId };
   } catch (error: any) {
     console.error('Error creating slider in Firestore:', error);
@@ -97,6 +136,14 @@ export async function updateSlider(id: string, slideData: Partial<HeroSlide>): P
       updatedAt: serverTimestamp()
     });
     await setDoc(slideRef, cleaned, { merge: true });
+    const cached = getCachedSliders();
+    if (cached) {
+      const idx = cached.findIndex((s) => s.id === id);
+      if (idx >= 0) {
+        cached[idx] = { ...cached[idx], ...cleaned };
+        setCachedSliders(cached);
+      }
+    }
     return { success: true };
   } catch (error: any) {
     console.error('Error updating slider in Firestore:', error);
@@ -111,6 +158,11 @@ export async function deleteSlider(id: string): Promise<{ success: boolean; erro
   try {
     const slideRef = doc(db, SLIDERS_COLLECTION, id);
     await deleteDoc(slideRef);
+    const cached = getCachedSliders();
+    if (cached) {
+      const updated = cached.filter((s) => s.id !== id);
+      setCachedSliders(updated);
+    }
     return { success: true };
   } catch (error: any) {
     console.error('Error deleting slider from Firestore:', error);
