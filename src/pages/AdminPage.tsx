@@ -17,7 +17,8 @@ import {
   FileCode,
   HardDrive,
   ArrowLeft,
-  Layers
+  Layers,
+  Users
 } from 'lucide-react';
 import {
   getGames,
@@ -29,10 +30,11 @@ import {
 import type { Game, SubtitleStatus } from '../types/game';
 import { useAuth } from '../context/AuthContext';
 import { SliderManager } from '../components/admin/SliderManager';
+import { UserManager } from '../components/admin/UserManager';
 
 export const AdminPage: React.FC = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'games' | 'sliders'>('games');
+  const [activeTab, setActiveTab] = useState<'games' | 'sliders' | 'users'>('games');
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -419,6 +421,25 @@ export const AdminPage: React.FC = () => {
               Boshqaruv
             </span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('users')}
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              activeTab === 'users'
+                ? 'bg-[#A3E635] text-[#0B0D12] shadow-accent-glow'
+                : 'text-gray-400 hover:text-white hover:bg-[#141821] border border-transparent'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            <span>Foydalanuvchilar</span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                activeTab === 'users' ? 'bg-black/20 text-[#0B0D12]' : 'bg-[#1E2533] text-gray-400'
+              }`}
+            >
+              Boshqaruv
+            </span>
+          </button>
         </div>
 
         {activeTab === 'games' ? (
@@ -595,8 +616,10 @@ export const AdminPage: React.FC = () => {
           )}
         </div>
           </>
-        ) : (
+        ) : activeTab === 'sliders' ? (
           <SliderManager games={games} />
+        ) : (
+          <UserManager />
         )}
       </main>
 

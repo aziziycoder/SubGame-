@@ -15,12 +15,13 @@ import {
   onSnapshot
 } from 'firebase/firestore';
 import { auth, db, googleProvider } from '../services/firebase';
-import type { GameLicense } from '../types/auth';
+import type { GameLicense, UserProfile } from '../types/auth';
 
 export const ADMIN_EMAILS = ['azizbekgulomovweb@gmail.com'];
 
 interface AuthContextType {
   user: User | null;
+  userProfile: UserProfile | null;
   isAdmin: boolean;
   loading: boolean;
   licenses: Record<string, GameLicense>;
@@ -35,40 +36,80 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [licenses, setLicenses] = useState<Record<string, GameLicense>>({});
 
-  const isAdmin = Boolean(user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase()));
+  const isEmailAdmin = Boolean(user?.email && ADMIN_EMAILS.some((e) => e.toLowerCase() === user.email?.toLowerCase()));
+  const isProfileAdmin = Boolean(userProfile?.role === 'admin' || userProfile?.isAdmin === true);
+  const isAdmin = isEmailAdmin || isProfileAdmin;
 
   useEffect(() => {
+    let unsubscribeUserDoc: (() => void) | null = null;
+
     const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       setLoading(false);
 
+      if (unsubscribeUserDoc) {
+        unsubscribeUserDoc();
+        unsubscribeUserDoc = null;
+      }
+
       if (currentUser) {
+        const userRef = doc(db, 'users', currentUser.uid);
+        const isMaster = Boolean(currentUser.email && ADMIN_EMAILS.some((e) => e.toLowerCase() === currentUser.email?.toLowerCase()));
+
         // Sync user to firestore
         try {
-          const userRef = doc(db, 'users', currentUser.uid);
-          await setDoc(
-            userRef,
-            {
-              uid: currentUser.uid,
-              email: currentUser.email,
-              displayName: currentUser.displayName,
-              photoURL: currentUser.photoURL,
-              lastLoginAt: serverTimestamp(),
-            },
-            { merge: true }
-          );
+          const syncData: any = {
+            uid: currentUser.uid,
+            email: currentUser.email,
+            displayName: currentUser.displayName,
+            photoURL: currentUser.photoURL,
+            lastLoginAt: serverTimestamp(),
+          };
+
+          if (isMaster) {
+            syncData.role = 'admin';
+            syncData.isAdmin = true;
+          }
+
+          await setDoc(userRef, syncData, { merge: true });
         } catch (err) {
           console.warn('Failed to sync user to Firestore:', err);
         }
+
+        // Real-time listener for user profile (for dynamic role updates)
+        unsubscribeUserDoc = onSnapshot(userRef, (docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setUserProfile({
+              uid: docSnap.id,
+              email: data.email || currentUser.email,
+              displayName: data.displayName || currentUser.displayName,
+              photoURL: data.photoURL || currentUser.photoURL,
+              role: data.role || (isMaster ? 'admin' : 'user'),
+              isAdmin: Boolean(data.isAdmin || data.role === 'admin' || isMaster),
+              createdAt: data.createdAt,
+              lastLoginAt: data.lastLoginAt,
+            });
+          }
+        }, (err) => {
+          console.warn('User profile listener error:', err);
+        });
       } else {
+        setUserProfile(null);
         setLicenses({});
       }
     });
 
-    return () => unsubscribeAuth();
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeUserDoc) {
+        unsubscribeUserDoc();
+      }
+    };
   }, []);
 
   // Listen to user licenses in real-time
@@ -177,6 +218,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider
       value={{
         user,
+        userProfile,
         isAdmin,
         loading,
         licenses,

@@ -1,8 +1,12 @@
+export type UserRole = 'admin' | 'user';
+
 export interface UserProfile {
   uid: string;
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
+  role?: UserRole;
+  isAdmin?: boolean;
   createdAt?: any;
   lastLoginAt?: any;
 }
@@ -22,3 +26,11 @@ export interface GameLicense {
   boundDeviceName?: string;
   createdAt: any;
 }
+
+export interface UserWithLicenses extends UserProfile {
+  licenses: GameLicense[];
+  claimedGamesCount: number;
+  activeLicensesCount: number;
+  boundDevicesCount: number;
+}
+
