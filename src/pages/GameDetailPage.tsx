@@ -112,17 +112,23 @@ export const GameDetailPage: React.FC = () => {
   };
 
 
+  const heroBackdrop = game.heroImage || game.cardImage || (game.screenshots && game.screenshots.length > 0 ? game.screenshots[0] : '') || game.cover;
+
   return (
     <div className="min-h-screen bg-[#0B0D12] text-white">
       {/* A. Hero Section with Backdrop Artwork */}
       <section className="relative min-h-[460px] sm:min-h-[560px] flex items-end pt-24 sm:pt-32 pb-8 sm:pb-12 overflow-hidden border-b border-[#2A3245]">
         {/* Backdrop Image extending behind navbar */}
         <div className="absolute inset-0 z-0">
-          <img
-            src={game.heroImage}
-            alt={game.title}
-            className="w-full h-full object-cover object-center filter brightness-[0.55] sm:brightness-[0.65] contrast-110 scale-105"
-          />
+          {heroBackdrop ? (
+            <img
+              src={heroBackdrop}
+              alt={game.title}
+              className="w-full h-full object-cover object-center filter brightness-[0.55] sm:brightness-[0.65] contrast-110 scale-105"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-[#1A1F2A] via-[#12161F] to-[#0B0D12]" />
+          )}
           {/* Smooth bottom blend */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D12] via-[#0B0D12]/60 to-transparent" />
           {/* Left gradient for text readability */}

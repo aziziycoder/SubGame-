@@ -193,6 +193,7 @@ export const AdminPage: React.FC = () => {
     const payload: Game = {
       ...initialFormState,
       ...formData,
+      heroImage: formData.heroImage || formData.cardImage || (parsedScreenshots.length > 0 ? parsedScreenshots[0] : '') || formData.cover || '',
       price: computedPrice,
       subtitlePrice: computedSubtitlePrice,
       priceNote: computedPriceNote,
@@ -804,6 +805,32 @@ export const AdminPage: React.FC = () => {
                       placeholder="https://itorrents-igruha.org/..."
                       value={formData.torrentUrl || ''}
                       onChange={(e) => setFormData({ ...formData, torrentUrl: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white font-mono text-xs focus:outline-none focus:border-[#A3E635]"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-semibold text-gray-300 mb-1">
+                      Katta Fon rasmi (Hero Banner 1920x1080) URL
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="https://... (o‘yin sahifasining katta orqa fon rasmi)"
+                      value={formData.heroImage || ''}
+                      onChange={(e) => setFormData({ ...formData, heroImage: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white font-mono text-xs focus:outline-none focus:border-[#A3E635]"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-semibold text-gray-300 mb-1">
+                      Skrinshotlar (Har bir qatorda bittadan rasm havolasi)
+                    </label>
+                    <textarea
+                      rows={3}
+                      placeholder={`https://...\nhttps://...`}
+                      value={screenshotsInput}
+                      onChange={(e) => setScreenshotsInput(e.target.value)}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white font-mono text-xs focus:outline-none focus:border-[#A3E635]"
                     />
                   </div>
