@@ -1123,16 +1123,42 @@ export const AdminPage: React.FC = () => {
                     )}
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-gray-400 mb-1">
-                        Yuklab olish to‘g‘ridan-to‘g‘ri havolasi (subtitleDownloadUrl)
-                      </label>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-[11px] font-semibold text-gray-400">
+                          Yuklab olish to‘g‘ridan-to‘g‘ri havolasi (Google Drive, GitHub yoki CDN)
+                        </label>
+                        <span className="text-[10px] text-[#A3E635] font-mono">Google Drive qo‘llab-quvvatlanadi</span>
+                      </div>
                       <input
                         type="text"
-                        placeholder="https://... (Fayl yuklanganda avtomatik kiritiladi yoki tashqi havola)"
+                        placeholder="Google Drive havolasi yoki to‘g‘ridan-to‘g‘ri yuklab olish URL"
                         value={formData.subtitleDownloadUrl || ''}
-                        onChange={(e) => setFormData({ ...formData, subtitleDownloadUrl: e.target.value })}
+                        onChange={(e) => {
+                          const val = e.target.value.trim();
+                          // Auto-convert Google Drive sharing link to direct download link
+                          const gDriveMatch = val.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                          if (gDriveMatch && gDriveMatch[1]) {
+                            setFormData({
+                              ...formData,
+                              subtitleDownloadUrl: `https://drive.google.com/uc?export=download&id=${gDriveMatch[1]}`,
+                            });
+                          } else {
+                            const gDriveIdMatch = val.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                            if (gDriveIdMatch && gDriveIdMatch[1] && val.includes('drive.google.com')) {
+                              setFormData({
+                                ...formData,
+                                subtitleDownloadUrl: `https://drive.google.com/uc?export=download&id=${gDriveIdMatch[1]}`,
+                              });
+                            } else {
+                              setFormData({ ...formData, subtitleDownloadUrl: val });
+                            }
+                          }
+                        }}
                         className="w-full px-3.5 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs text-white font-mono focus:outline-none focus:border-[#A3E635]"
                       />
+                      <p className="text-[11px] text-gray-500 mt-1">
+                        Google Drive havolasini tashlasangiz, tizim uni avtomatik yuklab olish formatiga aylantiradi. (Faylni Google Drive'da "Havolaga ega har kim" qilib qo‘ying).
+                      </p>
                     </div>
                   </div>
                 </div>
