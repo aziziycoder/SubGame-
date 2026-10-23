@@ -475,7 +475,7 @@ export const GAMES_DATA: Game[] = [
     subtitleCompatibility: 'Steam va barcha PC versiyalari',
     subtitleFormat: 'SubGame Launcher himoyalangan lokalizatsiyasi',
     subtitleSize: '1.5 MB',
-    subtitleDownloadUrl: '/launcher',
+    subtitleDownloadUrl: '',
     subtitlePrice: 'Bepul',
     subtitleTranslationType: 'To‘liq o‘zbekcha interfeys va dunyolar tarjimasi',
     installationGuide: [
