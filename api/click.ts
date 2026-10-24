@@ -1,5 +1,7 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 import crypto from 'crypto';
+
+type Req = any;
+type Res = any;
 
 const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || 'AIzaSyBeARpvr_M-_p8OfO23a1AkSOS5WmNxDDE';
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'subgame-ca4ed';
@@ -93,7 +95,7 @@ async function updateOrderRest(orderId: string, fields: Record<string, any>) {
  * -8: Error in request from click
  * -9: Transaction cancelled
  */
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: Req, res: Res) {
   // Allow GET for endpoint healthcheck
   if (req.method === 'GET') {
     return res.status(200).json({
