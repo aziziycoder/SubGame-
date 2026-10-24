@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/api/click/prepare",
+      "destination": "/api/click"
+    },
+    {
+      "source": "/api/click/complete",
+      "destination": "/api/click"
+    },
+    {
       "source": "/((?!api/.*).*)",
       "destination": "/index.html"
     }

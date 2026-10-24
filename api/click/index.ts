@@ -120,7 +120,12 @@ export default async function handler(req: Req, res: Res) {
     const click_paydoc_id = String(data.click_paydoc_id || '');
     const merchant_trans_id = String(data.merchant_trans_id || '');
     const amount = Number(data.amount || 0);
-    const action = Number(data.action ?? -1);
+    const reqUrl = req.url || '';
+    let action = Number(data.action ?? -1);
+    if (action === -1) {
+      if (reqUrl.includes('/prepare')) action = 0;
+      else if (reqUrl.includes('/complete')) action = 1;
+    }
     const error = Number(data.error ?? 0);
     const error_note = String(data.error_note || '');
     const sign_time = String(data.sign_time || '');
