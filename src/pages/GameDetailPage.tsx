@@ -28,20 +28,36 @@ import {
   ShieldCheck,
   Laptop,
   CreditCard,
-  X
+  X,
+  Gamepad2
 } from 'lucide-react';
 
 export const GameDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const initialGame = GAMES_DATA.find((g) => g.slug === slug);
   const [game, setGame] = useState<Game | undefined>(initialGame);
+  const [loading, setLoading] = useState<boolean>(!initialGame);
 
   useEffect(() => {
+    let isMounted = true;
     if (slug) {
-      getGameBySlug(slug).then((res) => {
-        if (res) setGame(res);
-      });
+      if (!initialGame) {
+        setLoading(true);
+      }
+      getGameBySlug(slug)
+        .then((res) => {
+          if (isMounted) {
+            setGame(res);
+            setLoading(false);
+          }
+        })
+        .catch(() => {
+          if (isMounted) setLoading(false);
+        });
     }
+    return () => {
+      isMounted = false;
+    };
   }, [slug]);
 
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -62,6 +78,27 @@ export const GameDetailPage: React.FC = () => {
       setTimeout(() => setClaimSuccess(false), 8000);
     }
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-32 pb-20 flex flex-col items-center justify-center text-center px-4 bg-[#0B0D12]">
+        <div className="relative mb-6">
+          {/* Glowing central box */}
+          <div className="w-16 h-16 rounded-2xl bg-[#A3E635]/15 border border-[#A3E635]/30 flex items-center justify-center text-[#A3E635] shadow-accent-glow">
+            <Gamepad2 className="w-8 h-8 animate-pulse" />
+          </div>
+          {/* Spinning perimeter ring */}
+          <div className="absolute -inset-2 rounded-2xl border-2 border-transparent border-t-[#A3E635] animate-spin" />
+        </div>
+        <h2 className="text-xl sm:text-2xl font-black text-white mb-2 tracking-tight">
+          O‘yin yuklanmoqda...
+        </h2>
+        <p className="text-gray-400 text-xs sm:text-sm max-w-sm">
+          SubGame platformasidan o‘yin ma’lumotlari va subtitr holati tekshirilmoqda.
+        </p>
+      </div>
+    );
+  }
 
   if (!game) {
     return (
