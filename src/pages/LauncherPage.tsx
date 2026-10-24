@@ -1,18 +1,56 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   Download,
   ShieldCheck,
   Zap,
   Cpu,
-  CheckCircle2,
   AlertTriangle,
-  KeyRound,
   Sparkles,
-  Monitor
+  Monitor,
+  FolderCheck,
+  Gamepad2,
+  ArrowRight,
+  Send,
+  LifeBuoy
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { FaqSection } from '../components/home/FaqSection';
 
 export const LauncherPage: React.FC = () => {
+  const steps = [
+    {
+      step: '01',
+      title: 'Launcherni yuklab oling',
+      description:
+        'Quyidagi tugma orqali rasmiy «SubGame-Launcher.exe» dasturini shaxsiy kompyuteringizga yuklab oling. Dastur portativ (portable) bo‘lib, hech qanday o‘rnatishni talab qilmaydi.',
+      icon: Download,
+      tip: 'Hajmi ~95 MB, portativ dastur.'
+    },
+    {
+      step: '02',
+      title: 'Dasturni ishga tushiring',
+      description:
+        'Yuklab olingan faylni ikki marta bosing. Agar Windows SmartScreen «Himoyalanmagan dastur» deb ogohlantirsa, «Подробнее (More info)» havolasini bosing va «Выполнить в любом случае (Run anyway)»ni tanlang.',
+      icon: AlertTriangle,
+      tip: 'Dastur 100% toza va xavfsiz.'
+    },
+    {
+      step: '03',
+      title: 'O‘yin ijro faylini (.exe) tanlang',
+      description:
+        'Launcherdagi katalogdan kerakli o‘yinni oching va kompyuteringizdagi o‘yin papkasidagi asosiy ijro faylini (.exe) bir marta ko‘rsatib bering.',
+      icon: FolderCheck,
+      tip: 'Steam, Epic Games yoki kompyuteringizdagi o‘yin papkasi.'
+    },
+    {
+      step: '04',
+      title: '1-bosishda o‘zbekcha o‘ynang',
+      description:
+        '«O‘yinni boshlash» tugmasini bosing. Subtitrlar avtomatik ulanadi, o‘yin ishga tushadi va siz o‘zbek tilidagi to‘liq kontentdan bahramand bo‘lasiz.',
+      icon: Gamepad2,
+      tip: 'O‘yin yakunlangach, fayllar toza saqlanadi.'
+    }
+  ];
 
   return (
     <div className="pt-24 pb-20 min-h-screen bg-[#0B0D12] text-[#F5F7FA]">
@@ -52,6 +90,13 @@ export const LauncherPage: React.FC = () => {
               <Download className="w-5 h-5" />
               <span>Launcherni yuklab olish (.exe)</span>
             </a>
+            <Link
+              to="/games"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-[#141821] text-gray-200 hover:text-white border border-[#2A3245] hover:border-gray-500 font-bold text-sm transition-all"
+            >
+              <span>O‘yinlar katalogi</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
 
           {/* Technical Specs Badges */}
@@ -68,6 +113,69 @@ export const LauncherPage: React.FC = () => {
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
               100% Xavfsiz & Toza
             </span>
+          </div>
+        </div>
+
+        {/* 4 Steps Guide */}
+        <div className="mb-20">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">
+              Qanday ishlatiladi? (4 oddiy qadam)
+            </h2>
+            <p className="text-sm text-gray-400">
+              Hech qanday murakkab sozlamalarsiz o‘yinni 1 daqiqada ishga tushiring
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {steps.map((st) => {
+              const Icon = st.icon;
+              return (
+                <div
+                  key={st.step}
+                  className="p-6 sm:p-7 rounded-2xl bg-[#141821] border border-[#2A3245] flex flex-col justify-between hover:border-[#A3E635]/50 transition-all"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-12 h-12 rounded-xl bg-[#1A1F2A] border border-[#2A3245] text-[#A3E635] flex items-center justify-center shadow-inner">
+                        <Icon className="w-6 h-6" />
+                      </div>
+                      <span className="text-3xl font-black font-mono text-gray-700 select-none">
+                        {st.step}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-bold text-white mb-2">
+                      {st.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-gray-300 leading-relaxed mb-4">
+                      {st.description}
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-[#2A3245]/60 text-xs text-gray-400 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#A3E635]" />
+                    <span>{st.tip}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* SmartScreen Alert Note */}
+        <div className="mb-20 p-6 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-4">
+          <AlertTriangle className="w-6 h-6 text-amber-400 shrink-0 mt-0.5" />
+          <div className="space-y-1.5 text-xs sm:text-sm text-gray-300">
+            <strong className="text-amber-300 block text-base font-bold">
+              Windows SmartScreen «Himoyalanmagan dastur» deb chiqarsa nima qilish kerak?
+            </strong>
+            <p className="leading-relaxed">
+              SubGame mustaqil loyiha bo‘lib, xorijiy qimmatbaho korporativ sertifikatga ega emas. Shu sababli Windows yangi yuklab olingan dasturni ilk bor ochganda xavfsizlik ogohlantirishini ko‘rsatadi.
+            </p>
+            <p className="leading-relaxed font-semibold text-white">
+              Yechim: Oynadagi <span className="text-[#A3E635]">«Подробнее (More info)»</span> yozuvini bosing, so‘ngra pastda chiqqan <span className="text-[#A3E635]">«Выполнить в любом случае (Run anyway)»</span> tugmasini bosing. Dastur mutlaqo toza va xavfsiz.
+            </p>
           </div>
         </div>
 
@@ -105,7 +213,7 @@ export const LauncherPage: React.FC = () => {
 
             <div className="p-6 rounded-2xl bg-[#141821] border border-[#2A3245] hover:border-[#A3E635]/50 transition-all">
               <div className="w-12 h-12 rounded-xl bg-[#A855F7]/15 border border-[#A855F7]/30 flex items-center justify-center text-[#A855F7] mb-4">
-                <CheckCircle2 className="w-6 h-6" />
+                <Sparkles className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-white mb-2">Toza O‘chirish & Xavfsizlik</h3>
               <p className="text-xs text-gray-400 leading-relaxed">
@@ -115,70 +223,40 @@ export const LauncherPage: React.FC = () => {
           </div>
         </div>
 
-        {/* 3 Step Guide */}
-        <div className="p-8 rounded-3xl bg-[#141821] border border-[#2A3245] mb-20">
-          <h2 className="text-2xl font-extrabold text-white text-center mb-8">
-            Launcherni ishlatish bo‘yicha 3 oddiy qadam
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="flex flex-col items-center text-center p-4">
-              <div className="w-10 h-10 rounded-full bg-[#A3E635] text-[#0B0D12] font-extrabold flex items-center justify-center text-base mb-3 shadow-sm">
-                1
-              </div>
-              <h4 className="font-bold text-white text-sm mb-1">Launcherni yuklab oling</h4>
-              <p className="text-xs text-gray-400 leading-relaxed">
-                Yuqoridagi tugma orqali <code className="text-[#A3E635]">.exe</code> faylini yuklab oling. O‘rnatish shart emas, ikki marta bosib to‘g‘ridan-to‘g‘ri ochiladi.
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center text-center p-4">
-              <div className="w-10 h-10 rounded-full bg-[#A3E635] text-[#0B0D12] font-extrabold flex items-center justify-center text-base mb-3 shadow-sm">
-                2
-              </div>
-              <h4 className="font-bold text-white text-sm mb-1">O‘yin faylini tanlang</h4>
-              <p className="text-xs text-gray-400 leading-relaxed">
-                Steam, Epic Games yoki kompyuteringizdagi o‘yin papkasidagi asosiy <code className="text-[#A3E635]">.exe</code> faylini ko‘rsating.
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center text-center p-4">
-              <div className="w-10 h-10 rounded-full bg-[#A3E635] text-[#0B0D12] font-extrabold flex items-center justify-center text-base mb-3 shadow-sm">
-                3
-              </div>
-              <h4 className="font-bold text-white text-sm mb-1">Kalitni kiriting & O‘ynang</h4>
-              <p className="text-xs text-gray-400 leading-relaxed">
-                Olingan litsenziya kalitini kiriting va «O‘yinni boshlash»ni bosing. Subtitrlar avtomatik ulanadi!
-              </p>
-            </div>
+        {/* Need Help CTA */}
+        <div className="p-8 rounded-3xl bg-gradient-to-r from-[#141821] via-[#1A1F2A] to-[#141821] border border-[#A3E635]/40 text-center space-y-4 shadow-xl mb-20">
+          <div className="w-12 h-12 rounded-2xl bg-[#A3E635]/15 border border-[#A3E635]/30 text-[#A3E635] flex items-center justify-center mx-auto">
+            <LifeBuoy className="w-6 h-6" />
+          </div>
+          <h3 className="text-xl sm:text-2xl font-extrabold text-white">
+            Savollaringiz bormi yoki yordam kerakmi?
+          </h3>
+          <p className="text-xs sm:text-sm text-gray-300 max-w-lg mx-auto leading-relaxed">
+            Agar Launcherni ishlatishda biror qiyinchilikka duch kelsangiz, rasmiy Telegram guruhimizga yozing, doimo yordam beramiz.
+          </p>
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href="https://t.me/subgame_uz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-sm hover:bg-[#84CC16] transition-all hover:scale-105 shadow-md shadow-[#A3E635]/20"
+            >
+              <Send className="w-4 h-4" />
+              <span>Telegramda yordam olish</span>
+            </a>
+            <Link
+              to="/games"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#141821] text-white border border-[#2A3245] hover:border-gray-500 font-bold text-sm transition-all"
+            >
+              <span>Katalogga o‘tish</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
 
-        {/* FAQ Accordion / Notices */}
-        <div className="max-w-3xl mx-auto space-y-4">
-          <h3 className="text-xl font-bold text-white mb-4 text-center">
-            Ko‘p beriladigan savollar
-          </h3>
-
-          <div className="p-4 rounded-xl bg-[#141821] border border-[#2A3245] space-y-1.5">
-            <h4 className="text-sm font-semibold text-white flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-              Windows SmartScreen «Himoyalanmagan dastur» deb chiqarsa nima qilish kerak?
-            </h4>
-            <p className="text-xs text-gray-400 leading-relaxed">
-              SubGame mustaqil loyiha bo‘lib, hozircha qimmat xorijiy sertifikatga ega emas. Shuning uchun Windows birinchi marta ochganda ogohlantirishi mumkin. Oynadagi <strong className="text-white">«Подробнее (More info)»</strong> tugmasini bosing va <strong className="text-[#A3E635]">«Выполнить в любом случае (Run anyway)»</strong> ni tanlang. Dastur 100% toza va xavfsiz.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-xl bg-[#141821] border border-[#2A3245] space-y-1.5">
-            <h4 className="text-sm font-semibold text-white flex items-center gap-2">
-              <KeyRound className="w-4 h-4 text-[#A3E635] shrink-0" />
-              Litsenziya kalitini qanday olaman?
-            </h4>
-            <p className="text-xs text-gray-400 leading-relaxed">
-              Litsenziya kalitlari bizning rasmiy Telegram botimiz yoki saytdagi buyurtma orqali taqdim etiladi. Bir martalik to‘lov bilan o‘yin sizning shaxsiy kompyuteringizga abadiy biriktiriladi.
-            </p>
-          </div>
+        {/* FAQ Section */}
+        <div>
+          <FaqSection />
         </div>
       </div>
     </div>

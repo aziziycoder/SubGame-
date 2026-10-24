@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { FavoritesProvider } from './context/FavoritesContext';
 import { ScrollToTop } from './components/common/ScrollToTop';
@@ -8,7 +8,6 @@ import { Footer } from './components/layout/Footer';
 import { HomePage } from './pages/HomePage';
 import { CatalogPage } from './pages/CatalogPage';
 import { GameDetailPage } from './pages/GameDetailPage';
-import { GuidePage } from './pages/GuidePage';
 import { AboutPage } from './pages/AboutPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 import { LauncherPage } from './pages/LauncherPage';
@@ -37,8 +36,8 @@ const AppContent: React.FC = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/games" element={<CatalogPage />} />
           <Route path="/games/:slug" element={<GameDetailPage />} />
-          <Route path="/guide" element={<GuidePage />} />
           <Route path="/launcher" element={<LauncherPage />} />
+          <Route path="/guide" element={<Navigate to="/launcher" replace />} />
           <Route path="/connect" element={<ConnectLauncherPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />

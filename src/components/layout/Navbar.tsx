@@ -9,7 +9,6 @@ import {
   Menu,
   X,
   Sparkles,
-  BookOpen,
   Info,
   Layers,
   Home,
@@ -56,7 +55,6 @@ export const Navbar: React.FC = () => {
     { name: 'Bosh sahifa', path: '/', icon: Home },
     { name: 'O‘yinlar', path: '/games', icon: Layers },
     { name: 'Launcher', path: '/launcher', icon: Monitor },
-    { name: 'Qo‘llanma', path: '/guide', icon: BookOpen },
     { name: 'Biz haqimizda', path: '/about', icon: Info },
   ];
 

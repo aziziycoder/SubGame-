@@ -178,10 +178,10 @@ export const FeaturedGames: React.FC = () => {
             <strong className="text-gray-200">Muhim eslatma:</strong> Subtitr fayllari mustaqil mod bo‘lib, SubGame platformasida bepul taqdim etiladi. O‘yinning o‘zi esa rasmiy litsenziyalangan do‘konlardan (Steam, GOG, Epic Games) xarid qilinishi shart.
           </p>
           <Link
-            to="/guide"
+            to="/launcher"
             className="shrink-0 text-[#A3E635] hover:underline font-semibold"
           >
-            Qo‘llanmani o‘qish →
+            Launcherni yuklab olish →
           </Link>
         </div>
       </div>

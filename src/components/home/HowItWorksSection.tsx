@@ -28,8 +28,8 @@ export const HowItWorksSection: React.FC = () => {
       title: '1 bosishda o‘ynang',
       description:
         'Launcherni ishga tushiring, o‘yinni bir marta ko‘rsating va o‘zbek tilida to‘liq zavqlanib o‘ynang.',
-      linkText: 'Qo‘llanmani ko‘rish',
-      linkUrl: '/guide',
+      linkText: 'Launcherni ko‘rish',
+      linkUrl: '/launcher',
     },
   ];
 

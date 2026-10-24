@@ -65,8 +65,8 @@ export const Footer: React.FC<FooterProps> = ({
                 </Link>
               </li>
               <li>
-                <Link to="/guide" className="hover:text-[#A3E635] transition-colors">
-                  O‘rnatish qo‘llanmasi
+                <Link to="/launcher" className="hover:text-[#A3E635] transition-colors">
+                  SubGame Launcher
                 </Link>
               </li>
               <li>
