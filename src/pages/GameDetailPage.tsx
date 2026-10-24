@@ -28,8 +28,7 @@ import {
   ShieldCheck,
   Laptop,
   CreditCard,
-  X,
-  Gamepad2
+  X
 } from 'lucide-react';
 
 export const GameDetailPage: React.FC = () => {
@@ -82,19 +81,17 @@ export const GameDetailPage: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen pt-32 pb-20 flex flex-col items-center justify-center text-center px-4 bg-[#0B0D12]">
-        <div className="relative mb-6">
-          {/* Glowing central box */}
-          <div className="w-16 h-16 rounded-2xl bg-[#A3E635]/15 border border-[#A3E635]/30 flex items-center justify-center text-[#A3E635] shadow-accent-glow">
-            <Gamepad2 className="w-8 h-8 animate-pulse" />
-          </div>
-          {/* Spinning perimeter ring */}
-          <div className="absolute -inset-2 rounded-2xl border-2 border-transparent border-t-[#A3E635] animate-spin" />
+        <div className="relative mb-5 flex items-center justify-center">
+          {/* Smooth circular spinning ring */}
+          <div className="w-12 h-12 rounded-full border-3 border-[#2A3245] border-t-[#A3E635] animate-spin shadow-accent-glow" />
+          {/* Subtle center glowing dot */}
+          <div className="absolute w-2.5 h-2.5 rounded-full bg-[#A3E635] animate-pulse" />
         </div>
-        <h2 className="text-xl sm:text-2xl font-black text-white mb-2 tracking-tight">
-          O‘yin yuklanmoqda...
+        <h2 className="text-base sm:text-lg font-bold text-white mb-1 tracking-tight">
+          Yuklanmoqda...
         </h2>
-        <p className="text-gray-400 text-xs sm:text-sm max-w-sm">
-          SubGame platformasidan o‘yin ma’lumotlari va subtitr holati tekshirilmoqda.
+        <p className="text-gray-400 text-xs max-w-xs">
+          O‘yin ma’lumotlari tayyorlanmoqda
         </p>
       </div>
     );
