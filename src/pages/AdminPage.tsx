@@ -327,6 +327,7 @@ export const AdminPage: React.FC = () => {
     const matchesSearch =
       g.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       g.developer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (g.publisher ? g.publisher.toLowerCase().includes(searchQuery.toLowerCase()) : false) ||
       g.slug.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'Barchasi' || g.subtitleStatus === statusFilter;
     return matchesSearch && matchesStatus;
@@ -767,6 +768,19 @@ export const AdminPage: React.FC = () => {
                       placeholder="Masalan: Santa Monica Studio"
                       value={formData.developer || ''}
                       onChange={(e) => setFormData({ ...formData, developer: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white focus:outline-none focus:border-[#A3E635]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-300 mb-1">
+                      Nashriyotchi (Publisher)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Masalan: Sony Interactive Entertainment"
+                      value={formData.publisher || ''}
+                      onChange={(e) => setFormData({ ...formData, publisher: e.target.value })}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white focus:outline-none focus:border-[#A3E635]"
                     />
                   </div>
