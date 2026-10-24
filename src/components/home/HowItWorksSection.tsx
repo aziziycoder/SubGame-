@@ -16,18 +16,18 @@ export const HowItWorksSection: React.FC = () => {
     {
       number: '02',
       icon: Download,
-      title: 'Subtitrni yuklab oling',
+      title: 'Launcher yoki faylni oling',
       description:
-        'O‘yin sahifasidan mos subtitr ZIP arxivini bepul va to‘g‘ridan-to‘g‘ri shaxsiy kompyuteringizga saqlang.',
-      linkText: 'Fayllar haqida',
-      linkUrl: '/guide#files',
+        'SubGame Launcherni yuklab oling yoki o‘yin sahifasidan tayyor lokalizatsiyani kompyuteringizga saqlang.',
+      linkText: 'Launcher haqida',
+      linkUrl: '/launcher',
     },
     {
       number: '03',
       icon: Gamepad2,
-      title: 'O‘rnating va o‘ynang',
+      title: '1 bosishda o‘ynang',
       description:
-        'Qisqa qo‘llanma asosida arxiv ichidagi fayllarni o‘yin papkasiga ko‘chiring va o‘yin ichida subtitrni yoqing.',
+        'Launcherni ishga tushiring, o‘yinni bir marta ko‘rsating va o‘zbek tilida to‘liq zavqlanib o‘ynang.',
       linkText: 'Qo‘llanmani ko‘rish',
       linkUrl: '/guide',
     },
