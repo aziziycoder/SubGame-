@@ -72,7 +72,7 @@ export const HeroSection: React.FC = () => {
               <img
                 src={slide.bgImage}
                 alt={`${slide.title} fon rasmi`}
-                className={`w-full h-full object-cover object-center filter brightness-[0.6] contrast-110 transition-transform duration-1000 ease-out ${
+                className={`w-full h-full object-cover object-center filter brightness-[0.80] sm:brightness-[0.85] contrast-105 transition-transform duration-1000 ease-out ${
                   isCurrent ? 'scale-105' : 'scale-100'
                 }`}
               />
@@ -81,9 +81,9 @@ export const HeroSection: React.FC = () => {
         })}
 
         {/* Cinematic Vignette Gradients */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D12] via-[#0B0D12]/50 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0D12]/90 via-[#0B0D12]/40 to-transparent hidden sm:block" />
-        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#0B0D12]/80 via-[#0B0D12]/30 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D12] via-[#0B0D12]/35 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0D12]/75 via-[#0B0D12]/25 to-transparent hidden sm:block" />
+        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#0B0D12]/70 via-transparent to-transparent pointer-events-none" />
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#A3E635]/10 rounded-full blur-3xl pointer-events-none" />
       </div>
 

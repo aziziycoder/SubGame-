@@ -135,17 +135,17 @@ export const GameDetailPage: React.FC = () => {
             <img
               src={heroBackdrop}
               alt={game.title}
-              className="w-full h-full object-cover object-center filter brightness-[0.55] sm:brightness-[0.65] contrast-110 scale-105"
+              className="w-full h-full object-cover object-center filter brightness-[0.80] sm:brightness-[0.85] contrast-[1.05] scale-105"
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-[#1A1F2A] via-[#12161F] to-[#0B0D12]" />
           )}
           {/* Smooth bottom blend */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D12] via-[#0B0D12]/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D12] via-[#0B0D12]/40 to-transparent" />
           {/* Left gradient for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0B0D12]/95 via-[#0B0D12]/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0B0D12]/80 via-[#0B0D12]/30 to-transparent" />
           {/* Top subtle shade behind navbar */}
-          <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#0B0D12]/80 via-[#0B0D12]/30 to-transparent pointer-events-none" />
+          <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#0B0D12]/70 via-transparent to-transparent pointer-events-none" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
