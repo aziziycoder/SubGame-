@@ -183,15 +183,6 @@ export const GameDetailPage: React.FC = () => {
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-4 overflow-x-auto whitespace-nowrap scrollbar-none">
-            <Link to="/" className="hover:text-white transition-colors">Bosh sahifa</Link>
-            <span>/</span>
-            <Link to="/games" className="hover:text-white transition-colors">O‘yinlar</Link>
-            <span>/</span>
-            <span className="text-[#A3E635] font-medium">{game.title}</span>
-          </div>
-
           {/* Hero Content: Mobile & Desktop Layout */}
           <div className="flex flex-col sm:flex-row gap-5 lg:gap-8 items-start sm:items-end">
             {/* Poster Thumbnail (Shown on both Mobile and Desktop) */}
