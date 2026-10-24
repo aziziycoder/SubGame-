@@ -6,6 +6,7 @@ import type { Game } from '../types/game';
 import { SubtitleStatusBadge } from '../components/common/Badge';
 import { Lightbox } from '../components/common/Lightbox';
 import { ReportIssueModal } from '../components/home/ReportIssueModal';
+import { ClickPaymentModal } from '../components/payment/ClickPaymentModal';
 import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -26,6 +27,7 @@ import {
   KeyRound,
   ShieldCheck,
   Laptop,
+  CreditCard,
   X
 } from 'lucide-react';
 
@@ -51,6 +53,15 @@ export const GameDetailPage: React.FC = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [copiedPath, setCopiedPath] = useState<string | null>(null);
   const [shared, setShared] = useState(false);
+  const [isClickModalOpen, setIsClickModalOpen] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'success') {
+      setClaimSuccess(true);
+      setTimeout(() => setClaimSuccess(false), 8000);
+    }
+  }, []);
 
   if (!game) {
     return (
@@ -219,14 +230,31 @@ export const GameDetailPage: React.FC = () => {
                       <span>Google orqali litsenziya olish</span>
                     </button>
                   ) : !hasLicense ? (
-                    <button
-                      onClick={handleClaimLicense}
-                      disabled={isClaiming}
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-bold text-xs sm:text-sm hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer disabled:opacity-60 whitespace-nowrap h-10 sm:h-10.5"
-                    >
-                      <KeyRound className="w-4 h-4" />
-                      <span>{isClaiming ? 'Biriktirilmoqda...' : 'Litsenziyani biriktirish'}</span>
-                    </button>
+                    (() => {
+                      const isFreeGame =
+                        !game.subtitlePrice ||
+                        game.subtitlePrice.toLowerCase().includes('bepul') ||
+                        game.subtitlePrice.toLowerCase().includes('tekin');
+
+                      return isFreeGame ? (
+                        <button
+                          onClick={handleClaimLicense}
+                          disabled={isClaiming}
+                          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-bold text-xs sm:text-sm hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer disabled:opacity-60 whitespace-nowrap h-10 sm:h-10.5"
+                        >
+                          <KeyRound className="w-4 h-4" />
+                          <span>{isClaiming ? 'Biriktirilmoqda...' : 'Litsenziyani biriktirish (Bepul)'}</span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => setIsClickModalOpen(true)}
+                          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#0089D0] hover:bg-[#0077b5] text-white font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] shadow-lg shadow-sky-500/25 cursor-pointer whitespace-nowrap h-10 sm:h-10.5"
+                        >
+                          <CreditCard className="w-4 h-4" />
+                          <span>Click orqali sotib olish ({game.subtitlePrice || game.price})</span>
+                        </button>
+                      );
+                    })()
                   ) : (
                     <Link
                       to="/launcher"
@@ -870,6 +898,20 @@ export const GameDetailPage: React.FC = () => {
             <X className="w-4 h-4" />
           </button>
         </div>
+      )}
+
+      {/* Click Payment Modal */}
+      {isClickModalOpen && user && (
+        <ClickPaymentModal
+          game={game}
+          user={user}
+          onClose={() => setIsClickModalOpen(false)}
+          onSuccess={() => {
+            setIsClickModalOpen(false);
+            setClaimSuccess(true);
+            setTimeout(() => setClaimSuccess(false), 8000);
+          }}
+        />
       )}
 
     </div>
