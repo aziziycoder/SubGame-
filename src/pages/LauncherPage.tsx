@@ -53,18 +53,11 @@ export const LauncherPage: React.FC = () => {
   ];
 
   return (
-    <div className="pt-24 pb-20 min-h-screen bg-[#0B0D12] text-[#F5F7FA]">
+    <div className="pt-28 pb-20 min-h-screen bg-[#0B0D12] text-[#F5F7FA]">
       {/* Background radial glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-96 bg-gradient-to-b from-[#A3E635]/10 via-[#38BDF8]/5 to-transparent blur-3xl pointer-events-none -z-10" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-xs text-gray-400 mb-8">
-          <Link to="/" className="hover:text-white transition-colors">Bosh sahifa</Link>
-          <span>/</span>
-          <span className="text-[#A3E635] font-semibold">SubGame Launcher</span>
-        </nav>
-
         {/* Hero Section */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#A3E635]/15 border border-[#A3E635]/40 text-[#A3E635] text-xs font-semibold mb-6 shadow-sm">
