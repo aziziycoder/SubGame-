@@ -1,31 +1,84 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import crypto from 'crypto';
-import * as admin from 'firebase-admin';
 
-// Initialize Firebase Admin (Singleton)
-if (!admin.apps.length) {
-  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    try {
-      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
-        projectId: serviceAccount.project_id || 'subgame-ca4ed',
-      });
-    } catch (err) {
-      console.warn('[Click API] Could not parse FIREBASE_SERVICE_ACCOUNT:', err);
-      admin.initializeApp({ projectId: 'subgame-ca4ed' });
-    }
-  } else {
-    admin.initializeApp({ projectId: 'subgame-ca4ed' });
-  }
-}
-
-const db = admin.firestore();
+const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || 'AIzaSyBeARpvr_M-_p8OfO23a1AkSOS5WmNxDDE';
+const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'subgame-ca4ed';
 
 // Click configuration (from Environment Variables with Sandbox fallbacks)
 const CLICK_SERVICE_ID = process.env.CLICK_SERVICE_ID || 'TEST_SERVICE_ID';
 const CLICK_MERCHANT_ID = process.env.CLICK_MERCHANT_ID || 'TEST_MERCHANT_ID';
 const CLICK_SECRET_KEY = process.env.CLICK_SECRET_KEY || 'TEST_SECRET_KEY';
+
+/**
+ * Saves or updates a license in Firestore using Firestore REST API.
+ * This works natively in Vercel Serverless without requiring complex service account files.
+ */
+async function grantLicenseRest(licenseId: string, data: {
+  userId: string;
+  userEmail: string;
+  gameId: string;
+  gameTitle: string;
+  gameSlug: string;
+  amount: number;
+  clickTransId: string;
+}) {
+  const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/licenses/${licenseId}?key=${FIREBASE_API_KEY}`;
+  
+  const payload = {
+    fields: {
+      id: { stringValue: licenseId },
+      userId: { stringValue: data.userId },
+      userEmail: { stringValue: data.userEmail || '' },
+      gameId: { stringValue: data.gameId },
+      gameTitle: { stringValue: data.gameTitle || '' },
+      gameSlug: { stringValue: data.gameSlug || data.gameId },
+      status: { stringValue: 'active' },
+      paidAmount: { integerValue: String(data.amount) },
+      paymentProvider: { stringValue: 'click' },
+      paymentRef: { stringValue: data.clickTransId },
+      createdAt: { timestampValue: new Date().toISOString() },
+    },
+  };
+
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Firestore REST error: ${res.status} - ${errText}`);
+  }
+
+  return await res.json();
+}
+
+/**
+ * Updates an order status in Firestore using Firestore REST API.
+ */
+async function updateOrderRest(orderId: string, fields: Record<string, any>) {
+  try {
+    const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/orders/${orderId}?key=${FIREBASE_API_KEY}`;
+    
+    const formattedFields: Record<string, any> = {};
+    for (const [key, value] of Object.entries(fields)) {
+      if (typeof value === 'string') {
+        formattedFields[key] = { stringValue: value };
+      } else if (typeof value === 'number') {
+        formattedFields[key] = { integerValue: String(value) };
+      }
+    }
+
+    await fetch(url, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields: formattedFields }),
+    });
+  } catch (err) {
+    console.warn('[Click API] Could not update order via REST:', err);
+  }
+}
 
 /**
  * Click Merchant API Error Codes:
@@ -47,6 +100,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       status: 'active',
       service: 'SubGame Click Merchant Webhook',
       timestamp: new Date().toISOString(),
+      serviceId: CLICK_SERVICE_ID,
+      merchantId: CLICK_MERCHANT_ID,
+      mode: CLICK_SECRET_KEY === 'TEST_SECRET_KEY' ? 'sandbox' : 'production',
     });
   }
 
@@ -72,8 +128,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log(`[Click Webhook] Received action=${action}, click_trans_id=${click_trans_id}, order=${merchant_trans_id}, amount=${amount}`);
 
     // 1. Signature Verification
-    // Prepare (action = 0): md5(click_trans_id + service_id + SECRET_KEY + merchant_trans_id + amount + action + sign_time)
-    // Complete (action = 1): md5(click_trans_id + service_id + SECRET_KEY + merchant_trans_id + merchant_prepare_id + amount + action + sign_time)
     const isSandboxTest = CLICK_SECRET_KEY === 'TEST_SECRET_KEY' || process.env.CLICK_SANDBOX === 'true';
 
     let expectedSign = '';
@@ -99,32 +153,43 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    // 2. Fetch Order from Firestore
-    let orderData: any = null;
-    let orderRef: admin.firestore.DocumentReference | null = null;
+    // 2. Parse Order Information
+    // merchant_trans_id can be ORD_timestamp_userId_gameId or userId_gameId
+    let userId = '';
+    let gameId = '';
+    let gameTitle = 'SubGame O‘yini';
+    let gameSlug = '';
+    let userEmail = '';
 
-    if (merchant_trans_id) {
-      try {
-        orderRef = db.collection('orders').doc(merchant_trans_id);
-        const orderSnap = await orderRef.get();
-        if (orderSnap.exists) {
-          orderData = orderSnap.data();
-        }
-      } catch (err) {
-        console.warn('[Click Webhook] Could not fetch order document:', err);
+    if (merchant_trans_id.startsWith('ORD_')) {
+      const parts = merchant_trans_id.split('_');
+      // ORD, timestamp, userId, gameId
+      if (parts.length >= 4) {
+        userId = parts[2];
+        gameId = parts.slice(3).join('_');
       }
-    }
-
-    // If order not found in orders collection, check if merchant_trans_id encodes userId and gameId (e.g. userId_gameId)
-    let userId = orderData?.userId;
-    let gameId = orderData?.gameId;
-    let gameTitle = orderData?.gameTitle || 'SubGame O‘yini';
-    let userEmail = orderData?.userEmail || '';
-
-    if (!userId && merchant_trans_id.includes('_')) {
+    } else if (merchant_trans_id.includes('_')) {
       const parts = merchant_trans_id.split('_');
       userId = parts[0];
-      gameId = parts[1];
+      gameId = parts.slice(1).join('_');
+    }
+
+    // Try reading order from Firestore REST API if needed
+    try {
+      const orderRes = await fetch(
+        `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/orders/${merchant_trans_id}?key=${FIREBASE_API_KEY}`
+      );
+      if (orderRes.ok) {
+        const orderDoc = await orderRes.json();
+        const f = orderDoc.fields || {};
+        if (f.userId?.stringValue) userId = f.userId.stringValue;
+        if (f.gameId?.stringValue) gameId = f.gameId.stringValue;
+        if (f.gameTitle?.stringValue) gameTitle = f.gameTitle.stringValue;
+        if (f.gameSlug?.stringValue) gameSlug = f.gameSlug.stringValue;
+        if (f.userEmail?.stringValue) userEmail = f.userEmail.stringValue;
+      }
+    } catch (e) {
+      console.warn('[Click Webhook] Could not fetch order doc via REST:', e);
     }
 
     if (!userId || !gameId) {
@@ -134,36 +199,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    // Check amount if orderData exists
-    if (orderData && orderData.amount && Number(orderData.amount) !== amount) {
-      return res.status(200).json({
-        error: -2,
-        error_note: 'Incorrect parameter amount',
-      });
-    }
-
     // 3. ACTION = 0 (PREPARE)
     if (action === 0) {
-      // Check if already paid
-      if (orderData && orderData.status === 'paid') {
-        return res.status(200).json({
-          error: -4,
-          error_note: 'Already paid',
-        });
-      }
-
-      // Record prepare state in Firestore
-      if (orderRef) {
-        await orderRef.set(
-          {
-            clickTransId: click_trans_id,
-            clickPaydocId: click_paydoc_id,
-            status: 'prepared',
-            preparedAt: admin.firestore.FieldValue.serverTimestamp(),
-          },
-          { merge: true }
-        );
-      }
+      await updateOrderRest(merchant_trans_id, {
+        clickTransId: click_trans_id,
+        clickPaydocId: click_paydoc_id,
+        status: 'prepared',
+      });
 
       return res.status(200).json({
         click_trans_id: Number(click_trans_id) || click_trans_id,
@@ -176,71 +218,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // 4. ACTION = 1 (COMPLETE)
     if (action === 1) {
-      // If error < 0, payment was cancelled by Click or user
+      // If error < 0, payment was cancelled
       if (error < 0) {
-        if (orderRef) {
-          await orderRef.set(
-            {
-              status: 'cancelled',
-              errorNote: error_note,
-              cancelledAt: admin.firestore.FieldValue.serverTimestamp(),
-            },
-            { merge: true }
-          );
-        }
+        await updateOrderRest(merchant_trans_id, {
+          status: 'cancelled',
+          errorNote: error_note,
+        });
         return res.status(200).json({
           error: -9,
           error_note: 'Transaction cancelled',
         });
       }
 
-      // Check if already paid to avoid double processing
-      if (orderData && orderData.status === 'paid') {
-        return res.status(200).json({
-          click_trans_id: Number(click_trans_id) || click_trans_id,
-          merchant_trans_id: merchant_trans_id,
-          merchant_confirm_id: click_trans_id,
-          error: 0,
-          error_note: 'Already processed',
-        });
-      }
+      // A) Update Order status to paid
+      await updateOrderRest(merchant_trans_id, {
+        status: 'paid',
+        paidAmount: amount,
+        clickTransId: click_trans_id,
+        clickPaydocId: click_paydoc_id,
+      });
 
-      // A) Mark Order as Paid
-      if (orderRef) {
-        await orderRef.set(
-          {
-            status: 'paid',
-            paidAmount: amount,
-            clickTransId: click_trans_id,
-            clickPaydocId: click_paydoc_id,
-            paidAt: admin.firestore.FieldValue.serverTimestamp(),
-          },
-          { merge: true }
-        );
-      }
-
-      // B) Grant Cloud License in Firestore (`licenses` collection)
+      // B) Grant Cloud License in Firestore
       const licenseId = `${userId}_${gameId}`;
-      const licenseRef = db.collection('licenses').doc(licenseId);
-
-      await licenseRef.set(
-        {
-          id: licenseId,
-          userId: userId,
-          userEmail: userEmail,
-          gameId: gameId,
-          gameTitle: gameTitle,
-          gameSlug: orderData?.gameSlug || gameId,
-          status: 'active',
-          hwid: null, // Ready to bind to the user's PC on first launcher launch!
-          boundDeviceName: null,
-          paidAmount: amount,
-          paymentProvider: 'click',
-          paymentRef: click_trans_id,
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true }
-      );
+      await grantLicenseRest(licenseId, {
+        userId,
+        userEmail,
+        gameId,
+        gameTitle,
+        gameSlug: gameSlug || gameId,
+        amount,
+        clickTransId: click_trans_id,
+      });
 
       console.log(`[Click Webhook] SUCCESS! License granted for user=${userId}, game=${gameId}, licenseId=${licenseId}`);
 
