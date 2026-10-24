@@ -50,9 +50,12 @@ service cloud.firestore {
       return isAuthenticated() && (
         ('email' in request.auth.token && request.auth.token.email == 'azizbekgulomovweb@gmail.com') ||
         (
-          exists(/databases/$(database)/documents/users/$(request.auth.uid)) && (
-            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', '') == 'admin' ||
-            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('isAdmin', false) == true
+          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          (
+            ('role' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+            ('isAdmin' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true)
           )
         )
       );
@@ -77,6 +80,7 @@ service cloud.firestore {
     // User profiles: Users can read/write their own profile; Admin can read and write all
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
       allow create: if isAdmin() || (
         isOwner(userId) &&
         !('role' in request.resource.data) &&
