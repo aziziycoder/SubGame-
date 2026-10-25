@@ -1,27 +1,52 @@
 <!doctype html>
 <html lang="uz" class="dark">
   <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6518SQBXWN"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-6518SQBXWN');
-    </script>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/images/logo_doppi.png" />
-    <link rel="apple-touch-icon" href="/images/logo_doppi.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SubGame — O‘zbekcha subtitrli videoo‘yinlar platformasi</title>
     <meta name="description" content="Sevimli videoo‘yinlaringizni o‘zbekcha subtitrlar bilan o‘ynang. A Plague Tale: Innocence va Requiem uchun yuqori sifatli o‘zbekcha subtitrlar." />
     <meta name="google-site-verification" content="KSqJL3crwucmBnsOvzbeLdyS-r_bwvXzuKEQSGar98g" />
     <meta name="theme-color" content="#0B0D12" />
-    <!-- Preconnect Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="icon" type="image/png" href="/images/logo_doppi.png" />
+    <link rel="apple-touch-icon" href="/images/logo_doppi.png" />
+
+    <!-- Preconnect CDNs for fast DNS & TLS handshake -->
+    <link rel="preconnect" href="https://shared.akamai.steamstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://shared.akamai.steamstatic.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Preload Critical LCP Hero Image -->
+    <link
+      rel="preload"
+      as="image"
+      href="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3242750/ss_80c54b48272b6414ebbf107542431ef23cf56940.1920x1080.jpg"
+      fetchpriority="high"
+    />
+
+    <!-- Google Fonts with display swap -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Google tag (gtag.js) - Non-blocking execution for 100% PageSpeed Core Web Vitals -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-6518SQBXWN', { 'transport_type': 'beacon' });
+
+      function loadGtag() {
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-6518SQBXWN';
+        document.head.appendChild(s);
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadGtag);
+      } else {
+        setTimeout(loadGtag, 1500);
+      }
+    </script>
   </head>
   <body class="bg-[#0B0D12] text-[#F5F7FA] font-sans antialiased selection:bg-[#A3E635] selection:text-[#0B0D12] min-h-screen">
     <div id="root"></div>

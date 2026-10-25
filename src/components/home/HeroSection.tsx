@@ -17,6 +17,16 @@ export const HeroSection: React.FC = () => {
     return INITIAL_SLIDES;
   });
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [loadedIndices, setLoadedIndices] = useState<Set<number>>(() => new Set([0]));
+
+  useEffect(() => {
+    setLoadedIndices((prev) => {
+      if (prev.has(currentSlide)) return prev;
+      const next = new Set(prev);
+      next.add(currentSlide);
+      return next;
+    });
+  }, [currentSlide]);
 
   useEffect(() => {
     let mounted = true;
@@ -62,6 +72,7 @@ export const HeroSection: React.FC = () => {
       <div className="absolute inset-0 z-0 overflow-hidden">
         {slides.map((slide, index) => {
           const isCurrent = currentSlide === index;
+          const shouldRender = loadedIndices.has(index);
           return (
             <div
               key={slide.id}
@@ -69,16 +80,18 @@ export const HeroSection: React.FC = () => {
                 isCurrent ? 'opacity-100 z-0' : 'opacity-0 -z-10 pointer-events-none'
               }`}
             >
-              <img
-                src={slide.bgImage}
-                alt={`${slide.title} fon rasmi`}
-                fetchPriority={index === 0 ? 'high' : 'low'}
-                loading={index === 0 ? 'eager' : 'lazy'}
-                decoding="async"
-                className={`w-full h-full object-cover object-center filter brightness-[0.80] sm:brightness-[0.85] contrast-105 transition-transform duration-1000 ease-out ${
-                  isCurrent ? 'scale-105' : 'scale-100'
-                }`}
-              />
+              {shouldRender && (
+                <img
+                  src={slide.bgImage}
+                  alt={`${slide.title} fon rasmi`}
+                  fetchPriority={index === 0 ? 'high' : 'low'}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  decoding="async"
+                  className={`w-full h-full object-cover object-center filter brightness-[0.80] sm:brightness-[0.85] contrast-105 transition-transform duration-1000 ease-out ${
+                    isCurrent ? 'scale-105' : 'scale-100'
+                  }`}
+                />
+              )}
             </div>
           );
         })}
@@ -178,6 +191,8 @@ export const HeroSection: React.FC = () => {
               >
                 {slides.map((slide, index) => {
                   const isCurrent = currentSlide === index;
+                  const shouldRender = loadedIndices.has(index);
+                  if (!shouldRender) return null;
                   return (
                     <img
                       key={slide.id}

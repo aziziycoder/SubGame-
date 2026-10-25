@@ -7,8 +7,9 @@ import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { AdminRoute } from './components/auth/AdminRoute';
 
-// Route-level Code Splitting for optimal performance
-const HomePage = lazy(() => import('./pages/HomePage').then((m) => ({ default: m.HomePage })));
+import { HomePage } from './pages/HomePage';
+
+// Route-level Code Splitting for non-landing pages to optimize initial bundle
 const CatalogPage = lazy(() => import('./pages/CatalogPage').then((m) => ({ default: m.CatalogPage })));
 const GameDetailPage = lazy(() => import('./pages/GameDetailPage').then((m) => ({ default: m.GameDetailPage })));
 const AboutPage = lazy(() => import('./pages/AboutPage').then((m) => ({ default: m.AboutPage })));
