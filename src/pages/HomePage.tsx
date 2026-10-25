@@ -5,8 +5,8 @@ import { WhyUsSection } from '../components/home/WhyUsSection';
 import { HowItWorksSection } from '../components/home/HowItWorksSection';
 import { CommunitySection } from '../components/home/CommunitySection';
 import { FaqSection } from '../components/home/FaqSection';
-import { SuggestGameModal } from '../components/home/SuggestGameModal';
-import { ReportIssueModal } from '../components/home/ReportIssueModal';
+const SuggestGameModal = React.lazy(() => import('../components/home/SuggestGameModal').then((m) => ({ default: m.SuggestGameModal })));
+const ReportIssueModal = React.lazy(() => import('../components/home/ReportIssueModal').then((m) => ({ default: m.ReportIssueModal })));
 
 export const HomePage: React.FC = () => {
   const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
@@ -33,15 +33,21 @@ export const HomePage: React.FC = () => {
       <CommunitySection onOpenSuggestModal={() => setIsSuggestModalOpen(true)} />
 
       {/* Modals */}
-      <SuggestGameModal
-        isOpen={isSuggestModalOpen}
-        onClose={() => setIsSuggestModalOpen(false)}
-      />
+      <React.Suspense fallback={null}>
+        {isSuggestModalOpen && (
+          <SuggestGameModal
+            isOpen={isSuggestModalOpen}
+            onClose={() => setIsSuggestModalOpen(false)}
+          />
+        )}
 
-      <ReportIssueModal
-        isOpen={isReportModalOpen}
-        onClose={() => setIsReportModalOpen(false)}
-      />
+        {isReportModalOpen && (
+          <ReportIssueModal
+            isOpen={isReportModalOpen}
+            onClose={() => setIsReportModalOpen(false)}
+          />
+        )}
+      </React.Suspense>
     </div>
   );
 };

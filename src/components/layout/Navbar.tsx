@@ -15,7 +15,8 @@ import {
   Monitor,
   Shield
 } from 'lucide-react';
-import { SuggestGameModal } from '../home/SuggestGameModal';
+// Lazy-load modal to avoid bundling with Navbar
+const SuggestGameModal = React.lazy(() => import('../home/SuggestGameModal').then((m) => ({ default: m.SuggestGameModal })));
 import { UserMenu } from './UserMenu';
 
 export const Navbar: React.FC = () => {
@@ -263,10 +264,14 @@ export const Navbar: React.FC = () => {
       </header>
 
       {/* Suggest Modal */}
-      <SuggestGameModal
-        isOpen={isSuggestModalOpen}
-        onClose={() => setIsSuggestModalOpen(false)}
-      />
+      {isSuggestModalOpen && (
+        <React.Suspense fallback={null}>
+          <SuggestGameModal
+            isOpen={isSuggestModalOpen}
+            onClose={() => setIsSuggestModalOpen(false)}
+          />
+        </React.Suspense>
+      )}
     </>
   );
 };

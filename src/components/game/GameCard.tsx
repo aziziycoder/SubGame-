@@ -57,6 +57,7 @@ export const GameCard: React.FC<GameCardProps> = ({ game, priority = false }) =>
           src={game.cardImage || game.cover}
           alt={game.title}
           loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
           className="w-full h-full object-contain transition-transform duration-500 ease-out group-hover:scale-105"
         />
       </Link>

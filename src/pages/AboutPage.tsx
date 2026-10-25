@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SITE_CONFIG } from '../config/site';
-import { SuggestGameModal } from '../components/home/SuggestGameModal';
+const SuggestGameModal = React.lazy(() => import('../components/home/SuggestGameModal').then((m) => ({ default: m.SuggestGameModal })));
 import {
   Sparkles,
   ShieldCheck,
@@ -145,10 +145,14 @@ export const AboutPage: React.FC = () => {
         </div>
       </div>
 
-      <SuggestGameModal
-        isOpen={isSuggestModalOpen}
-        onClose={() => setIsSuggestModalOpen(false)}
-      />
+      {isSuggestModalOpen && (
+        <React.Suspense fallback={null}>
+          <SuggestGameModal
+            isOpen={isSuggestModalOpen}
+            onClose={() => setIsSuggestModalOpen(false)}
+          />
+        </React.Suspense>
+      )}
     </div>
   );
 };

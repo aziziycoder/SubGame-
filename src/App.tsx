@@ -1,22 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { FavoritesProvider } from './context/FavoritesContext';
 import { ScrollToTop } from './components/common/ScrollToTop';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
-import { HomePage } from './pages/HomePage';
-import { CatalogPage } from './pages/CatalogPage';
-import { GameDetailPage } from './pages/GameDetailPage';
-import { AboutPage } from './pages/AboutPage';
-import { FavoritesPage } from './pages/FavoritesPage';
-import { LauncherPage } from './pages/LauncherPage';
-import { ConnectLauncherPage } from './pages/ConnectLauncherPage';
-import { AdminPage } from './pages/AdminPage';
 import { AdminRoute } from './components/auth/AdminRoute';
-import { NotFoundPage } from './pages/NotFoundPage';
-import { SuggestGameModal } from './components/home/SuggestGameModal';
-import { ReportIssueModal } from './components/home/ReportIssueModal';
+
+// Route-level Code Splitting for optimal performance
+const HomePage = lazy(() => import('./pages/HomePage').then((m) => ({ default: m.HomePage })));
+const CatalogPage = lazy(() => import('./pages/CatalogPage').then((m) => ({ default: m.CatalogPage })));
+const GameDetailPage = lazy(() => import('./pages/GameDetailPage').then((m) => ({ default: m.GameDetailPage })));
+const AboutPage = lazy(() => import('./pages/AboutPage').then((m) => ({ default: m.AboutPage })));
+const FavoritesPage = lazy(() => import('./pages/FavoritesPage').then((m) => ({ default: m.FavoritesPage })));
+const LauncherPage = lazy(() => import('./pages/LauncherPage').then((m) => ({ default: m.LauncherPage })));
+const ConnectLauncherPage = lazy(() => import('./pages/ConnectLauncherPage').then((m) => ({ default: m.ConnectLauncherPage })));
+const AdminPage = lazy(() => import('./pages/AdminPage').then((m) => ({ default: m.AdminPage })));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })));
+
+// Lazy-load heavy user modals only when triggered
+const SuggestGameModal = lazy(() => import('./components/home/SuggestGameModal').then((m) => ({ default: m.SuggestGameModal })));
+const ReportIssueModal = lazy(() => import('./components/home/ReportIssueModal').then((m) => ({ default: m.ReportIssueModal })));
+
+const PageLoader: React.FC = () => (
+  <div className="min-h-[60vh] flex items-center justify-center">
+    <div className="w-8 h-8 rounded-full border-2 border-[#2A3245] border-t-[#A3E635] animate-spin" />
+  </div>
+);
 
 const AppContent: React.FC = () => {
   const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
@@ -32,25 +42,27 @@ const AppContent: React.FC = () => {
 
       {/* Main Route Content */}
       <main className="flex-1">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/games" element={<CatalogPage />} />
-          <Route path="/games/:slug" element={<GameDetailPage />} />
-          <Route path="/launcher" element={<LauncherPage />} />
-          <Route path="/guide" element={<Navigate to="/launcher" replace />} />
-          <Route path="/connect" element={<ConnectLauncherPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/favorites" element={<FavoritesPage />} />
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <AdminPage />
-              </AdminRoute>
-            }
-          />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/games" element={<CatalogPage />} />
+            <Route path="/games/:slug" element={<GameDetailPage />} />
+            <Route path="/launcher" element={<LauncherPage />} />
+            <Route path="/guide" element={<Navigate to="/launcher" replace />} />
+            <Route path="/connect" element={<ConnectLauncherPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/favorites" element={<FavoritesPage />} />
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminPage />
+                </AdminRoute>
+              }
+            />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
       </main>
 
       {/* Public Footer: Hidden on Admin Panel */}
@@ -61,19 +73,23 @@ const AppContent: React.FC = () => {
         />
       )}
 
-      {/* Public Global Modals: Hidden on Admin Panel */}
+      {/* Public Global Modals (Lazy Loaded) */}
       {!isAdminRoute && (
-        <>
-          <SuggestGameModal
-            isOpen={isSuggestModalOpen}
-            onClose={() => setIsSuggestModalOpen(false)}
-          />
+        <Suspense fallback={null}>
+          {isSuggestModalOpen && (
+            <SuggestGameModal
+              isOpen={isSuggestModalOpen}
+              onClose={() => setIsSuggestModalOpen(false)}
+            />
+          )}
 
-          <ReportIssueModal
-            isOpen={isReportModalOpen}
-            onClose={() => setIsReportModalOpen(false)}
-          />
-        </>
+          {isReportModalOpen && (
+            <ReportIssueModal
+              isOpen={isReportModalOpen}
+              onClose={() => setIsReportModalOpen(false)}
+            />
+          )}
+        </Suspense>
       )}
     </div>
   );

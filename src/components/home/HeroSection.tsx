@@ -72,6 +72,9 @@ export const HeroSection: React.FC = () => {
               <img
                 src={slide.bgImage}
                 alt={`${slide.title} fon rasmi`}
+                fetchPriority={index === 0 ? 'high' : 'low'}
+                loading={index === 0 ? 'eager' : 'lazy'}
+                decoding="async"
                 className={`w-full h-full object-cover object-center filter brightness-[0.80] sm:brightness-[0.85] contrast-105 transition-transform duration-1000 ease-out ${
                   isCurrent ? 'scale-105' : 'scale-100'
                 }`}
@@ -180,6 +183,9 @@ export const HeroSection: React.FC = () => {
                       key={slide.id}
                       src={slide.cardImage}
                       alt={`${slide.title} Banner`}
+                      fetchPriority={index === 0 ? 'high' : 'low'}
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
                       className={`absolute inset-0 w-full h-full object-contain transition-all duration-700 ${
                         isCurrent ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
                       }`}
