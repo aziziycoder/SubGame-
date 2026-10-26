@@ -6,6 +6,7 @@ import { SubtitleStatusBadge } from '../components/common/Badge';
 import { Lightbox } from '../components/common/Lightbox';
 import { ReportIssueModal } from '../components/home/ReportIssueModal';
 import { ClickPaymentModal } from '../components/payment/ClickPaymentModal';
+import { ClickLogo } from '../components/common/BrandLogos';
 import { getGamePriceInfo } from '../services/paymentService';
 import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
@@ -27,7 +28,6 @@ import {
   KeyRound,
   ShieldCheck,
   Laptop,
-  CreditCard,
   Tag,
   X
 } from 'lucide-react';
@@ -325,9 +325,9 @@ export const GameDetailPage: React.FC = () => {
                       priceInfo.isPaid ? (
                         <button
                           onClick={() => setIsClickModalOpen(true)}
-                          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-xl bg-[#0089D0] hover:bg-[#0077b5] text-white font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] shadow-lg shadow-sky-500/25 cursor-pointer whitespace-nowrap h-11 sm:h-10.5"
+                          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-xl bg-[#0065FF] hover:bg-[#0052cc] text-white font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] shadow-lg shadow-blue-500/25 cursor-pointer whitespace-nowrap h-11 sm:h-10.5"
                         >
-                          <CreditCard className="w-4 h-4" />
+                          <ClickLogo variant="icon" className="w-4 h-4 text-white shrink-0" />
                           <span>Click orqali sotib olish ({priceInfo.text})</span>
                         </button>
                       ) : (
@@ -841,9 +841,9 @@ export const GameDetailPage: React.FC = () => {
                     priceInfo.isPaid ? (
                       <button
                         onClick={() => setIsClickModalOpen(true)}
-                        className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#0089D0] hover:bg-[#0077b5] text-white font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] shadow-lg shadow-sky-500/25 cursor-pointer"
+                        className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#0065FF] hover:bg-[#0052cc] text-white font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] shadow-lg shadow-blue-500/25 cursor-pointer"
                       >
-                        <CreditCard className="w-4 h-4" />
+                        <ClickLogo variant="icon" className="w-4 h-4 text-white shrink-0" />
                         <span>Click orqali sotib olish ({priceInfo.text})</span>
                       </button>
                     ) : (

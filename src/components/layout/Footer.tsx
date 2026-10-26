@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { SITE_CONFIG } from '../../config/site';
-import { Send, ArrowUp, Shield, Sparkles, MessageSquare } from 'lucide-react';
+import { ArrowUp, Shield, Sparkles, MessageSquare } from 'lucide-react';
+import { TelegramLogo } from '../common/BrandLogos';
 
 interface FooterProps {
   onOpenSuggestModal?: () => void;
@@ -42,7 +43,7 @@ export const Footer: React.FC<FooterProps> = ({
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-500/15 text-sky-400 border border-sky-500/30 hover:bg-sky-500/25 transition-all text-xs font-semibold"
               >
-                <Send className="w-4 h-4" />
+                <TelegramLogo className="w-4 h-4 shrink-0" />
                 <span>Telegram kanalimiz</span>
               </a>
             </div>
@@ -146,9 +147,10 @@ export const Footer: React.FC<FooterProps> = ({
                   href={SITE_CONFIG.telegramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-sky-400 transition-colors"
+                  className="hover:text-sky-400 transition-colors flex items-center gap-1.5"
                 >
-                  Telegram guruh / Chat
+                  <TelegramLogo className="w-3.5 h-3.5 shrink-0" />
+                  <span>Telegram guruh / Chat</span>
                 </a>
               </li>
               <li>

@@ -11,9 +11,9 @@ import {
   FolderCheck,
   Gamepad2,
   ArrowRight,
-  Send,
   LifeBuoy
 } from 'lucide-react';
+import { TelegramLogo } from '../components/common/BrandLogos';
 import { FaqSection } from '../components/home/FaqSection';
 
 export const LauncherPage: React.FC = () => {
@@ -232,9 +232,9 @@ export const LauncherPage: React.FC = () => {
               href="https://t.me/subgame_uz"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-sm hover:bg-[#84CC16] transition-all hover:scale-105 shadow-md shadow-[#A3E635]/20"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#229ED9] text-white font-extrabold text-sm hover:bg-[#1D93D2] transition-all hover:scale-105 shadow-md shadow-sky-500/20"
             >
-              <Send className="w-4 h-4" />
+              <TelegramLogo className="w-4 h-4 shrink-0" />
               <span>Telegramda yordam olish</span>
             </a>
             <Link

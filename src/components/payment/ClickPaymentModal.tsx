@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, ShieldCheck, Loader2, Sparkles, ExternalLink } from 'lucide-react';
 import type { Game } from '../../types/game';
 import { createClickOrder, simulateSandboxPayment } from '../../services/paymentService';
+import { ClickLogo } from '../common/BrandLogos';
 
 interface ClickPaymentModalProps {
   game: Game;
@@ -112,10 +113,10 @@ export const ClickPaymentModal: React.FC<ClickPaymentModalProps> = ({
           </div>
 
           {/* Click Payment Provider Info */}
-          <div className="p-3.5 rounded-2xl bg-sky-500/10 border border-sky-500/25 flex items-center justify-between">
+          <div className="p-3.5 rounded-2xl bg-[#0065FF]/10 border border-[#0065FF]/25 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#0089D0] flex items-center justify-center font-black text-white text-base shadow-md">
-                CLICK
+              <div className="h-10 px-2.5 rounded-xl bg-[#0065FF] flex items-center justify-center shadow-md">
+                <ClickLogo variant="full" className="h-4.5 w-auto text-white" />
               </div>
               <div>
                 <span className="text-xs font-bold text-white block">Click Up / Click Merchant</span>
@@ -138,7 +139,7 @@ export const ClickPaymentModal: React.FC<ClickPaymentModalProps> = ({
             <button
               onClick={handleProceedClick}
               disabled={loading || simulating}
-              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-[#0089D0] hover:bg-[#0077b5] text-white font-extrabold text-sm shadow-lg shadow-sky-500/25 transition-all hover:scale-[1.02] cursor-pointer disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-[#0065FF] hover:bg-[#0052cc] text-white font-extrabold text-sm shadow-lg shadow-blue-500/25 transition-all hover:scale-[1.02] cursor-pointer disabled:opacity-50"
             >
               {loading ? (
                 <>
@@ -147,8 +148,9 @@ export const ClickPaymentModal: React.FC<ClickPaymentModalProps> = ({
                 </>
               ) : (
                 <>
+                  <ClickLogo variant="icon" className="w-4 h-4 text-white" />
                   <span>Click orqali to‘lash ({displayPrice})</span>
-                  <ExternalLink className="w-4 h-4" />
+                  <ExternalLink className="w-4 h-4 opacity-75" />
                 </>
               )}
             </button>

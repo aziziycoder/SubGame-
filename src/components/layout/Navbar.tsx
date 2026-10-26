@@ -5,7 +5,6 @@ import { useFavorites } from '../../context/FavoritesContext';
 import { useAuth } from '../../context/AuthContext';
 import {
   Heart,
-  Send,
   Menu,
   X,
   Sparkles,
@@ -15,6 +14,7 @@ import {
   Monitor,
   Shield
 } from 'lucide-react';
+import { TelegramLogo } from '../common/BrandLogos';
 // Lazy-load modal to avoid bundling with Navbar
 const SuggestGameModal = React.lazy(() => import('../home/SuggestGameModal').then((m) => ({ default: m.SuggestGameModal })));
 import { UserMenu } from './UserMenu';
@@ -170,7 +170,7 @@ export const Navbar: React.FC = () => {
                 title="Telegram kanalimiz"
                 className="hidden sm:inline-flex items-center justify-center p-2 rounded-xl bg-sky-500/15 text-sky-400 border border-sky-500/30 hover:bg-sky-500/25 transition-all text-xs font-semibold cursor-pointer shadow-sm hover:shadow-sky-500/20"
               >
-                <Send className="w-4 h-4" />
+                <TelegramLogo className="w-4 h-4" />
               </a>
 
               {/* Mobile menu toggle */}
@@ -242,7 +242,7 @@ export const Navbar: React.FC = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3.5 px-4 py-3 rounded-xl text-base font-semibold text-sky-400 bg-sky-500/10 border border-sky-500/25"
               >
-                <Send className="w-5 h-5" />
+                <TelegramLogo className="w-5 h-5 shrink-0" />
                 <span>Telegram kanalimiz</span>
               </a>
             </nav>

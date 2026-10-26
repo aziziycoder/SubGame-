@@ -4,10 +4,10 @@ const SuggestGameModal = React.lazy(() => import('../components/home/SuggestGame
 import {
   Sparkles,
   ShieldCheck,
-  Send,
   Workflow,
   Globe2
 } from 'lucide-react';
+import { TelegramLogo } from '../components/common/BrandLogos';
 
 export const AboutPage: React.FC = () => {
   const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
@@ -129,9 +129,9 @@ export const AboutPage: React.FC = () => {
               href={SITE_CONFIG.telegramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-sm transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#229ED9] hover:bg-[#1D93D2] text-white font-bold text-sm transition-all"
             >
-              <Send className="w-4 h-4" />
+              <TelegramLogo className="w-4 h-4 shrink-0" />
               <span>Telegram guruhimizga o‘tish</span>
             </a>
             <button

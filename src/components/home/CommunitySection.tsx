@@ -1,6 +1,7 @@
 import React from 'react';
 import { SITE_CONFIG } from '../../config/site';
-import { Send, Users, Sparkles } from 'lucide-react';
+import { Users, Sparkles } from 'lucide-react';
+import { TelegramLogo } from '../common/BrandLogos';
 
 interface CommunitySectionProps {
   onOpenSuggestModal: () => void;
@@ -34,9 +35,9 @@ export const CommunitySection: React.FC<CommunitySectionProps> = ({ onOpenSugges
                 href={SITE_CONFIG.telegramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-sm sm:text-base transition-all hover:scale-[1.02] shadow-lg shadow-sky-500/20"
+                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#229ED9] hover:bg-[#1D93D2] text-white font-bold text-sm sm:text-base transition-all hover:scale-[1.02] shadow-lg shadow-sky-500/20"
               >
-                <Send className="w-5 h-5" />
+                <TelegramLogo className="w-5 h-5 shrink-0" />
                 <span>Telegram kanaliga o‘tish</span>
               </a>
 
