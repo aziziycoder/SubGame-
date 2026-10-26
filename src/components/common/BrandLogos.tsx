@@ -96,3 +96,32 @@ export const ClickLogo: React.FC<LogoProps & { variant?: 'full' | 'icon' | 'badg
     </svg>
   );
 };
+
+/**
+ * Click App icon badge (Squircle with official emblem)
+ */
+export const ClickBadge: React.FC<{ className?: string; size?: 'sm' | 'md' | 'lg' }> = ({
+  className = '',
+  size = 'md',
+}) => {
+  const sizeClasses = {
+    sm: 'w-8 h-8 rounded-lg',
+    md: 'w-10 h-10 rounded-xl',
+    lg: 'w-11 h-11 rounded-2xl',
+  }[size];
+
+  const iconSizes = {
+    sm: 'w-4 h-4',
+    md: 'w-5 h-5',
+    lg: 'w-6 h-6',
+  }[size];
+
+  return (
+    <div
+      className={`bg-[#0065FF] flex items-center justify-center shrink-0 shadow-md shadow-blue-500/25 ${sizeClasses} ${className}`}
+    >
+      <ClickLogo variant="icon" className={`${iconSizes} text-white`} />
+    </div>
+  );
+};
+
