@@ -7,6 +7,7 @@ import {
 } from 'firebase/auth';
 import {
   doc,
+  getDoc,
   setDoc,
   serverTimestamp,
   collection,
@@ -60,19 +61,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const userRef = doc(db, 'users', currentUser.uid);
         const isMaster = Boolean(currentUser.email && ADMIN_EMAILS.some((e) => e.toLowerCase() === currentUser.email?.toLowerCase()));
 
-        // Sync user to firestore
+        // Sync user to firestore safely without overwriting assigned roles
         try {
-          const syncData: any = {
-            uid: currentUser.uid,
-            email: currentUser.email,
-            displayName: currentUser.displayName,
-            photoURL: currentUser.photoURL,
-            lastLoginAt: serverTimestamp(),
-            role: isMaster ? 'admin' : 'user',
-            isAdmin: isMaster,
-          };
+          const userSnap = await getDoc(userRef);
+          if (!userSnap.exists()) {
+            // First time registration: create default user profile
+            await setDoc(userRef, {
+              uid: currentUser.uid,
+              email: currentUser.email,
+              displayName: currentUser.displayName,
+              photoURL: currentUser.photoURL,
+              createdAt: serverTimestamp(),
+              lastLoginAt: serverTimestamp(),
+              role: isMaster ? 'admin' : 'user',
+              isAdmin: isMaster,
+            });
+          } else {
+            // Existing user: only update login timestamp and profile details.
+            // DO NOT overwrite role or isAdmin if already assigned in Firestore!
+            const existingData = userSnap.data();
+            const updatePayload: Record<string, any> = {
+              uid: currentUser.uid,
+              email: currentUser.email,
+              displayName: currentUser.displayName || existingData.displayName,
+              photoURL: currentUser.photoURL || existingData.photoURL,
+              lastLoginAt: serverTimestamp(),
+            };
 
-          await setDoc(userRef, syncData, { merge: true });
+            if (isMaster) {
+              updatePayload.role = 'admin';
+              updatePayload.isAdmin = true;
+            }
+
+            await setDoc(userRef, updatePayload, { merge: true });
+          }
         } catch (err) {
           console.warn('Failed to sync user to Firestore:', err);
         }
@@ -81,13 +103,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         unsubscribeUserDoc = onSnapshot(userRef, (docSnap) => {
           if (docSnap.exists()) {
             const data = docSnap.data();
+            const isUserAdmin = Boolean(isMaster || data.isAdmin === true || data.role === 'admin');
             setUserProfile({
               uid: docSnap.id,
               email: data.email || currentUser.email,
               displayName: data.displayName || currentUser.displayName,
               photoURL: data.photoURL || currentUser.photoURL,
-              role: isMaster ? 'admin' : (data.role || 'user'),
-              isAdmin: Boolean(isMaster || (data.isAdmin && data.role === 'admin')),
+              role: isUserAdmin ? 'admin' : 'user',
+              isAdmin: isUserAdmin,
               createdAt: data.createdAt,
               lastLoginAt: data.lastLoginAt,
             });
