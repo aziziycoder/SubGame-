@@ -992,7 +992,7 @@ export const AdminPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-gray-300 mb-1 flex items-center gap-1.5">
-                      <SteamLogo className="w-4 h-4 text-sky-400 shrink-0" />
+                      <SteamLogo className="w-4 h-4 shrink-0" />
                       <span>Steam rasmiy sahifasi URL</span>
                     </label>
                     <input
@@ -1009,7 +1009,7 @@ export const AdminPage: React.FC = () => {
 
                   <div>
                     <label className="block text-xs font-semibold text-gray-300 mb-1 flex items-center gap-1.5">
-                      <EpicGamesLogo className="w-4 h-4 text-gray-200 shrink-0" />
+                      <EpicGamesLogo className="w-4 h-4 shrink-0" />
                       <span>Epic Games Store URL</span>
                     </label>
                     <input

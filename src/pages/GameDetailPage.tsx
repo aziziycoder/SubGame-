@@ -364,9 +364,9 @@ export const GameDetailPage: React.FC = () => {
                   {game.gameplayVideoUrl && (
                     <a
                       href="#gameplay-video"
-                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1A202C] text-gray-200 hover:text-white border border-[#2A3245] hover:border-red-500/50 font-semibold text-xs sm:text-sm transition-all whitespace-nowrap h-11 sm:h-10.5"
+                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1A202C] text-gray-200 hover:text-white border border-[#2A3245] hover:border-red-500/50 font-semibold text-xs sm:text-sm transition-all whitespace-nowrap h-11"
                     >
-                      <Play className="w-3.5 h-3.5 fill-red-400 text-red-400" />
+                      <Play className="w-3.5 h-3.5 fill-red-400 text-red-400 shrink-0" />
                       <span>Geympley</span>
                     </a>
                   )}
@@ -376,13 +376,13 @@ export const GameDetailPage: React.FC = () => {
                     onClick={() => toggleFavorite(game.id)}
                     aria-label="Sevimlilar"
                     title="Sevimlilarga qo'shish"
-                    className={`flex-1 sm:flex-initial h-11 sm:h-10.5 px-3 sm:px-0 sm:w-10.5 flex items-center justify-center gap-1.5 rounded-xl border transition-all cursor-pointer ${
+                    className={`flex-1 sm:flex-initial h-11 sm:w-11 px-3 sm:px-0 flex items-center justify-center gap-1.5 rounded-xl border transition-all cursor-pointer shrink-0 ${
                       favorited
                         ? 'bg-rose-500/20 text-rose-500 border-rose-500/40'
                         : 'bg-[#141821] text-gray-300 hover:text-white border-[#2A3245] hover:border-gray-500 hover:bg-[#1A202C]'
                     }`}
                   >
-                    <Heart className={`w-4 h-4 ${favorited ? 'fill-rose-500' : ''}`} />
+                    <Heart className={`w-4 h-4 shrink-0 ${favorited ? 'fill-rose-500' : ''}`} />
                     <span className="text-xs sm:hidden">Sevimli</span>
                   </button>
 
@@ -390,9 +390,9 @@ export const GameDetailPage: React.FC = () => {
                     onClick={handleShare}
                     aria-label="Ulashish"
                     title="Ulashish"
-                    className="flex-1 sm:flex-initial h-11 sm:h-10.5 px-3 sm:px-0 sm:w-10.5 flex items-center justify-center gap-1.5 rounded-xl bg-[#141821] border border-[#2A3245] text-gray-300 hover:text-white hover:border-gray-500 hover:bg-[#1A202C] transition-colors cursor-pointer"
+                    className="flex-1 sm:flex-initial h-11 sm:w-11 px-3 sm:px-0 flex items-center justify-center gap-1.5 rounded-xl bg-[#141821] border border-[#2A3245] text-gray-300 hover:text-white hover:border-gray-500 hover:bg-[#1A202C] transition-colors cursor-pointer shrink-0"
                   >
-                    {shared ? <Check className="w-4 h-4 text-[#A3E635]" /> : <Share2 className="w-4 h-4" />}
+                    {shared ? <Check className="w-4 h-4 text-[#A3E635] shrink-0" /> : <Share2 className="w-4 h-4 shrink-0" />}
                     <span className="text-xs sm:hidden">Ulashish</span>
                   </button>
                 </div>
@@ -976,8 +976,8 @@ export const GameDetailPage: React.FC = () => {
                         className="flex items-center justify-between p-3.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] hover:border-[#A3E635]/60 hover:bg-[#141821] text-gray-200 hover:text-white transition-all text-xs sm:text-sm group"
                       >
                         <div className="flex items-center gap-2.5 font-bold">
-                          {isSteam && <SteamLogo className="w-4 h-4 text-sky-400 shrink-0" />}
-                          {isEpic && <EpicGamesLogo className="w-4 h-4 text-gray-200 shrink-0" />}
+                          {isSteam && <SteamLogo className="w-5 h-5 shrink-0" />}
+                          {isEpic && <EpicGamesLogo className="w-5 h-5 shrink-0" />}
                           {!isSteam && !isEpic && <ExternalLink className="w-4 h-4 text-[#A3E635] shrink-0" />}
                           <span>{store.name} rasmiy sahifasi</span>
                         </div>
