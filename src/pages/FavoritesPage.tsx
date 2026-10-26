@@ -1,14 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useFavorites } from '../context/FavoritesContext';
-import { GAMES_DATA } from '../data/games';
+import { getGames } from '../services/gamesService';
+import type { Game } from '../types/game';
 import { GameCard } from '../components/game/GameCard';
 import { Heart, ArrowLeft, Layers } from 'lucide-react';
 
 export const FavoritesPage: React.FC = () => {
   const { favoriteIds } = useFavorites();
+  const [games, setGames] = useState<Game[]>([]);
 
-  const favoriteGames = GAMES_DATA.filter((game) =>
+  useEffect(() => {
+    getGames().then(setGames);
+  }, []);
+
+  const favoriteGames = games.filter((game) =>
     favoriteIds.includes(game.id)
   );
 

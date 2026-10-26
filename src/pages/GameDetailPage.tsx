@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { GAMES_DATA } from '../data/games';
 import { getGameBySlug } from '../services/gamesService';
 import type { Game } from '../types/game';
 import { SubtitleStatusBadge } from '../components/common/Badge';
@@ -33,16 +32,13 @@ import {
 
 export const GameDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const initialGame = GAMES_DATA.find((g) => g.slug === slug);
-  const [game, setGame] = useState<Game | undefined>(initialGame);
-  const [loading, setLoading] = useState<boolean>(!initialGame);
+  const [game, setGame] = useState<Game | undefined>(undefined);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     let isMounted = true;
     if (slug) {
-      if (!initialGame) {
-        setLoading(true);
-      }
+      setLoading(true);
       getGameBySlug(slug)
         .then((res) => {
           if (isMounted) {

@@ -1,23 +1,30 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { GAMES_DATA, GENRES, SUBTITLE_STATUSES } from '../data/games';
+import { GENRES, SUBTITLE_STATUSES } from '../data/games';
 import { getGames } from '../services/gamesService';
 import type { Game } from '../types/game';
 import { GameCard } from '../components/game/GameCard';
-import { Search, Filter, RotateCcw, Layers } from 'lucide-react';
+import { Search, Filter, RotateCcw, Layers, Loader2 } from 'lucide-react';
 
 export const CatalogPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearch = searchParams.get('q') || '';
 
-  const [games, setGames] = useState<Game[]>(GAMES_DATA);
+  const [games, setGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [selectedGenre, setSelectedGenre] = useState<string>('Barchasi');
   const [selectedStatus, setSelectedStatus] = useState<string>('Barchasi');
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'title'>('newest');
 
   useEffect(() => {
-    getGames().then(setGames);
+    getGames()
+      .then((data) => {
+        setGames(data);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   // Keep query params synced if passed in URL
@@ -186,7 +193,12 @@ export const CatalogPage: React.FC = () => {
         </div>
 
         {/* Games Grid or Empty State */}
-        {filteredGames.length > 0 ? (
+        {loading ? (
+          <div className="py-24 text-center flex flex-col items-center justify-center gap-3">
+            <Loader2 className="w-8 h-8 text-[#A3E635] animate-spin" />
+            <p className="text-sm text-gray-400">O‘yinlar yuklanmoqda...</p>
+          </div>
+        ) : filteredGames.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredGames.map((game) => (
               <GameCard key={game.id} game={game} />

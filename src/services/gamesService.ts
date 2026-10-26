@@ -6,12 +6,13 @@ import {
   setDoc,
   deleteDoc,
   query,
+  where,
   orderBy,
   serverTimestamp
 } from 'firebase/firestore';
 import { db } from './firebase';
 import type { Game } from '../types/game';
-import { GAMES_DATA } from '../data/games';
+import { INITIAL_GAMES_SEED } from '../data/initialGamesSeed';
 
 const GAMES_COLLECTION = 'games';
 
@@ -33,8 +34,8 @@ function cleanGameData(data: Record<string, any>): Record<string, any> {
 }
 
 /**
- * Fetch all games from Firestore.
- * If Firestore is empty or inaccessible, falls back to local GAMES_DATA.
+ * Fetch all games purely from Firestore collection 'games'.
+ * No static code fallback; 100% dynamic from the database.
  */
 export async function getGames(): Promise<Game[]> {
   try {
@@ -42,53 +43,55 @@ export async function getGames(): Promise<Game[]> {
     const q = query(gamesRef, orderBy('releaseYear', 'desc'));
     const snapshot = await getDocs(q);
 
-    const firestoreGamesMap = new Map<string, Game>();
-    const seenSlugs = new Set<string>();
-
+    const firestoreGames: Game[] = [];
     if (!snapshot.empty) {
       snapshot.forEach((docSnap) => {
         const data = docSnap.data() as Game;
-        const id = docSnap.id;
-        firestoreGamesMap.set(id, {
+        firestoreGames.push({
           ...data,
-          id
+          id: docSnap.id
         });
-        if (data.slug) seenSlugs.add(data.slug);
-        seenSlugs.add(id);
       });
     }
 
-    // Merge: Include all Firestore games, plus any local GAMES_DATA not yet in Firestore
-    const combinedGames: Game[] = Array.from(firestoreGamesMap.values());
-
-    for (const localGame of GAMES_DATA) {
-      if (!firestoreGamesMap.has(localGame.id) && !seenSlugs.has(localGame.slug) && !seenSlugs.has(localGame.id)) {
-        combinedGames.push(localGame);
-        seenSlugs.add(localGame.id);
-        if (localGame.slug) seenSlugs.add(localGame.slug);
-      }
-    }
-
-    // Sort by releaseYear desc
-    combinedGames.sort((a, b) => (b.releaseYear || 0) - (a.releaseYear || 0));
-
-    return combinedGames;
+    return firestoreGames;
   } catch (error) {
-    console.warn('Failed to fetch games from Firestore, falling back to local data:', error);
-    return GAMES_DATA;
+    console.error('Failed to fetch games from Firestore:', error);
+    return [];
   }
 }
 
 /**
- * Fetch a single game by slug from Firestore.
+ * Fetch a single game by slug or id directly from Firestore.
  */
 export async function getGameBySlug(slug: string): Promise<Game | undefined> {
   try {
-    const games = await getGames();
-    return games.find((g) => g.slug === slug || g.id === slug);
+    // 1. Direct document lookup by ID
+    const directDocRef = doc(db, GAMES_COLLECTION, slug);
+    const directSnap = await getDoc(directDocRef);
+    if (directSnap.exists()) {
+      return {
+        ...(directSnap.data() as Game),
+        id: directSnap.id
+      };
+    }
+
+    // 2. Query where 'slug' == slug
+    const gamesRef = collection(db, GAMES_COLLECTION);
+    const q = query(gamesRef, where('slug', '==', slug));
+    const snapshot = await getDocs(q);
+    if (!snapshot.empty) {
+      const docSnap = snapshot.docs[0];
+      return {
+        ...(docSnap.data() as Game),
+        id: docSnap.id
+      };
+    }
+
+    return undefined;
   } catch (error) {
-    console.warn('Failed to get game by slug:', error);
-    return GAMES_DATA.find((g) => g.slug === slug || g.id === slug);
+    console.error(`Failed to get game by slug "${slug}" from Firestore:`, error);
+    return undefined;
   }
 }
 
@@ -149,13 +152,13 @@ export async function deleteGame(id: string): Promise<{ success: boolean; error?
 }
 
 /**
- * Seed / Sync initial games from local games.ts into Firestore.
- * Does not overwrite existing games unless forceOverwrite is true, preserving admin edits.
+ * Seed / Sync initial games into Firestore for the admin panel.
+ * Reads from INITIAL_GAMES_SEED and writes missing games into Firestore.
  */
 export async function syncInitialGames(forceOverwrite = false): Promise<{ success: boolean; count: number; error?: string }> {
   try {
     let count = 0;
-    for (const game of GAMES_DATA) {
+    for (const game of INITIAL_GAMES_SEED) {
       const gameRef = doc(db, GAMES_COLLECTION, game.id);
       const existingSnap = await getDoc(gameRef);
       if (!existingSnap.exists() || forceOverwrite) {

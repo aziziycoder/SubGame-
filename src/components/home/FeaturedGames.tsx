@@ -1,20 +1,26 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { GAMES_DATA } from '../../data/games';
 import { getGames } from '../../services/gamesService';
 import type { Game } from '../../types/game';
 import { GameCard } from '../game/GameCard';
-import { ArrowRight, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Sparkles, Loader2 } from 'lucide-react';
 
 export const FeaturedGames: React.FC = () => {
   const sliderRef = useRef<HTMLDivElement>(null);
-  const [games, setGames] = useState<Game[]>(GAMES_DATA);
+  const [games, setGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [filterTab, setFilterTab] = useState<'all' | 'ready' | 'upcoming'>('all');
 
   useEffect(() => {
-    getGames().then(setGames);
+    getGames()
+      .then((data) => {
+        setGames(data);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   const filteredGames = games.filter((game) => {
@@ -156,20 +162,27 @@ export const FeaturedGames: React.FC = () => {
 
         {/* Horizontal Slider Track */}
         <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">
-          <div
-            ref={sliderRef}
-            className="flex gap-6 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth scrollbar-none"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            {filteredGames.map((game, idx) => (
-              <div
-                key={game.id}
-                className="w-[85vw] sm:w-[360px] md:w-[380px] lg:w-[380px] shrink-0 snap-start"
-              >
-                <GameCard game={game} priority={idx < 2} />
-              </div>
-            ))}
-          </div>
+          {loading ? (
+            <div className="py-20 flex flex-col items-center justify-center gap-3">
+              <Loader2 className="w-8 h-8 text-[#A3E635] animate-spin" />
+              <p className="text-xs text-gray-400">O‘yinlar yuklanmoqda...</p>
+            </div>
+          ) : (
+            <div
+              ref={sliderRef}
+              className="flex gap-6 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth scrollbar-none"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {filteredGames.map((game, idx) => (
+                <div
+                  key={game.id}
+                  className="w-[85vw] sm:w-[360px] md:w-[380px] lg:w-[380px] shrink-0 snap-start"
+                >
+                  <GameCard game={game} priority={idx < 2} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Note clarifying separation between game license and subtitle file */}
