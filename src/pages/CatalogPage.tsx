@@ -36,27 +36,37 @@ export const CatalogPage: React.FC = () => {
   }, [searchParams]);
 
   const filteredGames = useMemo(() => {
-    return games.filter((game) => {
-      // Search matching title or developer or short description
+    return (games || []).filter((game) => {
+      if (!game) return false;
+
+      const title = (game.title || '').toLowerCase();
+      const developer = (game.developer || '').toLowerCase();
+      const genres = Array.isArray(game.genres) ? game.genres : [];
+      const subtitleStatus = game.subtitleStatus || '';
+      const query = searchQuery.trim().toLowerCase();
+
+      // Search matching title or developer or genres
       const matchesSearch =
-        searchQuery.trim() === '' ||
-        game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        game.developer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        game.genres.some((g) => g.toLowerCase().includes(searchQuery.toLowerCase()));
+        query === '' ||
+        title.includes(query) ||
+        developer.includes(query) ||
+        genres.some((g) => (g || '').toLowerCase().includes(query));
 
       // Genre filter
       const matchesGenre =
-        selectedGenre === 'Barchasi' || game.genres.includes(selectedGenre);
+        selectedGenre === 'Barchasi' || genres.includes(selectedGenre);
 
       // Status filter
       const matchesStatus =
-        selectedStatus === 'Barchasi' || game.subtitleStatus === selectedStatus;
+        selectedStatus === 'Barchasi' || subtitleStatus === selectedStatus;
 
       return matchesSearch && matchesGenre && matchesStatus;
     }).sort((a, b) => {
-      if (sortBy === 'newest') return b.releaseYear - a.releaseYear;
-      if (sortBy === 'oldest') return a.releaseYear - b.releaseYear;
-      if (sortBy === 'title') return a.title.localeCompare(b.title);
+      const yearA = Number(a?.releaseYear) || 0;
+      const yearB = Number(b?.releaseYear) || 0;
+      if (sortBy === 'newest') return yearB - yearA;
+      if (sortBy === 'oldest') return yearA - yearB;
+      if (sortBy === 'title') return (a?.title || '').localeCompare(b?.title || '');
       return 0;
     });
   }, [games, searchQuery, selectedGenre, selectedStatus, sortBy]);

@@ -89,7 +89,7 @@ export const GameCard: React.FC<GameCardProps> = ({ game, priority = false }) =>
 
           {/* Genres */}
           <div className="flex flex-wrap gap-1.5 mt-3">
-            {game.genres.slice(0, 3).map((genre) => (
+            {(Array.isArray(game.genres) ? game.genres : []).slice(0, 3).map((genre) => (
               <span
                 key={genre}
                 className="text-[11px] px-2 py-0.5 rounded bg-[#141821] text-gray-300 border border-[#2A3245]"
