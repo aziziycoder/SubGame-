@@ -6,7 +6,7 @@ import { SubtitleStatusBadge } from '../components/common/Badge';
 import { Lightbox } from '../components/common/Lightbox';
 import { ReportIssueModal } from '../components/home/ReportIssueModal';
 import { ClickPaymentModal } from '../components/payment/ClickPaymentModal';
-import { ClickLogo } from '../components/common/BrandLogos';
+import { ClickLogo, SteamLogo, EpicGamesLogo } from '../components/common/BrandLogos';
 import { getGamePriceInfo } from '../services/paymentService';
 import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
@@ -29,7 +29,8 @@ import {
   ShieldCheck,
   Laptop,
   Tag,
-  X
+  X,
+  ShoppingCart
 } from 'lucide-react';
 
 export const GameDetailPage: React.FC = () => {
@@ -950,36 +951,48 @@ export const GameDetailPage: React.FC = () => {
             )}
 
             {/* Official Store Purchase Card */}
-            <div className="bg-[#141821] rounded-2xl p-5 sm:p-6 border border-[#2A3245] space-y-4">
-              <h3 className="text-base font-bold text-white">
-                O‘yinni sotib olish (Litsenziya)
-              </h3>
-              <p className="text-xs text-gray-400 leading-relaxed">
-                Subtitrdan foydalanish uchun o‘yinning o‘zi kompyuteringizda o‘rnatilgan bo‘lishi lozim. O‘yinni rasmiy do‘konlardan xarid qilishingiz mumkin:
-              </p>
+            {game.officialStoreLinks && game.officialStoreLinks.length > 0 && (
+              <div className="bg-[#141821] rounded-2xl p-5 sm:p-6 border border-[#2A3245] space-y-4">
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <ShoppingCart className="w-4 h-4 text-[#A3E635]" />
+                  <span>O‘yinni sotib olish (Litsenziya)</span>
+                </h3>
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  Subtitrdan foydalanish uchun o‘yinning o‘zi kompyuteringizda o‘rnatilgan bo‘lishi lozim. O‘yinni rasmiy do‘konlardan xarid qilishingiz mumkin:
+                </p>
 
-              <div className="space-y-2.5">
-                {game.officialStoreLinks.map((store) => (
-                  <a
-                    key={store.name}
-                    href={store.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between p-3 rounded-xl bg-[#0B0D12] border border-[#2A3245] hover:border-gray-400 text-gray-200 hover:text-white transition-colors text-xs sm:text-sm"
-                  >
-                    <div className="flex items-center gap-2 font-medium">
-                      <span>{store.name} rasmiy sahifasi</span>
-                    </div>
-                    <ExternalLink className="w-4 h-4 text-gray-400" />
-                  </a>
-                ))}
-              </div>
+                <div className="space-y-2.5">
+                  {game.officialStoreLinks.map((store) => {
+                    const nameLower = store.name.toLowerCase();
+                    const isSteam = nameLower.includes('steam');
+                    const isEpic = nameLower.includes('epic');
 
-              <div className="text-[11px] text-gray-500 pt-2 border-t border-[#2A3245]/60 flex items-center gap-1.5">
-                <Info className="w-3.5 h-3.5 shrink-0" />
-                <span>O‘yin narxi do‘konda rasmiy valyutada belgilanadi.</span>
+                    return (
+                      <a
+                        key={store.name + store.url}
+                        href={store.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between p-3.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] hover:border-[#A3E635]/60 hover:bg-[#141821] text-gray-200 hover:text-white transition-all text-xs sm:text-sm group"
+                      >
+                        <div className="flex items-center gap-2.5 font-bold">
+                          {isSteam && <SteamLogo className="w-4 h-4 text-sky-400 shrink-0" />}
+                          {isEpic && <EpicGamesLogo className="w-4 h-4 text-gray-200 shrink-0" />}
+                          {!isSteam && !isEpic && <ExternalLink className="w-4 h-4 text-[#A3E635] shrink-0" />}
+                          <span>{store.name} rasmiy sahifasi</span>
+                        </div>
+                        <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-[#A3E635] transition-colors shrink-0" />
+                      </a>
+                    );
+                  })}
+                </div>
+
+                <div className="text-[11px] text-gray-500 pt-2 border-t border-[#2A3245]/60 flex items-center gap-1.5">
+                  <Info className="w-3.5 h-3.5 shrink-0" />
+                  <span>O‘yin narxi do‘konda rasmiy valyutada belgilanadi.</span>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Support and Report Card */}
             <div className="bg-[#141821] rounded-2xl p-5 sm:p-6 border border-[#2A3245] space-y-3">

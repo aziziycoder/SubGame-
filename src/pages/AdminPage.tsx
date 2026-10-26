@@ -20,7 +20,8 @@ import {
   Layers,
   Users,
   UploadCloud,
-  FileCheck
+  FileCheck,
+  ShoppingCart
 } from 'lucide-react';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage } from '../services/firebase';
@@ -31,10 +32,11 @@ import {
   deleteGame,
   syncInitialGames
 } from '../services/gamesService';
-import type { Game, SubtitleStatus } from '../types/game';
+import type { Game, SubtitleStatus, OfficialStoreLink } from '../types/game';
 import { useAuth } from '../context/AuthContext';
 import { SliderManager } from '../components/admin/SliderManager';
 import { UserManager } from '../components/admin/UserManager';
+import { SteamLogo, EpicGamesLogo } from '../components/common/BrandLogos';
 
 export const AdminPage: React.FC = () => {
   const { user } = useAuth();
@@ -148,6 +150,9 @@ export const AdminPage: React.FC = () => {
   const [formData, setFormData] = useState<Partial<Game>>(initialFormState);
   const [genresInput, setGenresInput] = useState('Sarguzasht, Action');
   const [screenshotsInput, setScreenshotsInput] = useState('');
+  const [steamUrl, setSteamUrl] = useState('');
+  const [epicGamesUrl, setEpicGamesUrl] = useState('');
+  const [gogUrl, setGogUrl] = useState('');
 
   const loadGames = async () => {
     setLoading(true);
@@ -171,6 +176,9 @@ export const AdminPage: React.FC = () => {
     setFormData(initialFormState);
     setGenresInput('Sarguzasht, Action');
     setScreenshotsInput('');
+    setSteamUrl('');
+    setEpicGamesUrl('');
+    setGogUrl('');
     setFormError(null);
     setIsModalOpen(true);
   };
@@ -181,6 +189,12 @@ export const AdminPage: React.FC = () => {
     setFormData({ ...game });
     setGenresInput(game.genres ? game.genres.join(', ') : '');
     setScreenshotsInput(game.screenshots ? game.screenshots.join('\n') : '');
+    const steam = game.officialStoreLinks?.find((s) => s.name === 'Steam')?.url || '';
+    const epic = game.officialStoreLinks?.find((s) => s.name === 'Epic Games')?.url || '';
+    const gog = game.officialStoreLinks?.find((s) => s.name === 'GOG')?.url || '';
+    setSteamUrl(steam);
+    setEpicGamesUrl(epic);
+    setGogUrl(gog);
     setFormError(null);
     setIsModalOpen(true);
   };
@@ -294,7 +308,38 @@ export const AdminPage: React.FC = () => {
         directX: 'Versiya 12',
         storage: 'SSD (30 GB)'
       },
-      officialStoreLinks: formData.officialStoreLinks || [],
+      officialStoreLinks: (() => {
+        const links: OfficialStoreLink[] = [];
+        if (steamUrl.trim()) {
+          links.push({
+            name: 'Steam',
+            url: steamUrl.trim(),
+            priceNote: 'Steam rasmiy sahifasi'
+          });
+        }
+        if (epicGamesUrl.trim()) {
+          links.push({
+            name: 'Epic Games',
+            url: epicGamesUrl.trim(),
+            priceNote: 'Epic Games Store rasmiy sahifasi'
+          });
+        }
+        if (gogUrl.trim()) {
+          links.push({
+            name: 'GOG',
+            url: gogUrl.trim(),
+            priceNote: 'GOG rasmiy do‘koni'
+          });
+        }
+        if (formData.officialStoreLinks) {
+          for (const s of formData.officialStoreLinks) {
+            if (!['Steam', 'Epic Games', 'GOG'].includes(s.name) && s.url) {
+              links.push(s);
+            }
+          }
+        }
+        return links;
+      })(),
     } as Game;
 
     try {
@@ -932,12 +977,74 @@ export const AdminPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* 3. Subtitr va Launcher Parametrlari */}
+              {/* 3. Rasmiy Do'kon Havolalari (Steam & Epic Games) */}
+              <div className="space-y-4 pt-4 border-t border-[#2A3245]">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-[#A3E635] uppercase tracking-wider flex items-center gap-2">
+                    <ShoppingCart className="w-3.5 h-3.5" />
+                    <span>3. Rasmiy Do‘kon Havolalari (Steam & Epic Games)</span>
+                  </h4>
+                  <span className="text-[11px] text-gray-400">
+                    O‘yinni rasmiy xarid qilish havolalari
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-300 mb-1 flex items-center gap-1.5">
+                      <SteamLogo className="w-4 h-4 text-sky-400 shrink-0" />
+                      <span>Steam rasmiy sahifasi URL</span>
+                    </label>
+                    <input
+                      type="url"
+                      placeholder="https://store.steampowered.com/app/..."
+                      value={steamUrl}
+                      onChange={(e) => setSteamUrl(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white font-mono text-xs focus:outline-none focus:border-[#A3E635]"
+                    />
+                    <span className="text-[11px] text-gray-500 mt-1 block">
+                      Masalan: https://store.steampowered.com/app/1182900/
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-300 mb-1 flex items-center gap-1.5">
+                      <EpicGamesLogo className="w-4 h-4 text-gray-200 shrink-0" />
+                      <span>Epic Games Store URL</span>
+                    </label>
+                    <input
+                      type="url"
+                      placeholder="https://store.epicgames.com/p/..."
+                      value={epicGamesUrl}
+                      onChange={(e) => setEpicGamesUrl(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white font-mono text-xs focus:outline-none focus:border-[#A3E635]"
+                    />
+                    <span className="text-[11px] text-gray-500 mt-1 block">
+                      Masalan: https://store.epicgames.com/p/a-plague-tale-requiem
+                    </span>
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-semibold text-gray-400 mb-1">
+                      GOG yoki Boshqa Do‘kon URL (ixtiyoriy)
+                    </label>
+                    <input
+                      type="url"
+                      placeholder="https://www.gog.com/game/... (ixtiyoriy)"
+                      value={gogUrl}
+                      onChange={(e) => setGogUrl(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white font-mono text-xs focus:outline-none focus:border-[#A3E635]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. Subtitr va Launcher Parametrlari */}
               <div className="space-y-4 pt-4 border-t border-[#2A3245]">
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-bold text-[#A3E635] uppercase tracking-wider flex items-center gap-2">
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>3. Launcher & Subtitr Avtomatika Parametrlari</span>
+                    <span>4. Launcher & Subtitr Avtomatika Parametrlari</span>
                   </h4>
                   <span className="text-[11px] text-gray-400">
                     Launcher o‘rnatishda shu qiymatlarga tayanadi
