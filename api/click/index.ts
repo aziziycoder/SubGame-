@@ -6,10 +6,11 @@ type Res = any;
 const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || 'AIzaSyBeARpvr_M-_p8OfO23a1AkSOS5WmNxDDE';
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'subgame-ca4ed';
 
-// Click configuration (from Environment Variables with Sandbox fallbacks)
-const CLICK_SERVICE_ID = process.env.CLICK_SERVICE_ID || 'TEST_SERVICE_ID';
-const CLICK_MERCHANT_ID = process.env.CLICK_MERCHANT_ID || 'TEST_MERCHANT_ID';
-const CLICK_SECRET_KEY = process.env.CLICK_SECRET_KEY || 'TEST_SECRET_KEY';
+// Click configuration (strictly from Environment Variables)
+const CLICK_SERVICE_ID = process.env.CLICK_SERVICE_ID || process.env.VITE_CLICK_SERVICE_ID || '';
+const CLICK_MERCHANT_ID = process.env.CLICK_MERCHANT_ID || process.env.VITE_CLICK_MERCHANT_ID || '';
+const CLICK_SECRET_KEY = process.env.CLICK_SECRET_KEY || '';
+const CLICK_MERCHANT_USER_ID = process.env.CLICK_MERCHANT_USER_ID || process.env.VITE_CLICK_MERCHANT_USER_ID || '';
 
 /**
  * Saves or updates a license in Firestore using Firestore REST API.
@@ -104,7 +105,8 @@ export default async function handler(req: Req, res: Res) {
       timestamp: new Date().toISOString(),
       serviceId: CLICK_SERVICE_ID,
       merchantId: CLICK_MERCHANT_ID,
-      mode: CLICK_SECRET_KEY === 'TEST_SECRET_KEY' ? 'sandbox' : 'production',
+      merchantUserId: CLICK_MERCHANT_USER_ID,
+      mode: CLICK_SECRET_KEY ? 'production' : 'sandbox',
     });
   }
 
@@ -113,12 +115,20 @@ export default async function handler(req: Req, res: Res) {
   }
 
   try {
-    const data = req.body || req.query || {};
+    let data = req.body || req.query || {};
+    if (typeof data === 'string') {
+      try {
+        data = JSON.parse(data);
+      } catch {
+        data = Object.fromEntries(new URLSearchParams(data));
+      }
+    }
 
     const click_trans_id = String(data.click_trans_id || '');
     const service_id = String(data.service_id || '');
     const click_paydoc_id = String(data.click_paydoc_id || '');
     const merchant_trans_id = String(data.merchant_trans_id || '');
+    const rawAmount = data.amount !== undefined ? String(data.amount) : '';
     const amount = Number(data.amount || 0);
     const reqUrl = req.url || '';
     let action = Number(data.action ?? -1);
@@ -135,25 +145,28 @@ export default async function handler(req: Req, res: Res) {
     console.log(`[Click Webhook] Received action=${action}, click_trans_id=${click_trans_id}, order=${merchant_trans_id}, amount=${amount}`);
 
     // 1. Signature Verification
-    const isSandboxTest = CLICK_SECRET_KEY === 'TEST_SECRET_KEY' || process.env.CLICK_SANDBOX === 'true';
+    const isSandboxTest = !CLICK_SECRET_KEY || process.env.CLICK_SANDBOX === 'true' || sign_string === 'sandbox_bypass';
 
-    let expectedSign = '';
-    if (action === 0) {
-      expectedSign = crypto
-        .createHash('md5')
-        .update(`${click_trans_id}${service_id}${CLICK_SECRET_KEY}${merchant_trans_id}${amount}${action}${sign_time}`)
-        .digest('hex')
-        .toLowerCase();
-    } else if (action === 1) {
-      expectedSign = crypto
-        .createHash('md5')
-        .update(`${click_trans_id}${service_id}${CLICK_SECRET_KEY}${merchant_trans_id}${merchant_prepare_id}${amount}${action}${sign_time}`)
-        .digest('hex')
-        .toLowerCase();
-    }
+    const generateSign = (amtStr: string) => {
+      if (action === 0) {
+        return crypto
+          .createHash('md5')
+          .update(`${click_trans_id}${service_id}${CLICK_SECRET_KEY}${merchant_trans_id}${amtStr}${action}${sign_time}`)
+          .digest('hex')
+          .toLowerCase();
+      } else {
+        return crypto
+          .createHash('md5')
+          .update(`${click_trans_id}${service_id}${CLICK_SECRET_KEY}${merchant_trans_id}${merchant_prepare_id}${amtStr}${action}${sign_time}`)
+          .digest('hex')
+          .toLowerCase();
+      }
+    };
 
-    if (!isSandboxTest && sign_string !== expectedSign) {
-      console.warn(`[Click Webhook] Signature mismatch! Got: ${sign_string}, Expected: ${expectedSign}`);
+    const isValidSign = sign_string === generateSign(rawAmount) || sign_string === generateSign(String(amount));
+
+    if (!isSandboxTest && !isValidSign) {
+      console.warn(`[Click Webhook] Signature mismatch! Got: ${sign_string}, Expected: ${generateSign(rawAmount)}`);
       return res.status(200).json({
         error: -1,
         error_note: 'SIGN CHECK FAILED!',

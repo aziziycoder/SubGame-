@@ -2,11 +2,12 @@ import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebase';
 import type { Game } from '../types/game';
 
-// Click Merchant Settings (Can be overridden via VITE_CLICK_SERVICE_ID / VITE_CLICK_MERCHANT_ID)
+// Click Merchant Settings (loaded via environment variables)
 export const CLICK_CONFIG = {
-  serviceId: import.meta.env.VITE_CLICK_SERVICE_ID || 'TEST_SERVICE_ID',
-  merchantId: import.meta.env.VITE_CLICK_MERCHANT_ID || 'TEST_MERCHANT_ID',
-  isSandbox: import.meta.env.VITE_CLICK_SANDBOX !== 'false',
+  serviceId: import.meta.env.VITE_CLICK_SERVICE_ID || '',
+  merchantId: import.meta.env.VITE_CLICK_MERCHANT_ID || '',
+  merchantUserId: import.meta.env.VITE_CLICK_MERCHANT_USER_ID || '',
+  isSandbox: import.meta.env.VITE_CLICK_SANDBOX === 'true' || !import.meta.env.VITE_CLICK_SERVICE_ID,
 };
 
 /**
