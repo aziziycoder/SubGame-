@@ -108,7 +108,7 @@ export const UserMenu: React.FC = () => {
 
       {/* Dropdown Modal / Popover */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-[#141821] border border-[#2A3245] shadow-2xl z-50 p-4 space-y-4 animate-in fade-in zoom-in-95">
+        <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 max-w-sm rounded-2xl bg-[#141821] border border-[#2A3245] shadow-2xl z-50 p-4 space-y-4 animate-in fade-in zoom-in-95">
           {/* User Info Header */}
           <div className="flex items-center justify-between pb-3 border-b border-[#2A3245]">
             <div className="flex items-center gap-3">

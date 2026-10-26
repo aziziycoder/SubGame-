@@ -50,12 +50,12 @@ export const ClickPaymentModal: React.FC<ClickPaymentModalProps> = ({
         aria-hidden="true" 
       />
 
-      <div className="relative w-full max-w-md bg-[#121620] border-t sm:border border-[#2A3245] rounded-t-[28px] sm:rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col max-h-[92vh] animate-in slide-in-from-bottom-4 duration-200">
+      <div className="relative w-full max-w-md bg-[#121620] border-t sm:border border-[#2A3245] rounded-t-[28px] sm:rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col max-h-[95vh] animate-in slide-in-from-bottom-4 duration-200">
         {/* Mobile top pull indicator */}
         <div className="sm:hidden w-12 h-1 rounded-full bg-white/20 mx-auto mt-2.5 mb-1 shrink-0" />
 
         {/* Header with Game Image banner */}
-        <div className="relative h-32 sm:h-36 w-full bg-[#0B0D12] overflow-hidden shrink-0">
+        <div className="relative h-28 sm:h-36 w-full bg-[#0B0D12] overflow-hidden shrink-0">
           <img
             src={game.cardImage || game.cover}
             alt={game.title}
@@ -90,9 +90,9 @@ export const ClickPaymentModal: React.FC<ClickPaymentModalProps> = ({
         </div>
 
         {/* Content Body */}
-        <div className="p-4 sm:p-5 space-y-3.5 overflow-y-auto">
+        <div className="p-4 sm:p-5 space-y-3 overflow-y-auto">
           {/* DRM Notice */}
-          <div className="p-3.5 rounded-2xl bg-[#0B0D12]/80 border border-[#2A3245] space-y-1.5 text-xs">
+          <div className="p-3 rounded-2xl bg-[#0B0D12]/80 border border-[#2A3245] space-y-1 text-xs">
             <div className="flex items-center gap-2 font-bold text-white">
               <ShieldCheck className="w-4 h-4 text-[#A3E635] shrink-0" />
               <span>SubGame 1-Qurilma (DRM) Himoyasi</span>
@@ -103,9 +103,9 @@ export const ClickPaymentModal: React.FC<ClickPaymentModalProps> = ({
           </div>
 
           {/* Click Payment Provider Info */}
-          <div className="p-3.5 rounded-2xl bg-[#0065FF]/10 border border-[#0065FF]/25 flex items-center justify-between gap-3">
+          <div className="p-3 rounded-2xl bg-[#0065FF]/10 border border-[#0065FF]/25 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
-              <ClickBadge size="lg" />
+              <ClickBadge size="md" />
               <div className="min-w-0">
                 <span className="text-xs sm:text-sm font-black text-white block truncate">
                   Click Up / Click Merchant
@@ -127,20 +127,20 @@ export const ClickPaymentModal: React.FC<ClickPaymentModalProps> = ({
           )}
 
           {/* Action Buttons */}
-          <div className="space-y-2.5 pt-2">
+          <div className="space-y-2 pt-1 pb-1">
             <button
               onClick={handleProceedClick}
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2.5 py-3.5 sm:py-4 px-5 rounded-2xl bg-[#0065FF] hover:bg-[#0052cc] active:scale-[0.99] text-white font-extrabold text-sm sm:text-base shadow-xl shadow-blue-600/30 transition-all cursor-pointer disabled:opacity-50"
+              className="w-full h-12 flex items-center justify-center gap-2.5 px-4 rounded-2xl bg-[#0065FF] hover:bg-[#0052cc] active:scale-[0.99] text-white font-extrabold text-sm sm:text-base shadow-xl shadow-blue-600/30 transition-all cursor-pointer disabled:opacity-50"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                  <Loader2 className="w-5 h-5 animate-spin shrink-0" />
                   <span>Click to‘lov sahifasiga o‘tilmoqda...</span>
                 </>
               ) : (
                 <>
-                  <ClickLogo variant="icon" className="w-4.5 h-4.5 text-white shrink-0" />
+                  <ClickLogo variant="icon" className="w-5 h-5 text-white shrink-0" />
                   <span>Click orqali to‘lov qilish ({displayPrice})</span>
                   <ExternalLink className="w-4 h-4 opacity-80 shrink-0" />
                 </>
@@ -148,7 +148,7 @@ export const ClickPaymentModal: React.FC<ClickPaymentModalProps> = ({
             </button>
 
             {/* Security Guarantee Note */}
-            <div className="flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] text-gray-500 pt-1 pb-1">
+            <div className="flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] text-gray-500 pt-0.5">
               <Lock className="w-3 h-3 text-[#A3E635] shrink-0" />
               <span>256-bit shifrlangan xavfsiz to‘lov • Rasmiy Click.uz orqali</span>
             </div>

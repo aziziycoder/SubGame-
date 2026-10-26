@@ -2,6 +2,7 @@ import React from 'react';
 
 interface LogoProps extends React.SVGProps<SVGSVGElement> {
   className?: string;
+  style?: React.CSSProperties;
 }
 
 /**
@@ -10,6 +11,7 @@ interface LogoProps extends React.SVGProps<SVGSVGElement> {
 export const TelegramLogo: React.FC<LogoProps & { variant?: 'circle' | 'plane' }> = ({
   className = 'w-5 h-5',
   variant = 'circle',
+  style,
   ...props
 }) => {
   if (variant === 'plane') {
@@ -18,6 +20,7 @@ export const TelegramLogo: React.FC<LogoProps & { variant?: 'circle' | 'plane' }
         viewBox="0 0 24 24"
         fill="currentColor"
         className={className}
+        style={{ width: '1.25rem', height: '1.25rem', flexShrink: 0, display: 'inline-block', ...style }}
         xmlns="http://www.w3.org/2000/svg"
         {...props}
       >
@@ -30,6 +33,7 @@ export const TelegramLogo: React.FC<LogoProps & { variant?: 'circle' | 'plane' }
     <svg
       viewBox="0 0 240 240"
       className={className}
+      style={{ width: '1.25rem', height: '1.25rem', flexShrink: 0, display: 'inline-block', ...style }}
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
@@ -54,6 +58,7 @@ export const TelegramLogo: React.FC<LogoProps & { variant?: 'circle' | 'plane' }
 export const ClickLogo: React.FC<LogoProps & { variant?: 'full' | 'icon' | 'badge' }> = ({
   className = 'w-5 h-5',
   variant = 'icon',
+  style,
   ...props
 }) => {
   if (variant === 'full') {
@@ -62,6 +67,7 @@ export const ClickLogo: React.FC<LogoProps & { variant?: 'full' | 'icon' | 'badg
         viewBox="0 0 157 40"
         fill="none"
         className={className}
+        style={{ maxWidth: '100%', height: 'auto', ...style }}
         xmlns="http://www.w3.org/2000/svg"
         {...props}
       >
@@ -85,6 +91,15 @@ export const ClickLogo: React.FC<LogoProps & { variant?: 'full' | 'icon' | 'badg
       viewBox="0 0 40 40"
       fill="currentColor"
       className={className}
+      style={{
+        width: '1.25rem',
+        height: '1.25rem',
+        maxWidth: '100%',
+        maxHeight: '100%',
+        flexShrink: 0,
+        display: 'inline-block',
+        ...style,
+      }}
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
@@ -120,8 +135,11 @@ export const ClickBadge: React.FC<{ className?: string; size?: 'sm' | 'md' | 'lg
     <div
       className={`bg-[#0065FF] flex items-center justify-center shrink-0 shadow-md shadow-blue-500/25 ${sizeClasses} ${className}`}
     >
-      <ClickLogo variant="icon" className={`${iconSizes} text-white`} />
+      <ClickLogo
+        variant="icon"
+        className={`${iconSizes} text-white`}
+        style={{ width: undefined, height: undefined }}
+      />
     </div>
   );
 };
-
