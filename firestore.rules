@@ -117,13 +117,33 @@ service cloud.firestore {
     }
 
     // Orders collection:
-    // Read: Users can read their own orders; Admins can read all orders
-    // Create: Authenticated users can create orders for themselves; Admins can create all orders
-    // Update/Delete: Only Admins can update or delete orders (prevents client tampering with payment status or amount)
+    // Read: Single-document get is publicly allowed so Serverless payment webhooks (Click REST API)
+    //       and post-redirect checkout screens can fetch and verify order details without an auth token.
+    //       List queries are restricted to the order owner or admin to prevent user/order enumeration.
+    // Create: Authenticated users can create orders for themselves with 'pending' status; Admins can create all.
+    // Update: Admins can update all fields; Webhooks and clients can update status ('prepared', 'paid', 'cancelled')
+    //         and transaction metadata while keeping immutable fields (orderId, userId, gameId, amount, createdAt) intact.
+    // Delete: Admin only.
     match /orders/{orderId} {
-      allow read: if (isAuthenticated() && resource.data.userId == request.auth.uid) || isAdmin();
-      allow create: if (isAuthenticated() && request.resource.data.userId == request.auth.uid) || isAdmin();
-      allow update, delete: if isAdmin();
+      allow get: if true;
+      allow list: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAdmin() || (
+        isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.status == 'pending'
+      );
+      allow update: if isAdmin() || (
+        request.resource.data.status in ['prepared', 'paid', 'cancelled'] &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'status', 'clickTransId', 'clickPaydocId', 'paidAmount', 'errorNote', 'updatedAt'
+        ]) &&
+        request.resource.data.userId == resource.data.userId &&
+        request.resource.data.amount == resource.data.amount &&
+        request.resource.data.gameId == resource.data.gameId &&
+        (!('orderId' in request.resource.data) || request.resource.data.orderId == resource.data.orderId) &&
+        (!('createdAt' in request.resource.data) || request.resource.data.createdAt == resource.data.createdAt)
+      );
+      allow delete: if isAdmin();
     }
   }
 }

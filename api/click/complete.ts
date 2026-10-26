@@ -62,7 +62,8 @@ async function grantLicenseRest(licenseId: string, data: {
  */
 async function updateOrderRest(orderId: string, fields: Record<string, any>) {
   try {
-    const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/orders/${orderId}?key=${FIREBASE_API_KEY}`;
+    const fieldMask = Object.keys(fields).map((k) => `updateMask.fieldPaths=${encodeURIComponent(k)}`).join('&');
+    const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/orders/${orderId}?${fieldMask}&key=${FIREBASE_API_KEY}`;
     
     const formattedFields: Record<string, any> = {};
     for (const [key, value] of Object.entries(fields)) {
@@ -181,7 +182,11 @@ export default async function handler(req: Req, res: Res) {
     let gameSlug = '';
     let userEmail = '';
 
-    if (merchant_trans_id.startsWith('ORD_')) {
+    if (merchant_trans_id.includes('__')) {
+      const parts = merchant_trans_id.split('__');
+      userId = parts[0];
+      gameId = parts[1];
+    } else if (merchant_trans_id.startsWith('ORD_')) {
       const parts = merchant_trans_id.split('_');
       // ORD, timestamp, userId, gameId
       if (parts.length >= 4) {
@@ -210,6 +215,30 @@ export default async function handler(req: Req, res: Res) {
       }
     } catch (e) {
       console.warn('[Click Webhook] Could not fetch order doc via REST:', e);
+    }
+
+    // If userId was truncated (e.g. 6 chars like "A60znZ"), automatically expand to full 28-char UID
+    if (userId && userId.length < 20) {
+      try {
+        const usersRes = await fetch(
+          `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/users?key=${FIREBASE_API_KEY}`
+        );
+        if (usersRes.ok) {
+          const usersData = await usersRes.json();
+          const docs = usersData.documents || [];
+          for (const u of docs) {
+            const uid = (u.name || '').split('/').pop() || '';
+            if (uid.startsWith(userId)) {
+              console.log(`[Click Webhook] Expanded truncated userId ${userId} -> ${uid}`);
+              userId = uid;
+              if (u.fields?.email?.stringValue) userEmail = u.fields.email.stringValue;
+              break;
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('[Click Webhook] Could not expand truncated userId:', err);
+      }
     }
 
     if (!userId || !gameId) {

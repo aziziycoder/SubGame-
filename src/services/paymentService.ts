@@ -118,8 +118,10 @@ export async function createClickOrder({
   customAmount,
 }: CreateOrderParams): Promise<CreateOrderResult> {
   const amount = customAmount ?? (parseGamePrice(game.subtitlePrice) || parseGamePrice(game.price) || 15000);
-  const timestamp = Date.now();
-  const orderId = `ORD_${timestamp}_${userId.substring(0, 6)}_${game.id.substring(0, 8)}`;
+  const timestamp = Date.now().toString(36);
+  // Encode full 28-char userId and gameId within Click's 64-char merchant_trans_id limit
+  const cleanGameId = game.id.substring(0, 24);
+  const orderId = `${userId}__${cleanGameId}__${timestamp}`;
 
   // 1. Create order record in Firestore
   const orderRef = doc(db, 'orders', orderId);

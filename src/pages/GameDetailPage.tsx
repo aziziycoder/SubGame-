@@ -72,9 +72,20 @@ export const GameDetailPage: React.FC = () => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('payment') === 'success') {
       setClaimSuccess(true);
+      if (game && user) {
+        claimLicense(game.id, game.title, game.slug).then(() => {
+          // Clean URL params so it doesn't re-trigger on refresh
+          const url = new URL(window.location.href);
+          url.searchParams.delete('payment');
+          url.searchParams.delete('orderId');
+          url.searchParams.delete('payment_status');
+          url.searchParams.delete('payment_id');
+          window.history.replaceState({}, '', url.toString());
+        });
+      }
       setTimeout(() => setClaimSuccess(false), 8000);
     }
-  }, []);
+  }, [game, user]);
 
   if (loading) {
     return (
