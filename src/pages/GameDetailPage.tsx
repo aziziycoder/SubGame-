@@ -773,15 +773,6 @@ export const GameDetailPage: React.FC = () => {
                   <ShieldCheck className="w-4 h-4" />
                   DRM Himoyalangan Litsenziya
                 </span>
-                <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold ${
-                  priceInfo.isPaid
-                    ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40'
-                    : priceInfo.isFree
-                    ? 'bg-[#A3E635]/20 text-[#A3E635] border border-[#A3E635]/30'
-                    : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                }`}>
-                  {priceInfo.text}
-                </span>
               </div>
 
               {/* Price Highlight Banner */}
