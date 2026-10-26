@@ -62,28 +62,6 @@ export const GameCard: React.FC<GameCardProps> = ({ game, priority = false }) =>
           decoding="async"
           className="w-full h-full object-contain transition-transform duration-500 ease-out group-hover:scale-105"
         />
-
-        {/* Floating Price Tag on Poster */}
-        <div className="absolute bottom-2.5 right-2.5 z-10 pointer-events-none">
-          <span
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg backdrop-blur-md text-xs font-black tracking-wide shadow-xl border ${
-              priceInfo.isPaid
-                ? 'bg-[#0B0D12]/90 text-sky-300 border-sky-500/50 shadow-sky-500/20'
-                : priceInfo.isFree
-                ? 'bg-[#0B0D12]/90 text-[#A3E635] border-[#A3E635]/50 shadow-lime-500/20'
-                : 'bg-[#0B0D12]/90 text-amber-300 border-amber-500/50 shadow-amber-500/10'
-            }`}
-          >
-            {priceInfo.isPaid ? (
-              <Tag className="w-3 h-3 text-sky-400" />
-            ) : priceInfo.isFree ? (
-              <ShieldCheck className="w-3 h-3 text-[#A3E635]" />
-            ) : (
-              <Sparkles className="w-3 h-3 text-amber-400" />
-            )}
-            <span>{priceInfo.text}</span>
-          </span>
-        </div>
       </Link>
 
       {/* Content */}
