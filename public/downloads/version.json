@@ -1,8 +1,8 @@
 {
-  "version": "1.0.2",
+  "version": "1.0.3",
   "downloadUrl": "https://www.subgame.uz/downloads/SubGame-Launcher.exe",
   "patchUrl": "https://www.subgame.uz/downloads/update-bundle.zip",
-  "patchSize": "937 KB",
-  "changelog": "Tezkor yangilanish tizimi (Delta Patch) faollashtirildi: endi yangilanish hajmi 96 MB emas, bor-yo'g'i 937 KB!",
-  "releaseDate": "2026-10-24"
+  "patchSize": "936 KB",
+  "changelog": "Litsenziyalar soni va holati real vaqtda profil bilan sinxronlashtirildi.",
+  "releaseDate": "2026-10-26"
 }
