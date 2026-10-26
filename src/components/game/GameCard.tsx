@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import type { Game } from '../../types/game';
 import { SubtitleStatusBadge } from '../common/Badge';
 import { useFavorites } from '../../context/FavoritesContext';
-import { Heart, Monitor, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Heart, Monitor, ArrowRight, ShieldCheck, Tag, Sparkles } from 'lucide-react';
+import { getGamePriceInfo } from '../../services/paymentService';
 
 interface GameCardProps {
   game: Game;
@@ -13,6 +14,7 @@ interface GameCardProps {
 export const GameCard: React.FC<GameCardProps> = ({ game, priority = false }) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorited = isFavorite(game.id);
+  const priceInfo = getGamePriceInfo(game);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -60,6 +62,28 @@ export const GameCard: React.FC<GameCardProps> = ({ game, priority = false }) =>
           decoding="async"
           className="w-full h-full object-contain transition-transform duration-500 ease-out group-hover:scale-105"
         />
+
+        {/* Floating Price Tag on Poster */}
+        <div className="absolute bottom-2.5 right-2.5 z-10 pointer-events-none">
+          <span
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg backdrop-blur-md text-xs font-black tracking-wide shadow-xl border ${
+              priceInfo.isPaid
+                ? 'bg-[#0B0D12]/90 text-sky-300 border-sky-500/50 shadow-sky-500/20'
+                : priceInfo.isFree
+                ? 'bg-[#0B0D12]/90 text-[#A3E635] border-[#A3E635]/50 shadow-lime-500/20'
+                : 'bg-[#0B0D12]/90 text-amber-300 border-amber-500/50 shadow-amber-500/10'
+            }`}
+          >
+            {priceInfo.isPaid ? (
+              <Tag className="w-3 h-3 text-sky-400" />
+            ) : priceInfo.isFree ? (
+              <ShieldCheck className="w-3 h-3 text-[#A3E635]" />
+            ) : (
+              <Sparkles className="w-3 h-3 text-amber-400" />
+            )}
+            <span>{priceInfo.text}</span>
+          </span>
+        </div>
       </Link>
 
       {/* Content */}
@@ -100,19 +124,26 @@ export const GameCard: React.FC<GameCardProps> = ({ game, priority = false }) =>
 
         {/* Footer info: Platforms, Price status, Batafsil button */}
         <div className="pt-4 mt-4 border-t border-[#2A3245]/60 flex items-center justify-between">
-          <div className="flex flex-col">
-            <span className="text-[11px] text-gray-400">O‘yin narxi:</span>
-            <span
-              className={`text-xs font-semibold ${
-                game.subtitleStatus !== 'Tayyor' || game.price === 'Tez kunda'
-                  ? 'text-amber-400'
-                  : game.price === 'Tekin' || game.price === 'Bepul'
-                  ? 'text-[#A3E635]'
-                  : 'text-gray-200'
-              }`}
-            >
-              {game.subtitleStatus !== 'Tayyor' ? 'Tez kunda' : game.price}
-            </span>
+          <div className="flex flex-col min-w-0 pr-2">
+            <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Subtitr narxi:</span>
+            <div className="mt-1 flex items-center">
+              {priceInfo.isPaid ? (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-black text-sky-300 bg-sky-500/15 border border-sky-500/35 shadow-sm">
+                  <Tag className="w-3 h-3 text-sky-400 shrink-0" />
+                  <span className="truncate">{priceInfo.text}</span>
+                </span>
+              ) : priceInfo.isFree ? (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-black text-[#A3E635] bg-[#A3E635]/15 border border-[#A3E635]/35 shadow-sm">
+                  <ShieldCheck className="w-3 h-3 text-[#A3E635] shrink-0" />
+                  <span>Bepul</span>
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold text-amber-400 bg-amber-500/15 border border-amber-500/35">
+                  <Sparkles className="w-3 h-3 text-amber-400 shrink-0" />
+                  <span>Tez kunda</span>
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-2">

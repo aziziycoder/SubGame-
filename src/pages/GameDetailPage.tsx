@@ -6,6 +6,7 @@ import { SubtitleStatusBadge } from '../components/common/Badge';
 import { Lightbox } from '../components/common/Lightbox';
 import { ReportIssueModal } from '../components/home/ReportIssueModal';
 import { ClickPaymentModal } from '../components/payment/ClickPaymentModal';
+import { getGamePriceInfo } from '../services/paymentService';
 import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -27,6 +28,7 @@ import {
   ShieldCheck,
   Laptop,
   CreditCard,
+  Tag,
   X
 } from 'lucide-react';
 
@@ -117,6 +119,7 @@ export const GameDetailPage: React.FC = () => {
   const favorited = isFavorite(game.id);
   const hasLicense = isLicenseClaimed(game.id);
   const license = getGameLicense(game.id);
+  const priceInfo = getGamePriceInfo(game);
 
   const handleClaimLicense = async () => {
     setIsClaiming(true);
@@ -194,6 +197,21 @@ export const GameDetailPage: React.FC = () => {
             <div className="space-y-3.5 flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                 <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
+                
+                {/* Prominent Subtitle Price Tag */}
+                <div
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-black tracking-wide border shadow-md ${
+                    priceInfo.isPaid
+                      ? 'bg-sky-500/20 text-sky-300 border-sky-500/40 shadow-sky-500/20'
+                      : priceInfo.isFree
+                      ? 'bg-[#A3E635]/20 text-[#A3E635] border-[#A3E635]/40 shadow-lime-500/20'
+                      : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                  }`}
+                >
+                  <Tag className="w-3.5 h-3.5" />
+                  <span>Subtitr narxi: {priceInfo.text}</span>
+                </div>
+
                 <span className="text-xs font-mono text-gray-300 bg-[#141821] px-2.5 py-0.5 rounded-full border border-[#2A3245]">
                   {game.releaseYear}
                 </span>
@@ -251,31 +269,24 @@ export const GameDetailPage: React.FC = () => {
                       <span>Google orqali litsenziya olish</span>
                     </button>
                   ) : !hasLicense ? (
-                    (() => {
-                      const isFreeGame =
-                        !game.subtitlePrice ||
-                        game.subtitlePrice.toLowerCase().includes('bepul') ||
-                        game.subtitlePrice.toLowerCase().includes('tekin');
-
-                      return isFreeGame ? (
-                        <button
-                          onClick={handleClaimLicense}
-                          disabled={isClaiming}
-                          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-bold text-xs sm:text-sm hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer disabled:opacity-60 whitespace-nowrap h-10 sm:h-10.5"
-                        >
-                          <KeyRound className="w-4 h-4" />
-                          <span>{isClaiming ? 'Biriktirilmoqda...' : 'Litsenziyani biriktirish (Bepul)'}</span>
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => setIsClickModalOpen(true)}
-                          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#0089D0] hover:bg-[#0077b5] text-white font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] shadow-lg shadow-sky-500/25 cursor-pointer whitespace-nowrap h-10 sm:h-10.5"
-                        >
-                          <CreditCard className="w-4 h-4" />
-                          <span>Click orqali sotib olish ({game.subtitlePrice || game.price})</span>
-                        </button>
-                      );
-                    })()
+                    priceInfo.isPaid ? (
+                      <button
+                        onClick={() => setIsClickModalOpen(true)}
+                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#0089D0] hover:bg-[#0077b5] text-white font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] shadow-lg shadow-sky-500/25 cursor-pointer whitespace-nowrap h-10 sm:h-10.5"
+                      >
+                        <CreditCard className="w-4 h-4" />
+                        <span>Click orqali sotib olish ({priceInfo.text})</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleClaimLicense}
+                        disabled={isClaiming}
+                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-bold text-xs sm:text-sm hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer disabled:opacity-60 whitespace-nowrap h-10 sm:h-10.5"
+                      >
+                        <KeyRound className="w-4 h-4" />
+                        <span>{isClaiming ? 'Biriktirilmoqda...' : 'Litsenziyani biriktirish (Bepul)'}</span>
+                      </button>
+                    )
                   ) : (
                     <Link
                       to="/launcher"
@@ -485,6 +496,29 @@ export const GameDetailPage: React.FC = () => {
                     {game.subtitleFormat} • {game.subtitleSize || 'Kichik'}
                   </strong>
                 </div>
+
+                <div className="p-4 rounded-xl bg-[#0B0D12] border border-[#2A3245] sm:col-span-2 flex items-center justify-between">
+                  <div>
+                    <span className="text-xs text-gray-500 uppercase tracking-wider block mb-0.5">
+                      Subtitr Litsenziya Narxi
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      1 ta kompyuter uchun rasmiy faollashtirish
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-sm font-black border ${
+                      priceInfo.isPaid
+                        ? 'bg-sky-500/15 text-sky-300 border-sky-500/40 shadow-sm shadow-sky-500/20'
+                        : priceInfo.isFree
+                        ? 'bg-[#A3E635]/15 text-[#A3E635] border-[#A3E635]/40 shadow-sm shadow-lime-500/20'
+                        : 'bg-amber-500/15 text-amber-300 border-amber-500/40'
+                    }`}>
+                      <Tag className="w-4 h-4" />
+                      <span>{priceInfo.text}</span>
+                    </span>
+                  </div>
+                </div>
               </div>
 
               <div className="p-4 rounded-xl bg-[#1A1F2A] border border-[#2A3245] space-y-2 mb-4">
@@ -682,12 +716,33 @@ export const GameDetailPage: React.FC = () => {
                   DRM Himoyalangan Litsenziya
                 </span>
                 <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold ${
-                  game.subtitleStatus !== 'Tayyor' || game.subtitlePrice === 'Tez kunda'
-                    ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                    : 'bg-[#A3E635]/20 text-[#A3E635] border border-[#A3E635]/30'
+                  priceInfo.isPaid
+                    ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40'
+                    : priceInfo.isFree
+                    ? 'bg-[#A3E635]/20 text-[#A3E635] border border-[#A3E635]/30'
+                    : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
                 }`}>
-                  {game.subtitleStatus !== 'Tayyor' ? 'Tez kunda' : game.subtitlePrice}
+                  {priceInfo.text}
                 </span>
+              </div>
+
+              {/* Price Highlight Banner */}
+              <div className="p-3.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] flex items-center justify-between">
+                <div>
+                  <span className="text-[11px] text-gray-400 block font-medium">Subtitr litsenziyasi:</span>
+                  <span className="text-[10px] text-gray-500">1 Akkaunt = 1 Kompyuter</span>
+                </div>
+                <div className="text-right">
+                  <span className={`text-base sm:text-lg font-black tracking-tight ${
+                    priceInfo.isPaid
+                      ? 'text-sky-300'
+                      : priceInfo.isFree
+                      ? 'text-[#A3E635]'
+                      : 'text-amber-400'
+                  }`}>
+                    {priceInfo.text}
+                  </span>
+                </div>
               </div>
 
               <h3 className="text-base sm:text-lg font-bold text-white">
@@ -726,14 +781,24 @@ export const GameDetailPage: React.FC = () => {
                       <span>Google bilan kirish va litsenziya olish</span>
                     </button>
                   ) : !hasLicense ? (
-                    <button
-                      onClick={handleClaimLicense}
-                      disabled={isClaiming}
-                      className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-xs hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer disabled:opacity-60"
-                    >
-                      <KeyRound className="w-4 h-4" />
-                      <span>{isClaiming ? 'Biriktirilmoqda...' : 'Bepul litsenziyani faollashtirish'}</span>
-                    </button>
+                    priceInfo.isPaid ? (
+                      <button
+                        onClick={() => setIsClickModalOpen(true)}
+                        className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#0089D0] hover:bg-[#0077b5] text-white font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] shadow-lg shadow-sky-500/25 cursor-pointer"
+                      >
+                        <CreditCard className="w-4 h-4" />
+                        <span>Click orqali sotib olish ({priceInfo.text})</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleClaimLicense}
+                        disabled={isClaiming}
+                        className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-xs hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer disabled:opacity-60"
+                      >
+                        <KeyRound className="w-4 h-4" />
+                        <span>{isClaiming ? 'Biriktirilmoqda...' : 'Bepul litsenziyani faollashtirish'}</span>
+                      </button>
+                    )
                   ) : (
                     <div className="space-y-2.5">
                       <div className="p-3 rounded-xl bg-[#0B0D12] border border-[#2A3245] space-y-1.5 text-xs">

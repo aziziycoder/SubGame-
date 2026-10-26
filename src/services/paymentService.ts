@@ -23,6 +23,77 @@ export function parseGamePrice(priceStr?: string): number {
   return digits ? parseInt(digits, 10) : 0;
 }
 
+export interface GamePriceInfo {
+  text: string;
+  isFree: boolean;
+  isUpcoming: boolean;
+  isPaid: boolean;
+  numericAmount: number;
+}
+
+/**
+ * Standardized price calculator for cards, badges and checkout.
+ */
+export function getGamePriceInfo(game: Game): GamePriceInfo {
+  // 1. If subtitle is not yet ready, it's always "Tez kunda"
+  if (game.subtitleStatus !== 'Tayyor') {
+    return {
+      text: 'Tez kunda',
+      isFree: false,
+      isUpcoming: true,
+      isPaid: false,
+      numericAmount: 0,
+    };
+  }
+
+  // 2. Check if explicit "Tez kunda"
+  const rawSubPrice = (game.subtitlePrice || '').trim();
+  const rawPrice = (game.price || '').trim();
+
+  if (rawSubPrice.toLowerCase() === 'tez kunda' || rawPrice.toLowerCase() === 'tez kunda') {
+    return {
+      text: 'Tez kunda',
+      isFree: false,
+      isUpcoming: true,
+      isPaid: false,
+      numericAmount: 0,
+    };
+  }
+
+  // 3. Numeric price in price or subtitlePrice
+  const num = parseGamePrice(rawSubPrice) || parseGamePrice(rawPrice);
+  if (num > 0) {
+    const formatted = `${num.toLocaleString('ru-RU')} so‘m`;
+    return {
+      text: formatted,
+      isFree: false,
+      isUpcoming: false,
+      isPaid: true,
+      numericAmount: num,
+    };
+  }
+
+  // 4. "Pullik" without explicit numbers -> default 15 000 so‘m
+  if (rawSubPrice.toLowerCase() === 'pullik' || rawPrice.toLowerCase() === 'pullik') {
+    return {
+      text: '15 000 so‘m',
+      isFree: false,
+      isUpcoming: false,
+      isPaid: true,
+      numericAmount: 15000,
+    };
+  }
+
+  // 5. Free
+  return {
+    text: 'Bepul',
+    isFree: true,
+    isUpcoming: false,
+    isPaid: false,
+    numericAmount: 0,
+  };
+}
+
 export interface CreateOrderParams {
   userId: string;
   userEmail: string;
