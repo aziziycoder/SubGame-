@@ -59,7 +59,7 @@ export const GameDetailPage: React.FC = () => {
   }, [slug]);
 
   const { isFavorite, toggleFavorite } = useFavorites();
-  const { user, isLicenseClaimed, claimLicense, getGameLicense, signInWithGoogle } = useAuth();
+  const { user, isAdmin, isLicenseClaimed, claimLicense, getGameLicense, signInWithGoogle } = useAuth();
   const [isClaiming, setIsClaiming] = useState(false);
   const [claimSuccess, setClaimSuccess] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -129,7 +129,7 @@ export const GameDetailPage: React.FC = () => {
   }
 
   const favorited = isFavorite(game.id);
-  const hasLicense = isLicenseClaimed(game.id);
+  const hasLicense = isAdmin || isLicenseClaimed(game.id);
   const license = getGameLicense(game.id);
   const priceInfo = getGamePriceInfo(game);
 
@@ -785,23 +785,35 @@ export const GameDetailPage: React.FC = () => {
               </div>
 
               {/* Price Highlight Banner */}
-              <div className="p-3.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] flex items-center justify-between">
-                <div>
-                  <span className="text-[11px] text-gray-400 block font-medium">Subtitr litsenziyasi:</span>
-                  <span className="text-[10px] text-gray-500">1 Akkaunt = 1 Kompyuter</span>
-                </div>
-                <div className="text-right">
-                  <span className={`text-base sm:text-lg font-black tracking-tight ${
-                    priceInfo.isPaid
-                      ? 'text-sky-300'
-                      : priceInfo.isFree
-                      ? 'text-[#A3E635]'
-                      : 'text-amber-400'
-                  }`}>
-                    {priceInfo.text}
+              {isAdmin ? (
+                <div className="p-3.5 rounded-xl bg-[#0B0D12] border border-[#A3E635]/40 flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] text-[#A3E635] block font-bold">Admin hisobi:</span>
+                    <span className="text-[10px] text-gray-400">Barcha o‘yinlarga to‘liq bepul kirish</span>
+                  </div>
+                  <span className="text-xs px-2.5 py-1 rounded-md font-black bg-[#A3E635]/20 text-[#A3E635] border border-[#A3E635]/40">
+                    ADMIN
                   </span>
                 </div>
-              </div>
+              ) : (
+                <div className="p-3.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] text-gray-400 block font-medium">Subtitr litsenziyasi:</span>
+                    <span className="text-[10px] text-gray-500">1 Akkaunt = 1 Kompyuter</span>
+                  </div>
+                  <div className="text-right">
+                    <span className={`text-base sm:text-lg font-black tracking-tight ${
+                      priceInfo.isPaid
+                        ? 'text-sky-300'
+                        : priceInfo.isFree
+                        ? 'text-[#A3E635]'
+                        : 'text-amber-400'
+                    }`}>
+                      {priceInfo.text}
+                    </span>
+                  </div>
+                </div>
+              )}
 
               <h3 className="text-base sm:text-lg font-bold text-white">
                 1 Akkaunt = 1 Qurilma
@@ -863,22 +875,24 @@ export const GameDetailPage: React.FC = () => {
                         <div className="flex items-center justify-between">
                           <span className="text-gray-400">Holat:</span>
                           <span className="text-emerald-400 font-bold flex items-center gap-1">
-                            <CheckCircle2 className="w-3.5 h-3.5" /> Akkauntga biriktirilgan
+                            <CheckCircle2 className="w-3.5 h-3.5" /> {isAdmin ? 'Admin ruxsati (To‘liq kirish)' : 'Akkauntga biriktirilgan'}
                           </span>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-400">Qurilma (HWID):</span>
-                          <span className="text-gray-300 font-mono text-[11px]">
-                            {license?.hwid ? (
-                              <span className="text-[#A3E635] flex items-center gap-1">
-                                <Laptop className="w-3 h-3" />
-                                {license.boundDeviceName || `${license.hwid.substring(0, 10)}...`}
-                              </span>
-                            ) : (
-                              <span className="text-amber-400">Launcherni kuting</span>
-                            )}
-                          </span>
-                        </div>
+                        {!isAdmin && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-400">Qurilma (HWID):</span>
+                            <span className="text-gray-300 font-mono text-[11px]">
+                              {license?.hwid ? (
+                                <span className="text-[#A3E635] flex items-center gap-1">
+                                  <Laptop className="w-3 h-3" />
+                                  {license.boundDeviceName || `${license.hwid.substring(0, 10)}...`}
+                                </span>
+                              ) : (
+                                <span className="text-amber-400">Launcherni kuting</span>
+                              )}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <Link
@@ -951,7 +965,7 @@ export const GameDetailPage: React.FC = () => {
             )}
 
             {/* Official Store Purchase Card */}
-            {game.officialStoreLinks && game.officialStoreLinks.length > 0 && (
+            {!isAdmin && game.officialStoreLinks && game.officialStoreLinks.length > 0 && (
               <div className="bg-[#141821] rounded-2xl p-5 sm:p-6 border border-[#2A3245] space-y-4">
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
                   <ShoppingCart className="w-4 h-4 text-[#A3E635]" />
@@ -1057,7 +1071,7 @@ export const GameDetailPage: React.FC = () => {
       )}
 
       {/* Click Payment Modal */}
-      {isClickModalOpen && user && (
+      {isClickModalOpen && user && !isAdmin && (
         <ClickPaymentModal
           game={game}
           user={user}

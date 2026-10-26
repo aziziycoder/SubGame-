@@ -204,6 +204,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const isLicenseClaimed = (gameId: string): boolean => {
+    if (isAdmin) return true;
     return !!licenses[gameId];
   };
 
