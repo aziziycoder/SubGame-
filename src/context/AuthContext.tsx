@@ -17,15 +17,7 @@ import {
 import { auth, db, googleProvider } from '../services/firebase';
 import type { GameLicense, UserProfile } from '../types/auth';
 
-export const ADMIN_EMAILS = [
-  'azizbekgulomovweb@gmail.com',
-  'azizbekgulomovcoder@gmail.com',
-];
-
-export const OWNER_LINKED_EMAILS = [
-  'azizbekgulomovweb@gmail.com',
-  'azizbekgulomovcoder@gmail.com',
-];
+export const ADMIN_EMAILS = ['azizbekgulomovweb@gmail.com'];
 
 interface AuthContextType {
   user: User | null;
@@ -76,12 +68,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             displayName: currentUser.displayName,
             photoURL: currentUser.photoURL,
             lastLoginAt: serverTimestamp(),
+            role: isMaster ? 'admin' : 'user',
+            isAdmin: isMaster,
           };
-
-          if (isMaster) {
-            syncData.role = 'admin';
-            syncData.isAdmin = true;
-          }
 
           await setDoc(userRef, syncData, { merge: true });
         } catch (err) {
@@ -97,8 +86,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               email: data.email || currentUser.email,
               displayName: data.displayName || currentUser.displayName,
               photoURL: data.photoURL || currentUser.photoURL,
-              role: data.role || (isMaster ? 'admin' : 'user'),
-              isAdmin: Boolean(data.isAdmin || data.role === 'admin' || isMaster),
+              role: isMaster ? 'admin' : (data.role || 'user'),
+              isAdmin: Boolean(isMaster || (data.isAdmin && data.role === 'admin')),
               createdAt: data.createdAt,
               lastLoginAt: data.lastLoginAt,
             });
@@ -128,51 +117,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
-      const isOwnerAccount = Boolean(
-        user.email && OWNER_LINKED_EMAILS.some((e) => e.toLowerCase() === user.email?.toLowerCase())
-      );
-
-      // If developer account, load both this account's licenses and existing master licenses
-      const targetUids = isOwnerAccount && user.uid !== 'A60znZ4poze0mvdeEqh8Xcr5Lj62'
-        ? [user.uid, 'A60znZ4poze0mvdeEqh8Xcr5Lj62']
-        : [user.uid];
-
-      const q = query(collection(db, 'licenses'), where('userId', 'in', targetUids));
+      const q = query(collection(db, 'licenses'), where('userId', '==', user.uid));
       const unsubscribeLicenses = onSnapshot(q, (snapshot) => {
         const licenseMap: Record<string, GameLicense> = {};
-        const licensesToSync: GameLicense[] = [];
-
         snapshot.forEach((docSnap) => {
           const data = docSnap.data() as GameLicense;
           licenseMap[data.gameId] = {
             ...data,
             id: docSnap.id,
           };
-          if (isOwnerAccount && data.userId !== user.uid) {
-            licensesToSync.push(data);
-          }
         });
-
         setLicenses(licenseMap);
-
-        // Auto-sync master licenses to current developer account in Firestore
-        if (licensesToSync.length > 0) {
-          for (const lic of licensesToSync) {
-            const newDocId = `${user.uid}_${lic.gameId}`;
-            const licRef = doc(db, 'licenses', newDocId);
-            setDoc(
-              licRef,
-              {
-                ...lic,
-                id: newDocId,
-                userId: user.uid,
-                userEmail: user.email || lic.userEmail,
-                userName: user.displayName || lic.userName,
-              },
-              { merge: true }
-            ).catch((err) => console.warn('Sync license error:', err));
-          }
-        }
       }, (error) => {
         console.warn('Error listening to licenses:', error);
       });
