@@ -1,10 +1,10 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { getGames } from '../../services/gamesService';
 import type { Game } from '../../types/game';
 import { GameCard } from '../game/GameCard';
-import { ArrowRight, ChevronLeft, ChevronRight, Sparkles, Loader2 } from 'lucide-react';
-import { getGamePriceInfo } from '../../services/paymentService';
+import { ArrowRight, ChevronLeft, ChevronRight, Sparkles, Loader2, RotateCcw } from 'lucide-react';
+
 
 export const FeaturedGames: React.FC = () => {
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -12,7 +12,7 @@ export const FeaturedGames: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
-  const [filterTab, setFilterTab] = useState<'all' | 'ready' | 'upcoming' | 'free' | 'paid'>('all');
+  const [activeFilter, setActiveFilter] = useState<'ready' | 'inProgress' | 'upcoming' | null>(null);
 
   useEffect(() => {
     getGames()
@@ -24,14 +24,36 @@ export const FeaturedGames: React.FC = () => {
       });
   }, []);
 
-  const filteredGames = games.filter((game) => {
-    if (filterTab === 'ready') return game.subtitleStatus === 'Tayyor';
-    if (filterTab === 'upcoming') return game.subtitleStatus !== 'Tayyor';
-    const priceInfo = getGamePriceInfo(game);
-    if (filterTab === 'free') return priceInfo.isFree;
-    if (filterTab === 'paid') return priceInfo.isPaid;
-    return true;
-  });
+  // Compute live subtitle status statistics
+  const stats = useMemo(() => {
+    let ready = 0;
+    let inProgress = 0;
+    let upcoming = 0;
+
+    games.forEach((game) => {
+      const s = (game.subtitleStatus || '').trim().toLowerCase();
+      if (s === 'tayyor') {
+        ready++;
+      } else if (s === 'jarayonda' || s === 'ishlab chiqilmoqda') {
+        inProgress++;
+      } else {
+        upcoming++;
+      }
+    });
+
+    return { ready, inProgress, upcoming, total: games.length };
+  }, [games]);
+
+  const filteredGames = useMemo(() => {
+    if (!activeFilter) return games;
+    return games.filter((game) => {
+      const s = (game.subtitleStatus || '').trim().toLowerCase();
+      if (activeFilter === 'ready') return s === 'tayyor';
+      if (activeFilter === 'inProgress') return s === 'jarayonda' || s === 'ishlab chiqilmoqda';
+      if (activeFilter === 'upcoming') return s !== 'tayyor' && s !== 'jarayonda' && s !== 'ishlab chiqilmoqda';
+      return true;
+    });
+  }, [games, activeFilter]);
 
   const checkScroll = () => {
     if (sliderRef.current) {
@@ -91,59 +113,89 @@ export const FeaturedGames: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Filter Tabs */}
-            <div className="flex items-center bg-[#141821] p-1 rounded-xl border border-[#2A3245]">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+            {/* Live Subtitle Statistics */}
+            <div className="flex items-center gap-1.5 sm:gap-2 p-1 rounded-2xl bg-[#141821] border border-[#2A3245]">
+              {/* Tayyor Stat Pill */}
               <button
-                onClick={() => setFilterTab('all')}
-                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
-                  filterTab === 'all'
-                    ? 'bg-[#A3E635] text-[#0B0D12]'
-                    : 'text-gray-400 hover:text-white'
+                onClick={() => setActiveFilter(activeFilter === 'ready' ? null : 'ready')}
+                className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  activeFilter === 'ready'
+                    ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/25 ring-2 ring-emerald-400/30'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
                 }`}
+                title="Tayyor subtitrli o‘yinlar (Filtrlash uchun bosing)"
               >
-                Barchasi ({games.length})
+                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
+                <span>Tayyor</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                    activeFilter === 'ready'
+                      ? 'bg-black/25 text-white'
+                      : 'bg-emerald-500/15 text-emerald-400'
+                  }`}
+                >
+                  {stats.ready} ta
+                </span>
               </button>
+
+              {/* Jarayonda Stat Pill */}
               <button
-                onClick={() => setFilterTab('ready')}
-                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
-                  filterTab === 'ready'
-                    ? 'bg-[#A3E635] text-[#0B0D12]'
-                    : 'text-gray-400 hover:text-white'
+                onClick={() => setActiveFilter(activeFilter === 'inProgress' ? null : 'inProgress')}
+                className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  activeFilter === 'inProgress'
+                    ? 'bg-sky-500 text-white shadow-sm shadow-sky-500/25 ring-2 ring-sky-400/30'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
                 }`}
+                title="Jarayondagi subtitrli o‘yinlar (Filtrlash uchun bosing)"
               >
-                Tayyor
+                <span className="w-2 h-2 rounded-full bg-sky-400 shrink-0 animate-pulse" />
+                <span>Jarayonda</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                    activeFilter === 'inProgress'
+                      ? 'bg-black/25 text-white'
+                      : 'bg-sky-500/15 text-sky-400'
+                  }`}
+                >
+                  {stats.inProgress} ta
+                </span>
               </button>
+
+              {/* Tez kunda Stat Pill */}
               <button
-                onClick={() => setFilterTab('upcoming')}
-                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
-                  filterTab === 'upcoming'
-                    ? 'bg-[#A3E635] text-[#0B0D12]'
-                    : 'text-gray-400 hover:text-white'
+                onClick={() => setActiveFilter(activeFilter === 'upcoming' ? null : 'upcoming')}
+                className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  activeFilter === 'upcoming'
+                    ? 'bg-amber-500 text-white shadow-sm shadow-amber-500/25 ring-2 ring-amber-400/30'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
                 }`}
+                title="Tez kunda chiqadigan subtitrli o‘yinlar (Filtrlash uchun bosing)"
               >
-                Kutilayotgan
+                <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
+                <span>Tez kunda</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                    activeFilter === 'upcoming'
+                      ? 'bg-black/25 text-white'
+                      : 'bg-amber-500/15 text-amber-400'
+                  }`}
+                >
+                  {stats.upcoming} ta
+                </span>
               </button>
-              <button
-                onClick={() => setFilterTab('free')}
-                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
-                  filterTab === 'free'
-                    ? 'bg-[#A3E635] text-[#0B0D12]'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                Tekin (Bepul)
-              </button>
-              <button
-                onClick={() => setFilterTab('paid')}
-                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
-                  filterTab === 'paid'
-                    ? 'bg-sky-400 text-[#0B0D12]'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                Pullik
-              </button>
+
+              {/* Reset to All if filtered */}
+              {activeFilter && (
+                <button
+                  onClick={() => setActiveFilter(null)}
+                  className="flex items-center gap-1 px-2 py-1 text-[11px] font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
+                  title="Barcha o‘yinlarni ko‘rsatish"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span className="hidden sm:inline">Barchasi</span>
+                </button>
+              )}
             </div>
 
             {/* Slider Arrow Buttons */}
