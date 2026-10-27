@@ -65,17 +65,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           const userSnap = await getDoc(userRef);
           if (!userSnap.exists()) {
-            // First time registration: create default user profile
-            await setDoc(userRef, {
+            // First time registration: create default user profile without role fields for non-admins to satisfy security rules
+            const newUserData: Record<string, any> = {
               uid: currentUser.uid,
               email: currentUser.email,
               displayName: currentUser.displayName,
               photoURL: currentUser.photoURL,
               createdAt: serverTimestamp(),
               lastLoginAt: serverTimestamp(),
-              role: isMaster ? 'admin' : 'user',
-              isAdmin: isMaster,
-            });
+            };
+
+            if (isMaster) {
+              newUserData.role = 'admin';
+              newUserData.isAdmin = true;
+            }
+
+            await setDoc(userRef, newUserData);
           } else {
             // Existing user: only update login timestamp and profile details.
             // DO NOT overwrite role or isAdmin if already assigned in Firestore!

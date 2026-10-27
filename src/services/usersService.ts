@@ -2,11 +2,13 @@ import {
   collection,
   getDocs,
   doc,
+  setDoc,
   updateDoc,
   deleteDoc,
   query,
   orderBy,
-  writeBatch
+  writeBatch,
+  serverTimestamp
 } from 'firebase/firestore';
 import { db } from './firebase';
 import type { UserProfile, GameLicense, UserWithLicenses, UserRole } from '../types/auth';
@@ -55,13 +57,11 @@ export const getAllUsersWithLicenses = async (): Promise<{
     });
 
     const knownUserIds = new Set(rawUsers.map((u) => u.uid));
+    const recoveredUsersMap = new Map<string, UserProfile>();
 
     // 2. Fetch all licenses
     const licensesSnapshot = await getDocs(collection(db, 'licenses'));
     const licensesByUser: Record<string, GameLicense[]> = {};
-    let activeUserLicenses = 0;
-    let activeUserBoundDevices = 0;
-    let orphanedCount = 0;
 
     licensesSnapshot.forEach((docSnap) => {
       const lic = { id: docSnap.id, ...docSnap.data() } as GameLicense;
@@ -70,6 +70,53 @@ export const getAllUsersWithLicenses = async (): Promise<{
       }
       licensesByUser[lic.userId].push(lic);
 
+      // Auto-detect and recover legitimate users who claimed games but were missing from users collection
+      if (!knownUserIds.has(lic.userId) && lic.userId && lic.userEmail) {
+        if (!recoveredUsersMap.has(lic.userId)) {
+          const recovered: UserProfile = {
+            uid: lic.userId,
+            email: lic.userEmail,
+            displayName: lic.userName || lic.userEmail.split('@')[0],
+            photoURL: lic.userPhoto || null,
+            role: 'user',
+            isAdmin: false,
+            createdAt: lic.createdAt || null,
+            lastLoginAt: lic.createdAt || null,
+          };
+          recoveredUsersMap.set(lic.userId, recovered);
+
+          // Asynchronously persist to users collection in Firestore
+          setDoc(
+            doc(db, 'users', lic.userId),
+            {
+              uid: recovered.uid,
+              email: recovered.email,
+              displayName: recovered.displayName,
+              photoURL: recovered.photoURL,
+              role: 'user',
+              isAdmin: false,
+              createdAt: recovered.createdAt || serverTimestamp(),
+              lastLoginAt: recovered.lastLoginAt || serverTimestamp(),
+            },
+            { merge: true }
+          ).catch((e) => console.warn('Auto-sync missing user doc error:', e));
+        }
+      }
+    });
+
+    // Merge recovered users into rawUsers
+    recoveredUsersMap.forEach((u) => {
+      rawUsers.push(u);
+      knownUserIds.add(u.uid);
+    });
+
+    // Compute active vs truly orphaned licenses
+    let activeUserLicenses = 0;
+    let activeUserBoundDevices = 0;
+    let orphanedCount = 0;
+
+    licensesSnapshot.forEach((docSnap) => {
+      const lic = docSnap.data() as GameLicense;
       if (knownUserIds.has(lic.userId)) {
         activeUserLicenses++;
         if (lic.hwid) {
@@ -249,6 +296,9 @@ export const cleanupOrphanedLicenses = async (): Promise<{
     const licensesSnapshot = await getDocs(collection(db, 'licenses'));
     const orphanedDocs = licensesSnapshot.docs.filter((d) => {
       const data = d.data();
+      // Keep any license that has a valid Google user email to prevent data loss
+      const hasRealUserEmail = Boolean(data.userEmail && data.userEmail.includes('@'));
+      if (hasRealUserEmail) return false;
       return !data.userId || !validUserIds.has(data.userId);
     });
 

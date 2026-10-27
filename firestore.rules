@@ -83,8 +83,8 @@ service cloud.firestore {
       allow list: if isAdmin();
       allow create: if isAdmin() || (
         isOwner(userId) &&
-        !('role' in request.resource.data) &&
-        !('isAdmin' in request.resource.data)
+        (!('role' in request.resource.data) || request.resource.data.role == 'user') &&
+        (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == false)
       );
       allow update: if isAdmin() || (
         isOwner(userId) &&
