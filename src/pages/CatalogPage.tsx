@@ -5,17 +5,12 @@ import type { Game } from '../types/game';
 import { GameCard } from '../components/game/GameCard';
 import {
   Search,
-  Filter,
   RotateCcw,
   Layers,
   Loader2,
-  Tag,
-  CheckCircle2,
-  ArrowUpDown,
   X,
   ChevronLeft,
   ChevronRight,
-  ShieldCheck,
 } from 'lucide-react';
 import { getGamePriceInfo } from '../services/paymentService';
 
@@ -212,12 +207,13 @@ export const CatalogPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Modern Filter Hub Card */}
-        <div className="bg-[#141821] border border-[#2A3245] rounded-3xl p-5 sm:p-6 mb-8 space-y-5 shadow-2xl">
-          {/* Row 1: Search & Sort Bar */}
-          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
+        {/* Minimalist Filter Section */}
+        <div className="space-y-3.5 mb-8">
+          {/* Top Row: Search + Minimalist Filters Toolbar */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2.5">
             {/* Search Input */}
             <div className="relative flex-1">
+              <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 placeholder="O‘yin nomi, janri yoki studiyani qidiring..."
@@ -230,16 +226,15 @@ export const CatalogPage: React.FC = () => {
                     setSearchParams({});
                   }
                 }}
-                className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-white placeholder-gray-500 text-xs sm:text-sm focus:outline-none focus:border-[#A3E635] focus:ring-1 focus:ring-[#A3E635]/40 transition-all shadow-inner"
+                className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-[#141821] border border-[#2A3245] hover:border-gray-600 focus:border-[#A3E635] text-white placeholder-gray-500 text-xs sm:text-sm focus:outline-none transition-all shadow-sm"
               />
-              <Search className="w-4 h-4 text-[#A3E635] absolute left-3.5 top-1/2 -translate-y-1/2" />
               {searchQuery && (
                 <button
                   onClick={() => {
                     setSearchQuery('');
                     setSearchParams({});
                   }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-0.5 rounded cursor-pointer transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-0.5 rounded cursor-pointer transition-colors"
                   title="Qidiruvni tozalash"
                 >
                   <X className="w-3.5 h-3.5" />
@@ -247,30 +242,71 @@ export const CatalogPage: React.FC = () => {
               )}
             </div>
 
-            {/* Sort Dropdown */}
-            <div className="flex items-center gap-2 shrink-0">
-              <div className="relative flex-1 sm:flex-initial">
+            {/* Compact Filter Controls (Status, Price, Sort) */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+              {/* Subtitle Status Dropdown */}
+              <div className="relative shrink-0">
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className={`appearance-none pl-3.5 pr-7 py-2.5 rounded-2xl text-xs font-semibold cursor-pointer border transition-all focus:outline-none ${
+                    selectedStatus !== 'Barchasi'
+                      ? 'bg-[#A3E635]/15 text-[#A3E635] border-[#A3E635]/50'
+                      : 'bg-[#141821] text-gray-300 border-[#2A3245] hover:border-gray-600'
+                  }`}
+                >
+                  <option value="Barchasi" className="bg-[#141821] text-white">Subtitr: Barchasi</option>
+                  <option value="Tayyor" className="bg-[#141821] text-emerald-400">● Tayyor ({statusCounts.ready})</option>
+                  <option value="Jarayonda" className="bg-[#141821] text-sky-400">● Jarayonda ({statusCounts.inProgress})</option>
+                  <option value="Tez kunda" className="bg-[#141821] text-amber-400">● Tez kunda ({statusCounts.upcoming})</option>
+                </select>
+                <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400">▼</span>
+              </div>
+
+              {/* Price Dropdown */}
+              <div className="relative shrink-0">
+                <select
+                  value={selectedPrice}
+                  onChange={(e) => setSelectedPrice(e.target.value as any)}
+                  className={`appearance-none pl-3.5 pr-7 py-2.5 rounded-2xl text-xs font-semibold cursor-pointer border transition-all focus:outline-none ${
+                    selectedPrice !== 'all'
+                      ? 'bg-sky-500/15 text-sky-400 border-sky-500/50'
+                      : 'bg-[#141821] text-gray-300 border-[#2A3245] hover:border-gray-600'
+                  }`}
+                >
+                  <option value="all" className="bg-[#141821] text-white">Narx: Barchasi</option>
+                  <option value="free" className="bg-[#141821] text-emerald-400">Bepul ({priceCounts.free})</option>
+                  <option value="paid" className="bg-[#141821] text-sky-400">Pullik ({priceCounts.paid})</option>
+                </select>
+                <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400">▼</span>
+              </div>
+
+              {/* Sort Dropdown */}
+              <div className="relative shrink-0">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="w-full sm:w-auto appearance-none pl-9 pr-9 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-white text-xs sm:text-sm focus:outline-none focus:border-[#A3E635] transition-all cursor-pointer font-medium"
+                  className={`appearance-none pl-3.5 pr-7 py-2.5 rounded-2xl text-xs font-semibold cursor-pointer border transition-all focus:outline-none ${
+                    sortBy !== 'newest'
+                      ? 'bg-white/10 text-white border-white/30'
+                      : 'bg-[#141821] text-gray-300 border-[#2A3245] hover:border-gray-600'
+                  }`}
                 >
-                  <option value="newest">Yil: Yangi o‘yinlar</option>
-                  <option value="oldest">Yil: Avvalgi o‘yinlar</option>
-                  <option value="title">Alifbo: A–Z</option>
+                  <option value="newest" className="bg-[#141821] text-white">Saralash: Yangi</option>
+                  <option value="oldest" className="bg-[#141821] text-white">Saralash: Avvalgi</option>
+                  <option value="title" className="bg-[#141821] text-white">Saralash: A–Z</option>
                 </select>
-                <ArrowUpDown className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 text-[10px]">▼</span>
+                <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400">▼</span>
               </div>
 
-              {/* Reset Filters Button */}
+              {/* Reset Button (only if active) */}
               {hasActiveFilters && (
                 <button
                   onClick={resetFilters}
                   title="Barcha filtrlarni tozalash"
-                  className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold transition-all cursor-pointer whitespace-nowrap"
+                  className="flex items-center gap-1.5 px-3 py-2.5 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0"
                 >
-                  <RotateCcw className="w-3.5 h-3.5" />
+                  <RotateCcw className="w-3 h-3" />
                   <span className="hidden sm:inline">Tozalash</span>
                   <span className="px-1.5 py-0.2 rounded-full bg-rose-500/20 text-[10px] font-mono">
                     {activeFiltersCount}
@@ -280,175 +316,21 @@ export const CatalogPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Row 2: Segmented Controls for Subtitle Status & Price */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 pt-3 border-t border-[#2A3245]/60">
-            {/* Status Segmented Buttons (7 cols) */}
-            <div className="lg:col-span-7 space-y-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#A3E635]" />
-                Subtitr holati:
-              </span>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1 rounded-xl bg-[#0B0D12] border border-[#2A3245]">
-                <button
-                  onClick={() => setSelectedStatus('Barchasi')}
-                  className={`text-xs px-2.5 py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                    selectedStatus === 'Barchasi'
-                      ? 'bg-[#A3E635] text-[#0B0D12] shadow-sm shadow-[#A3E635]/25'
-                      : 'text-gray-300 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <span>Barchasi</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                    selectedStatus === 'Barchasi' ? 'bg-[#0B0D12]/20 text-[#0B0D12]' : 'bg-[#141821] text-gray-400'
-                  }`}>
-                    {statusCounts.all}
-                  </span>
-                </button>
+          {/* Minimalist Dynamic Genres Strip */}
+          <div className="relative flex items-center">
+            {/* Scroll Left Button */}
+            <button
+              onClick={() => scrollGenres('left')}
+              className="hidden sm:flex items-center justify-center w-7 h-7 rounded-full bg-[#141821] hover:bg-[#1E2536] text-gray-400 hover:text-white border border-[#2A3245] shadow-sm transition-all cursor-pointer mr-2 shrink-0"
+              title="Chapga siljitish"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
 
-                <button
-                  onClick={() => setSelectedStatus('Tayyor')}
-                  className={`text-xs px-2.5 py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                    selectedStatus === 'Tayyor'
-                      ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/25'
-                      : 'text-gray-300 hover:text-emerald-400 hover:bg-emerald-500/10'
-                  }`}
-                >
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
-                  <span>Tayyor</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                    selectedStatus === 'Tayyor' ? 'bg-black/30 text-white' : 'bg-[#141821] text-gray-400'
-                  }`}>
-                    {statusCounts.ready}
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => setSelectedStatus('Jarayonda')}
-                  className={`text-xs px-2.5 py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                    selectedStatus === 'Jarayonda'
-                      ? 'bg-sky-500 text-white shadow-sm shadow-sky-500/25'
-                      : 'text-gray-300 hover:text-sky-400 hover:bg-sky-500/10'
-                  }`}
-                >
-                  <span className="w-2 h-2 rounded-full bg-sky-400 shrink-0" />
-                  <span>Jarayonda</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                    selectedStatus === 'Jarayonda' ? 'bg-black/30 text-white' : 'bg-[#141821] text-gray-400'
-                  }`}>
-                    {statusCounts.inProgress}
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => setSelectedStatus('Tez kunda')}
-                  className={`text-xs px-2.5 py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                    selectedStatus === 'Tez kunda'
-                      ? 'bg-amber-500 text-white shadow-sm shadow-amber-500/25'
-                      : 'text-gray-300 hover:text-amber-400 hover:bg-amber-500/10'
-                  }`}
-                >
-                  <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
-                  <span>Tez kunda</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                    selectedStatus === 'Tez kunda' ? 'bg-black/30 text-white' : 'bg-[#141821] text-gray-400'
-                  }`}>
-                    {statusCounts.upcoming}
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            {/* Price Segmented Buttons (5 cols) */}
-            <div className="lg:col-span-5 space-y-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
-                <Tag className="w-3.5 h-3.5 text-sky-400" />
-                Narx toifasi:
-              </span>
-              <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-[#0B0D12] border border-[#2A3245]">
-                <button
-                  onClick={() => setSelectedPrice('all')}
-                  className={`text-xs px-2 py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                    selectedPrice === 'all'
-                      ? 'bg-[#A3E635] text-[#0B0D12] shadow-sm shadow-[#A3E635]/25'
-                      : 'text-gray-300 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <span>Barchasi</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                    selectedPrice === 'all' ? 'bg-[#0B0D12]/20 text-[#0B0D12]' : 'bg-[#141821] text-gray-400'
-                  }`}>
-                    {priceCounts.all}
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => setSelectedPrice('free')}
-                  className={`text-xs px-2 py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                    selectedPrice === 'free'
-                      ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/25'
-                      : 'text-emerald-400 hover:bg-emerald-500/10'
-                  }`}
-                >
-                  <ShieldCheck className="w-3 h-3 shrink-0" />
-                  <span>Bepul</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                    selectedPrice === 'free' ? 'bg-black/30 text-white' : 'bg-[#141821] text-gray-400'
-                  }`}>
-                    {priceCounts.free}
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => setSelectedPrice('paid')}
-                  className={`text-xs px-2 py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                    selectedPrice === 'paid'
-                      ? 'bg-sky-500 text-white shadow-sm shadow-sky-500/25'
-                      : 'text-sky-300 hover:bg-sky-500/10'
-                  }`}
-                >
-                  <Tag className="w-3 h-3 shrink-0" />
-                  <span>Pullik</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                    selectedPrice === 'paid' ? 'bg-black/30 text-white' : 'bg-[#141821] text-gray-400'
-                  }`}>
-                    {priceCounts.paid}
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Row 3: 100% Dynamic Database-Driven Genre Chips */}
-          <div className="pt-3 border-t border-[#2A3245]/60 space-y-2.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
-                <Filter className="w-3.5 h-3.5 text-[#A3E635]" />
-                Janrlar (bazada {dynamicGenres.length - 1} ta):
-              </span>
-
-              {/* Scroll buttons for long genre lists */}
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => scrollGenres('left')}
-                  className="p-1 rounded-lg bg-[#0B0D12] hover:bg-[#1A202C] text-gray-400 hover:text-white border border-[#2A3245] transition-colors cursor-pointer"
-                  title="Chapga siljitish"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  onClick={() => scrollGenres('right')}
-                  className="p-1 rounded-lg bg-[#0B0D12] hover:bg-[#1A202C] text-gray-400 hover:text-white border border-[#2A3245] transition-colors cursor-pointer"
-                  title="O‘ngga siljitish"
-                >
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Horizontally scrollable genre chips */}
+            {/* Scrollable Genres */}
             <div
               ref={genreScrollRef}
-              className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none scroll-smooth"
+              className="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none scroll-smooth flex-1"
             >
               {dynamicGenres.map((genre) => {
                 const isSelected = selectedGenre.toLowerCase() === genre.name.toLowerCase();
@@ -457,10 +339,10 @@ export const CatalogPage: React.FC = () => {
                   <button
                     key={genre.name}
                     onClick={() => setSelectedGenre(genre.name)}
-                    className={`text-xs px-3.5 py-1.5 rounded-xl shrink-0 transition-all flex items-center gap-1.5 cursor-pointer ${
+                    className={`text-xs px-3 py-1.5 rounded-xl shrink-0 transition-all flex items-center gap-1.5 cursor-pointer font-medium ${
                       isSelected
-                        ? 'bg-[#A3E635] text-[#0B0D12] font-black shadow-accent-glow scale-[1.02] border border-[#A3E635]'
-                        : 'bg-[#0B0D12] text-gray-300 hover:text-white hover:bg-[#1A202C] border border-[#2A3245]'
+                        ? 'bg-[#A3E635] text-[#0B0D12] font-black shadow-sm shadow-[#A3E635]/25 scale-[1.02]'
+                        : 'bg-[#141821] text-gray-400 hover:text-white hover:bg-[#1C2230] border border-[#2A3245]/70 hover:border-gray-600'
                     }`}
                   >
                     <span>{genre.name}</span>
@@ -468,7 +350,7 @@ export const CatalogPage: React.FC = () => {
                       className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                         isSelected
                           ? 'bg-[#0B0D12]/20 text-[#0B0D12] font-bold'
-                          : 'bg-[#141821] text-gray-400'
+                          : 'bg-[#0B0D12] text-gray-400'
                       }`}
                     >
                       {genre.count}
@@ -477,6 +359,15 @@ export const CatalogPage: React.FC = () => {
                 );
               })}
             </div>
+
+            {/* Scroll Right Button */}
+            <button
+              onClick={() => scrollGenres('right')}
+              className="hidden sm:flex items-center justify-center w-7 h-7 rounded-full bg-[#141821] hover:bg-[#1E2536] text-gray-400 hover:text-white border border-[#2A3245] shadow-sm transition-all cursor-pointer ml-2 shrink-0"
+              title="O‘ngga siljitish"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
 
