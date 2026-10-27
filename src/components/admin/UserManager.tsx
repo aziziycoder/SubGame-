@@ -18,7 +18,8 @@ import {
   Copy,
   Check,
   RotateCcw,
-  ChevronRight
+  ChevronRight,
+  Trash2
 } from 'lucide-react';
 import type { UserWithLicenses, UserRole } from '../../types/auth';
 import {
@@ -27,6 +28,7 @@ import {
   resetLicenseHwid,
   toggleLicenseStatus,
   deleteLicense,
+  cleanupOrphanedLicenses,
   type UserStats
 } from '../../services/usersService';
 import { ADMIN_EMAILS } from '../../context/AuthContext';
@@ -38,7 +40,10 @@ export const UserManager: React.FC = () => {
     totalAdmins: 0,
     totalLicenses: 0,
     totalBoundDevices: 0,
+    orphanedLicensesCount: 0,
+    rawLicensesCount: 0,
   });
+  const [cleaningOrphans, setCleaningOrphans] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -184,6 +189,34 @@ export const UserManager: React.FC = () => {
     }
   };
 
+  const handleCleanupOrphaned = async () => {
+    if (
+      !window.confirm(
+        `Bazada ro‘yxatdan o‘tgan faol foydalanuvchilarga tegishli bo‘lmagan ${stats.orphanedLicensesCount} ta egasiz (yetim) litsenziya topildi.\n\nUlarni butunlay o‘chirib tozalashni tasdiqlaysizmi?`
+      )
+    ) {
+      return;
+    }
+
+    setCleaningOrphans(true);
+    try {
+      const res = await cleanupOrphanedLicenses();
+      if (res.success) {
+        showToast(
+          `${res.deletedCount} ta egasiz litsenziya muvaffaqiyatli tozalandi!`,
+          'success'
+        );
+        await loadData(true);
+      } else {
+        showToast(res.error || 'Tozalashda xatolik yuz berdi', 'error');
+      }
+    } catch (err: any) {
+      showToast('Xatolik: ' + err.message, 'error');
+    } finally {
+      setCleaningOrphans(false);
+    }
+  };
+
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
@@ -282,7 +315,17 @@ export const UserManager: React.FC = () => {
             <span className="text-3xl font-black text-cyan-400">{stats.totalLicenses}</span>
             <Gamepad2 className="w-5 h-5 text-cyan-500" />
           </div>
-          <span className="text-[11px] text-gray-500 block">Foydalanuvchilar olgan o‘yinlar</span>
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] text-gray-500 block">Faol userlar olgan o‘yinlar</span>
+            {stats.orphanedLicensesCount > 0 && (
+              <span
+                className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 font-semibold"
+                title="Bazada egasi mavjud bo‘lmagan eski litsenziyalar"
+              >
+                +{stats.orphanedLicensesCount} egasiz
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="p-5 rounded-2xl bg-[#141821] border border-purple-500/20 space-y-2">
@@ -353,14 +396,28 @@ export const UserManager: React.FC = () => {
           </div>
         </div>
 
-        <button
-          onClick={() => loadData(true)}
-          disabled={refreshing || loading}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1E2533] text-gray-200 hover:text-white border border-[#2A3245] text-sm font-bold transition-all disabled:opacity-50"
-        >
-          <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-[#A3E635]' : ''}`} />
-          <span>Yangilash</span>
-        </button>
+        <div className="flex items-center gap-2 self-end md:self-auto flex-wrap">
+          {stats.orphanedLicensesCount > 0 && (
+            <button
+              onClick={handleCleanupOrphaned}
+              disabled={cleaningOrphans || refreshing || loading}
+              className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs sm:text-sm font-bold transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+              title="Mavjud bo‘lmagan eski foydalanuvchilarning litsenziyalarini bazadan o‘chirish"
+            >
+              <Trash2 className={`w-4 h-4 ${cleaningOrphans ? 'animate-spin' : ''}`} />
+              <span>Yetim litsenziyalarni tozalash ({stats.orphanedLicensesCount})</span>
+            </button>
+          )}
+
+          <button
+            onClick={() => loadData(true)}
+            disabled={refreshing || loading}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1E2533] text-gray-200 hover:text-white border border-[#2A3245] text-sm font-bold transition-all disabled:opacity-50 cursor-pointer"
+          >
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-[#A3E635]' : ''}`} />
+            <span>Yangilash</span>
+          </button>
+        </div>
       </div>
 
       {/* Users Table / List */}

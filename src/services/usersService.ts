@@ -5,7 +5,8 @@ import {
   updateDoc,
   deleteDoc,
   query,
-  orderBy
+  orderBy,
+  writeBatch
 } from 'firebase/firestore';
 import { db } from './firebase';
 import type { UserProfile, GameLicense, UserWithLicenses, UserRole } from '../types/auth';
@@ -16,6 +17,8 @@ export interface UserStats {
   totalAdmins: number;
   totalLicenses: number;
   totalBoundDevices: number;
+  orphanedLicensesCount: number;
+  rawLicensesCount: number;
 }
 
 /**
@@ -51,10 +54,14 @@ export const getAllUsersWithLicenses = async (): Promise<{
       });
     });
 
+    const knownUserIds = new Set(rawUsers.map((u) => u.uid));
+
     // 2. Fetch all licenses
     const licensesSnapshot = await getDocs(collection(db, 'licenses'));
     const licensesByUser: Record<string, GameLicense[]> = {};
-    let totalBoundDevices = 0;
+    let activeUserLicenses = 0;
+    let activeUserBoundDevices = 0;
+    let orphanedCount = 0;
 
     licensesSnapshot.forEach((docSnap) => {
       const lic = { id: docSnap.id, ...docSnap.data() } as GameLicense;
@@ -63,8 +70,13 @@ export const getAllUsersWithLicenses = async (): Promise<{
       }
       licensesByUser[lic.userId].push(lic);
 
-      if (lic.hwid) {
-        totalBoundDevices++;
+      if (knownUserIds.has(lic.userId)) {
+        activeUserLicenses++;
+        if (lic.hwid) {
+          activeUserBoundDevices++;
+        }
+      } else {
+        orphanedCount++;
       }
     });
 
@@ -104,8 +116,10 @@ export const getAllUsersWithLicenses = async (): Promise<{
     const stats: UserStats = {
       totalUsers: usersWithLicenses.length,
       totalAdmins,
-      totalLicenses: licensesSnapshot.size,
-      totalBoundDevices,
+      totalLicenses: activeUserLicenses, // Only licenses belonging to existing users
+      totalBoundDevices: activeUserBoundDevices, // Only devices belonging to existing users
+      orphanedLicensesCount: orphanedCount,
+      rawLicensesCount: licensesSnapshot.size,
     };
 
     return { users: usersWithLicenses, stats };
@@ -214,6 +228,52 @@ export const deleteLicense = async (
     return {
       success: false,
       error: error?.message || 'Litsenziyani o‘chirishda xatolik yuz berdi.',
+    };
+  }
+};
+
+/**
+ * Delete all orphaned licenses (licenses whose userId does not exist in the users collection).
+ */
+export const cleanupOrphanedLicenses = async (): Promise<{
+  success: boolean;
+  deletedCount: number;
+  error?: string;
+}> => {
+  try {
+    // 1. Fetch all valid user UIDs from users collection
+    const usersSnapshot = await getDocs(collection(db, 'users'));
+    const validUserIds = new Set(usersSnapshot.docs.map((d) => d.id));
+
+    // 2. Fetch all licenses
+    const licensesSnapshot = await getDocs(collection(db, 'licenses'));
+    const orphanedDocs = licensesSnapshot.docs.filter((d) => {
+      const data = d.data();
+      return !data.userId || !validUserIds.has(data.userId);
+    });
+
+    if (orphanedDocs.length === 0) {
+      return { success: true, deletedCount: 0 };
+    }
+
+    // 3. Batch delete in chunks (max 400 docs per batch)
+    let deletedCount = 0;
+    const chunkSize = 400;
+    for (let i = 0; i < orphanedDocs.length; i += chunkSize) {
+      const chunk = orphanedDocs.slice(i, i + chunkSize);
+      const batch = writeBatch(db);
+      chunk.forEach((d) => batch.delete(d.ref));
+      await batch.commit();
+      deletedCount += chunk.length;
+    }
+
+    return { success: true, deletedCount };
+  } catch (error: any) {
+    console.error('Error cleaning up orphaned licenses:', error);
+    return {
+      success: false,
+      deletedCount: 0,
+      error: error?.message || 'Yetim litsenziyalarni tozalashda xatolik yuz berdi.',
     };
   }
 };
