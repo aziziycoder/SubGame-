@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   Clock,
   Flame,
-  Gamepad2,
 } from 'lucide-react';
 
 export const FeaturedGames: React.FC = () => {
@@ -44,7 +43,7 @@ export const FeaturedGames: React.FC = () => {
       }
     });
 
-    return { ready, inProgress, upcoming, total: games.length };
+    return { ready, inProgress, upcoming };
   }, [games]);
 
   return (
@@ -64,7 +63,7 @@ export const FeaturedGames: React.FC = () => {
               O‘zbekcha subtitrlar statistikasi
             </h2>
             <p className="text-xs sm:text-sm text-gray-400 mt-2 max-w-2xl leading-relaxed">
-              Platformamizda tayyorlangan, tarjima qilinayotgan va rejalashtirilgan barcha o‘yinlar haqida real vaqtdagi statistika.
+              Platformamizda tayyorlangan, tarjima qilinayotgan va rejalashtirilgan barcha o‘yinlar holati.
             </p>
           </div>
 
@@ -72,7 +71,7 @@ export const FeaturedGames: React.FC = () => {
             to="/games"
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] text-xs sm:text-sm font-bold hover:bg-[#84CC16] transition-all shadow-accent-glow self-start sm:self-auto shrink-0 group"
           >
-            <span>Barcha o‘yinlar katalogi</span>
+            <span>Katalogga o‘tish</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
@@ -84,12 +83,12 @@ export const FeaturedGames: React.FC = () => {
             <p className="text-xs text-gray-400">Statistika yuklanmoqda...</p>
           </div>
         ) : (
-          /* 4 Gaming Stats Cards in SubGame Visual Style */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          /* 3 Gaming Stats Cards: Tayyor, Jarayonda, Tez kunda */
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* 1. Tayyor subtitrlar */}
             <Link
               to="/games?status=Tayyor"
-              className="group relative bg-[#141821] rounded-2xl p-6 border border-[#2A3245] hover:border-[#A3E635]/60 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card-glow flex flex-col justify-between overflow-hidden"
+              className="group relative bg-[#141821] rounded-2xl p-6 sm:p-7 border border-[#2A3245] hover:border-[#A3E635]/60 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card-glow flex flex-col justify-between overflow-hidden"
             >
               {/* Corner ambient glow */}
               <div className="absolute -right-8 -top-8 w-24 h-24 bg-[#A3E635]/10 rounded-full blur-2xl group-hover:bg-[#A3E635]/20 transition-all pointer-events-none" />
@@ -109,11 +108,11 @@ export const FeaturedGames: React.FC = () => {
                   {stats.ready} <span className="text-base sm:text-lg font-sans font-semibold text-gray-400">ta</span>
                 </div>
 
-                <h3 className="text-base font-bold text-white group-hover:text-[#A3E635] transition-colors mb-1.5">
+                <h3 className="text-lg font-bold text-white group-hover:text-[#A3E635] transition-colors mb-1.5">
                   Tayyor subtitrlar
                 </h3>
 
-                <p className="text-xs text-gray-400 leading-relaxed">
+                <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">
                   To‘liq tarjima qilingan va yuklab olishga tayyor o‘yinlar
                 </p>
               </div>
@@ -127,7 +126,7 @@ export const FeaturedGames: React.FC = () => {
             {/* 2. Jarayonda */}
             <Link
               to="/games?status=Jarayonda"
-              className="group relative bg-[#141821] rounded-2xl p-6 border border-[#2A3245] hover:border-sky-500/60 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card-glow flex flex-col justify-between overflow-hidden"
+              className="group relative bg-[#141821] rounded-2xl p-6 sm:p-7 border border-[#2A3245] hover:border-sky-500/60 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card-glow flex flex-col justify-between overflow-hidden"
             >
               {/* Corner ambient glow */}
               <div className="absolute -right-8 -top-8 w-24 h-24 bg-sky-500/10 rounded-full blur-2xl group-hover:bg-sky-500/20 transition-all pointer-events-none" />
@@ -147,11 +146,11 @@ export const FeaturedGames: React.FC = () => {
                   {stats.inProgress} <span className="text-base sm:text-lg font-sans font-semibold text-gray-400">ta</span>
                 </div>
 
-                <h3 className="text-base font-bold text-white group-hover:text-sky-400 transition-colors mb-1.5">
+                <h3 className="text-lg font-bold text-white group-hover:text-sky-400 transition-colors mb-1.5">
                   Ishlab chiqilmoqda
                 </h3>
 
-                <p className="text-xs text-gray-400 leading-relaxed">
+                <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">
                   Hozirda tarjima va tahrir bosqichida bo‘lgan o‘yinlar
                 </p>
               </div>
@@ -165,7 +164,7 @@ export const FeaturedGames: React.FC = () => {
             {/* 3. Tez kunda */}
             <Link
               to="/games?status=Tez+kunda"
-              className="group relative bg-[#141821] rounded-2xl p-6 border border-[#2A3245] hover:border-amber-500/60 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card-glow flex flex-col justify-between overflow-hidden"
+              className="group relative bg-[#141821] rounded-2xl p-6 sm:p-7 border border-[#2A3245] hover:border-amber-500/60 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card-glow flex flex-col justify-between overflow-hidden"
             >
               {/* Corner ambient glow */}
               <div className="absolute -right-8 -top-8 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all pointer-events-none" />
@@ -185,54 +184,17 @@ export const FeaturedGames: React.FC = () => {
                   {stats.upcoming} <span className="text-base sm:text-lg font-sans font-semibold text-gray-400">ta</span>
                 </div>
 
-                <h3 className="text-base font-bold text-white group-hover:text-amber-400 transition-colors mb-1.5">
+                <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors mb-1.5">
                   Rejadagi loyihalar
                 </h3>
 
-                <p className="text-xs text-gray-400 leading-relaxed">
+                <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">
                   Tez kunda tarjimasi boshlanishi kutilayotgan o‘yinlar
                 </p>
               </div>
 
               <div className="mt-6 pt-4 border-t border-[#2A3245]/60 flex items-center justify-between text-xs font-semibold text-amber-400 group-hover:text-amber-300 transition-colors">
                 <span>O‘yinlarni ko‘rish</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </Link>
-
-            {/* 4. Jami o‘yinlar */}
-            <Link
-              to="/games"
-              className="group relative bg-[#141821] rounded-2xl p-6 border border-[#2A3245] hover:border-[#A3E635]/60 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card-glow flex flex-col justify-between overflow-hidden"
-            >
-              {/* Corner ambient glow */}
-              <div className="absolute -right-8 -top-8 w-24 h-24 bg-[#A3E635]/10 rounded-full blur-2xl group-hover:bg-[#A3E635]/20 transition-all pointer-events-none" />
-
-              <div>
-                <div className="flex items-center justify-between mb-5">
-                  <div className="w-12 h-12 rounded-xl bg-[#1A1F2A] border border-[#2A3245] flex items-center justify-center text-[#A3E635] group-hover:scale-110 group-hover:bg-[#A3E635] group-hover:text-[#0B0D12] transition-all duration-300 shadow-sm">
-                    <Gamepad2 className="w-6 h-6" />
-                  </div>
-                  <span className="text-[11px] font-mono text-gray-300 bg-[#0B0D12] px-2.5 py-1 rounded-full border border-[#2A3245] font-bold">
-                    To‘liq katalog
-                  </span>
-                </div>
-
-                <div className="text-4xl sm:text-5xl font-black text-white font-mono tracking-tight group-hover:text-[#A3E635] transition-colors mb-2">
-                  {stats.total} <span className="text-base sm:text-lg font-sans font-semibold text-gray-400">ta</span>
-                </div>
-
-                <h3 className="text-base font-bold text-white group-hover:text-[#A3E635] transition-colors mb-1.5">
-                  Barcha o‘yinlar
-                </h3>
-
-                <p className="text-xs text-gray-400 leading-relaxed">
-                  Loyiha doirasidagi barcha o‘zbekcha o‘yinlar ro‘yxati
-                </p>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-[#2A3245]/60 flex items-center justify-between text-xs font-semibold text-[#A3E635] group-hover:text-[#BEF264] transition-colors">
-                <span>Katalogga o‘tish</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>
