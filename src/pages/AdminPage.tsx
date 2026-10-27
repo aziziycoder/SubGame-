@@ -172,6 +172,250 @@ export const AdminPage: React.FC = () => {
   const [epicGamesUrl, setEpicGamesUrl] = useState('');
   const [gogUrl, setGogUrl] = useState('');
 
+  // JSON Import States
+  const [isJsonModalOpen, setIsJsonModalOpen] = useState(false);
+  const [jsonInput, setJsonInput] = useState('');
+  const [jsonError, setJsonError] = useState<string | null>(null);
+  const [parsedGamesPreview, setParsedGamesPreview] = useState<Game[]>([]);
+  const [jsonSubmitting, setJsonSubmitting] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const normalizeGameFromJson = (raw: any): Game => {
+    if (!raw || typeof raw !== 'object') {
+      throw new Error('JSON formati noto‘g‘ri (obyekt kutilmoqda)');
+    }
+    if (!raw.title) {
+      throw new Error('O‘yin nomi ("title") ko‘rsatilishi shart!');
+    }
+
+    const rawSlug = raw.slug || raw.id || raw.title;
+    const cleanSlug = String(rawSlug).toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-');
+    const cleanId = raw.id || cleanSlug;
+
+    // Genres
+    let genres: string[] = ['Sarguzasht'];
+    if (Array.isArray(raw.genres)) {
+      genres = raw.genres.map(String).filter(Boolean);
+    } else if (typeof raw.genres === 'string') {
+      genres = raw.genres.split(',').map((g: string) => g.trim()).filter(Boolean);
+    }
+
+    // Screenshots
+    let screenshots: string[] = [];
+    if (Array.isArray(raw.screenshots)) {
+      screenshots = raw.screenshots.map(String).filter(Boolean);
+    } else if (typeof raw.screenshots === 'string') {
+      screenshots = raw.screenshots.split('\n').map((s: string) => s.trim()).filter(Boolean);
+    }
+
+    // Official store links
+    const officialStoreLinks: OfficialStoreLink[] = [];
+    if (Array.isArray(raw.officialStoreLinks)) {
+      for (const link of raw.officialStoreLinks) {
+        if (link && link.name && link.url) {
+          officialStoreLinks.push({
+            name: link.name,
+            url: link.url,
+            priceNote: link.priceNote || `${link.name} rasmiy sahifasi`
+          });
+        }
+      }
+    }
+    if (raw.steamUrl && !officialStoreLinks.some((l) => l.name === 'Steam')) {
+      officialStoreLinks.push({ name: 'Steam', url: raw.steamUrl, priceNote: 'Steam rasmiy sahifasi' });
+    }
+    if (raw.epicGamesUrl && !officialStoreLinks.some((l) => l.name === 'Epic Games')) {
+      officialStoreLinks.push({ name: 'Epic Games', url: raw.epicGamesUrl, priceNote: 'Epic Games rasmiy sahifasi' });
+    }
+    if (raw.gogUrl && !officialStoreLinks.some((l) => l.name === 'GOG')) {
+      officialStoreLinks.push({ name: 'GOG', url: raw.gogUrl, priceNote: 'GOG rasmiy sahifasi' });
+    }
+
+    const minReq = {
+      os: raw.minimumRequirements?.os || '',
+      processor: raw.minimumRequirements?.processor || '',
+      memory: raw.minimumRequirements?.memory || '',
+      graphics: raw.minimumRequirements?.graphics || '',
+      directX: raw.minimumRequirements?.directX || '',
+      storage: raw.minimumRequirements?.storage || ''
+    };
+    const recReq = {
+      os: raw.recommendedRequirements?.os || '',
+      processor: raw.recommendedRequirements?.processor || '',
+      memory: raw.recommendedRequirements?.memory || '',
+      graphics: raw.recommendedRequirements?.graphics || '',
+      directX: raw.recommendedRequirements?.directX || '',
+      storage: raw.recommendedRequirements?.storage || ''
+    };
+
+    return {
+      id: cleanId,
+      slug: cleanSlug,
+      title: String(raw.title).trim(),
+      cover: raw.cover || '',
+      cardImage: raw.cardImage || raw.cover || '',
+      heroImage: raw.heroImage || raw.cardImage || raw.cover || '',
+      gameplayVideoUrl: raw.gameplayVideoUrl || '',
+      torrentUrl: raw.torrentUrl || '',
+      screenshots,
+      shortDescription: raw.shortDescription || '',
+      fullDescription: raw.fullDescription || raw.shortDescription || '',
+      releaseYear: Number(raw.releaseYear) || new Date().getFullYear(),
+      developer: raw.developer || '',
+      publisher: raw.publisher || '',
+      genres: genres.length > 0 ? genres : ['Sarguzasht'],
+      platforms: Array.isArray(raw.platforms) && raw.platforms.length > 0 ? raw.platforms : ['PC'],
+      officialStoreLinks,
+      price: raw.price || 'Tekin',
+      priceNote: raw.priceNote || 'O‘yin va o‘zbekcha subtitr SubGame platformasida bepul taqdim etiladi.',
+      subtitleStatus: raw.subtitleStatus || 'Tayyor',
+      subtitleLanguage: raw.subtitleLanguage || 'O‘zbekcha (Lotin)',
+      subtitleVersion: raw.subtitleVersion || 'v1.0.0',
+      subtitleLastUpdated: raw.subtitleLastUpdated || new Date().toISOString().split('T')[0],
+      subtitleCompatibility: raw.subtitleCompatibility || 'Barcha PC versiyalari',
+      subtitleFormat: raw.subtitleFormat || 'SubGame Launcher himoyalangan lokalizatsiyasi',
+      subtitleSize: raw.subtitleSize || '',
+      subtitlePrice: raw.subtitlePrice || 'Bepul',
+      subtitleTranslationType: raw.subtitleTranslationType || 'To‘liq matnli mahalliylashtirish',
+      defaultExeName: raw.defaultExeName || '',
+      targetFileName: raw.targetFileName || '',
+      targetRelativeDir: raw.targetRelativeDir || '',
+      keyPrefix: raw.keyPrefix || '',
+      isFeatured: Boolean(raw.isFeatured),
+      tags: Array.isArray(raw.tags) ? raw.tags : genres,
+      installationGuide: Array.isArray(raw.installationGuide) && raw.installationGuide.length > 0 ? raw.installationGuide : [
+        {
+          step: 1,
+          title: 'SubGame Launcherni oching',
+          description: 'SubGame Launcher ilovasini ishga tushiring.'
+        },
+        {
+          step: 2,
+          title: 'O‘yin ijro faylini (.exe) tanlang',
+          description: `O‘rnatilgan papkadagi ${raw.defaultExeName || 'o‘yin fayli'}ni ko‘rsating.`
+        },
+        {
+          step: 3,
+          title: 'O‘yinni boshlash',
+          description: 'O‘yinni boshlash tugmasini bosing. Subtitrlar avtomatik ulanadi.'
+        }
+      ],
+      minimumRequirements: minReq,
+      recommendedRequirements: recReq
+    };
+  };
+
+  const applyGameToForm = (game: Game) => {
+    setFormData(game);
+    setGenresInput(game.genres ? game.genres.join(', ') : 'Sarguzasht');
+    setScreenshotsInput(game.screenshots ? game.screenshots.join('\n') : '');
+    const steam = game.officialStoreLinks?.find((s) => s.name === 'Steam')?.url || '';
+    const epic = game.officialStoreLinks?.find((s) => s.name === 'Epic Games')?.url || '';
+    const gog = game.officialStoreLinks?.find((s) => s.name === 'GOG')?.url || '';
+    setSteamUrl(steam);
+    setEpicGamesUrl(epic);
+    setGogUrl(gog);
+    setFormError(null);
+  };
+
+  const parseJsonContent = (text: string) => {
+    setJsonInput(text);
+    if (!text.trim()) {
+      setParsedGamesPreview([]);
+      setJsonError(null);
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(text);
+      if (Array.isArray(parsed)) {
+        if (parsed.length === 0) {
+          throw new Error('JSON massivi bo‘sh');
+        }
+        const gamesList = parsed.map((item, idx) => {
+          try {
+            return normalizeGameFromJson(item);
+          } catch (e: any) {
+            throw new Error(`[${idx + 1}-o‘yin]: ${e.message}`);
+          }
+        });
+        setParsedGamesPreview(gamesList);
+        setJsonError(null);
+      } else if (typeof parsed === 'object' && parsed !== null) {
+        const singleGame = normalizeGameFromJson(parsed);
+        setParsedGamesPreview([singleGame]);
+        setJsonError(null);
+      } else {
+        throw new Error('JSON formati noto‘g‘ri. O‘yin obyekti yoki massiv kutilmoqda.');
+      }
+    } catch (err: any) {
+      setParsedGamesPreview([]);
+      setJsonError(err.message || 'JSON formati noto‘g‘ri');
+    }
+  };
+
+  const handleJsonFileUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      if (content) {
+        parseJsonContent(content);
+      }
+    };
+    reader.onerror = () => {
+      setJsonError('Faylni o‘qishda xatolik yuz berdi');
+    };
+    reader.readAsText(file);
+  };
+
+  const handleAutofillFormFromJsonFile = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      if (!content) return;
+      try {
+        const parsed = JSON.parse(content);
+        const gameObj = Array.isArray(parsed) ? parsed[0] : parsed;
+        const normalized = normalizeGameFromJson(gameObj);
+        applyGameToForm(normalized);
+      } catch (err: any) {
+        setFormError('JSON faylni o‘qishda xatolik: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleOpenInFormEditor = (game: Game) => {
+    setIsJsonModalOpen(false);
+    setIsEditing(false);
+    setEditingId(null);
+    applyGameToForm(game);
+    setIsModalOpen(true);
+  };
+
+  const handleDirectSaveJsonGames = async () => {
+    if (parsedGamesPreview.length === 0) return;
+    setJsonSubmitting(true);
+    setJsonError(null);
+    try {
+      for (const game of parsedGamesPreview) {
+        const res = await createGame(game);
+        if (!res.success) {
+          throw new Error(res.error || `"${game.title}" o‘yinini saqlashda xatolik`);
+        }
+      }
+      setIsJsonModalOpen(false);
+      setJsonInput('');
+      setParsedGamesPreview([]);
+      await loadGames();
+      alert(`Muvaffaqiyatli! ${parsedGamesPreview.length} ta o‘yin Firestore bazasiga qo‘shildi.`);
+    } catch (err: any) {
+      setJsonError(err.message || 'Saqlashda xatolik yuz berdi');
+    } finally {
+      setJsonSubmitting(false);
+    }
+  };
+
   const loadGames = async () => {
     setLoading(true);
     try {
@@ -612,7 +856,7 @@ export const AdminPage: React.FC = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 flex-wrap">
             <button
               onClick={handleSyncInitial}
               disabled={syncing}
@@ -621,6 +865,20 @@ export const AdminPage: React.FC = () => {
             >
               <RefreshCw className={`w-4 h-4 text-[#A3E635] ${syncing ? 'animate-spin' : ''}`} />
               <span>{syncing ? 'Yuklanmoqda...' : 'Boshlang‘ich O‘yinlarni Yuklash'}</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setJsonInput('');
+                setJsonError(null);
+                setParsedGamesPreview([]);
+                setIsJsonModalOpen(true);
+              }}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1E2533] text-sky-400 hover:text-sky-300 border border-sky-500/30 hover:border-sky-500/60 text-xs sm:text-sm font-bold transition-all cursor-pointer shadow-sm"
+              title="JSON fayl yoki matn orqali o‘yin qo‘shish"
+            >
+              <FileCode className="w-4 h-4" />
+              <span>JSON orqali qo‘shish</span>
             </button>
 
             <button
@@ -782,12 +1040,37 @@ export const AdminPage: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-[#1A202C] transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <input
+                  type="file"
+                  id="modal-json-upload"
+                  accept=".json,application/json"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      handleAutofillFormFromJsonFile(file);
+                      e.target.value = '';
+                    }
+                  }}
+                />
+                <label
+                  htmlFor="modal-json-upload"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-semibold cursor-pointer transition-colors"
+                  title="JSON faylni tanlash va shaklni avtomatik to‘ldirish"
+                >
+                  <FileCode className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">JSON fayldan to‘ldirish</span>
+                  <span className="sm:hidden">JSON</span>
+                </label>
+
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-[#1A202C] transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             {/* Modal Form */}
@@ -1717,6 +2000,219 @@ export const AdminPage: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* JSON Import Modal */}
+      {isJsonModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="relative w-full max-w-3xl my-8 bg-[#141821] border border-[#2A3245] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            {/* Header */}
+            <div className="p-5 sm:p-6 border-b border-[#2A3245] flex items-center justify-between bg-[#0B0D12]/60">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center">
+                  <FileCode className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-white">
+                    JSON orqali o‘yin qo‘shish
+                  </h3>
+                  <p className="text-xs text-gray-400">
+                    JSON faylni tashlang yoki kodini maydonga nusxalang (Paste)
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsJsonModalOpen(false)}
+                className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-[#1A202C] transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-5 sm:p-6 space-y-5 overflow-y-auto flex-1">
+              {/* File Dropzone / Selector */}
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setIsDragOver(true);
+                }}
+                onDragLeave={() => setIsDragOver(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setIsDragOver(false);
+                  const file = e.dataTransfer.files?.[0];
+                  if (file) handleJsonFileUpload(file);
+                }}
+                className={`relative border-2 border-dashed rounded-2xl p-6 text-center transition-all ${
+                  isDragOver
+                    ? 'border-[#A3E635] bg-[#A3E635]/5'
+                    : 'border-[#2A3245] hover:border-gray-500 bg-[#0B0D12]/50'
+                }`}
+              >
+                <input
+                  type="file"
+                  id="json-file-input"
+                  accept=".json,application/json"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      handleJsonFileUpload(file);
+                      e.target.value = '';
+                    }
+                  }}
+                />
+                <label
+                  htmlFor="json-file-input"
+                  className="cursor-pointer flex flex-col items-center justify-center gap-2"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-[#141821] border border-[#2A3245] flex items-center justify-center text-sky-400">
+                    <UploadCloud className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <span className="text-xs sm:text-sm font-bold text-white hover:underline">
+                      JSON faylni tanlash uchun bosing
+                    </span>
+                    <span className="text-xs text-gray-400 block mt-0.5">
+                      yoki faylni shu yerga tortib tashlang (.json)
+                    </span>
+                  </div>
+                </label>
+              </div>
+
+              {/* JSON Textarea */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-xs">
+                  <label className="font-semibold text-gray-300">
+                    Yoki JSON kodini shu yerga qo‘ying:
+                  </label>
+                  {jsonInput && (
+                    <button
+                      onClick={() => parseJsonContent('')}
+                      className="text-rose-400 hover:text-rose-300 font-medium cursor-pointer"
+                    >
+                      Tozalash
+                    </button>
+                  )}
+                </div>
+                <textarea
+                  rows={8}
+                  value={jsonInput}
+                  onChange={(e) => parseJsonContent(e.target.value)}
+                  placeholder={`{\n  "title": "Hollow Knight",\n  "slug": "hollow-knight",\n  "cover": "...",\n  "developer": "Team Cherry",\n  "releaseYear": 2017,\n  "genres": ["Metroidvania", "Action"],\n  "subtitleStatus": "Tayyor"\n}`}
+                  className="w-full p-3.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-xs font-mono text-gray-200 placeholder-gray-600 focus:outline-none focus:border-[#A3E635] leading-relaxed resize-y"
+                />
+              </div>
+
+              {/* Error Message */}
+              {jsonError && (
+                <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{jsonError}</span>
+                </div>
+              )}
+
+              {/* Success / Parsed Preview */}
+              {parsedGamesPreview.length > 0 && !jsonError && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-[#A3E635] uppercase tracking-wider flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      Aniqlangan o‘yinlar ({parsedGamesPreview.length} ta):
+                    </span>
+                  </div>
+
+                  <div className="space-y-2.5 max-h-56 overflow-y-auto">
+                    {parsedGamesPreview.map((game, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-3 rounded-xl bg-[#0B0D12] border border-[#2A3245]"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          {game.cardImage || game.cover ? (
+                            <img
+                              src={game.cardImage || game.cover}
+                              alt={game.title}
+                              className="w-14 h-9 object-cover rounded-lg border border-[#2A3245] shrink-0"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = '/images/logo_doppi.png';
+                              }}
+                            />
+                          ) : (
+                            <div className="w-14 h-9 rounded-lg bg-[#141821] border border-[#2A3245] flex items-center justify-center text-gray-500 shrink-0">
+                              <Gamepad2 className="w-5 h-5" />
+                            </div>
+                          )}
+
+                          <div className="min-w-0">
+                            <h4 className="text-xs font-bold text-white truncate">
+                              {game.title}
+                              {game.releaseYear ? ` (${game.releaseYear})` : ''}
+                            </h4>
+                            <div className="flex items-center gap-2 mt-0.5 text-[11px] text-gray-400">
+                              <span>{game.developer || 'Noma‘lum studiya'}</span>
+                              <span>•</span>
+                              <span className="text-emerald-400 font-medium">
+                                {game.subtitleStatus}
+                              </span>
+                              <span>•</span>
+                              <span className="font-mono text-gray-500">/{game.slug}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Open in form button */}
+                        {parsedGamesPreview.length === 1 && (
+                          <button
+                            onClick={() => handleOpenInFormEditor(game)}
+                            className="px-3 py-1.5 rounded-lg bg-[#141821] hover:bg-[#1E2533] text-gray-300 hover:text-white border border-[#2A3245] text-xs font-semibold shrink-0 cursor-pointer transition-colors"
+                            title="Maydonlarni shaklda ko‘rish va tahrirlash"
+                          >
+                            Formada ko‘rish
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="p-5 sm:p-6 border-t border-[#2A3245] flex items-center justify-between bg-[#0B0D12]/60">
+              <span className="text-xs text-gray-400">
+                {parsedGamesPreview.length > 0
+                  ? `${parsedGamesPreview.length} ta o‘yin saqlashga tayyor`
+                  : 'Saqlash uchun to‘g‘ri formatdagi JSON kiriting'}
+              </span>
+
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setIsJsonModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-[#1A1F2A] hover:bg-[#232938] text-gray-300 text-xs font-semibold transition-colors cursor-pointer"
+                >
+                  Bekor qilish
+                </button>
+
+                <button
+                  type="button"
+                  disabled={parsedGamesPreview.length === 0 || jsonSubmitting}
+                  onClick={handleDirectSaveJsonGames}
+                  className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-xs hover:bg-[#84CC16] shadow-accent-glow transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>
+                    {jsonSubmitting
+                      ? 'Saqlanmoqda...'
+                      : `Bazaga Saqlash (${parsedGamesPreview.length})`}
+                  </span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
