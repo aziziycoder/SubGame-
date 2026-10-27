@@ -21,7 +21,9 @@ import {
   Users,
   UploadCloud,
   FileCheck,
-  ShoppingCart
+  ShoppingCart,
+  Monitor,
+  Cpu
 } from 'lucide-react';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage } from '../services/firebase';
@@ -145,6 +147,22 @@ export const AdminPage: React.FC = () => {
     targetFileName: 'tt01.pc',
     targetRelativeDir: 'TRTEXT',
     keyPrefix: 'SUB-GAME',
+    minimumRequirements: {
+      os: '',
+      processor: '',
+      memory: '',
+      graphics: '',
+      directX: '',
+      storage: ''
+    },
+    recommendedRequirements: {
+      os: '',
+      processor: '',
+      memory: '',
+      graphics: '',
+      directX: '',
+      storage: ''
+    }
   };
 
   const [formData, setFormData] = useState<Partial<Game>>(initialFormState);
@@ -186,7 +204,25 @@ export const AdminPage: React.FC = () => {
   const handleOpenEditModal = (game: Game) => {
     setIsEditing(true);
     setEditingId(game.id);
-    setFormData({ ...game });
+    setFormData({
+      ...game,
+      minimumRequirements: {
+        os: game.minimumRequirements?.os || '',
+        processor: game.minimumRequirements?.processor || '',
+        memory: game.minimumRequirements?.memory || '',
+        graphics: game.minimumRequirements?.graphics || '',
+        directX: game.minimumRequirements?.directX || '',
+        storage: game.minimumRequirements?.storage || ''
+      },
+      recommendedRequirements: {
+        os: game.recommendedRequirements?.os || '',
+        processor: game.recommendedRequirements?.processor || '',
+        memory: game.recommendedRequirements?.memory || '',
+        graphics: game.recommendedRequirements?.graphics || '',
+        directX: game.recommendedRequirements?.directX || '',
+        storage: game.recommendedRequirements?.storage || ''
+      }
+    });
     setGenresInput(game.genres ? game.genres.join(', ') : '');
     setScreenshotsInput(game.screenshots ? game.screenshots.join('\n') : '');
     const steam = game.officialStoreLinks?.find((s) => s.name === 'Steam')?.url || '';
@@ -293,20 +329,20 @@ export const AdminPage: React.FC = () => {
         }
       ],
       minimumRequirements: formData.minimumRequirements || {
-        os: 'Windows 10 (64-bit)',
-        processor: 'Intel Core i5 / AMD Ryzen 5',
-        memory: '8 GB RAM',
-        graphics: 'GeForce GTX 1060 / Radeon RX 580',
-        directX: 'Versiya 11',
-        storage: '30 GB bo‘sh joy'
+        os: '',
+        processor: '',
+        memory: '',
+        graphics: '',
+        directX: '',
+        storage: ''
       },
       recommendedRequirements: formData.recommendedRequirements || {
-        os: 'Windows 10/11 (64-bit)',
-        processor: 'Intel Core i7 / AMD Ryzen 7',
-        memory: '16 GB RAM',
-        graphics: 'GeForce RTX 2060 / Radeon RX 5700',
-        directX: 'Versiya 12',
-        storage: 'SSD (30 GB)'
+        os: '',
+        processor: '',
+        memory: '',
+        graphics: '',
+        directX: '',
+        storage: ''
       },
       officialStoreLinks: (() => {
         const links: OfficialStoreLink[] = [];
@@ -1285,7 +1321,386 @@ export const AdminPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Modal Footer Buttons */}
+              {/* 5. Tizim talablari (PC) */}
+              <div className="space-y-4 pt-4 border-t border-[#2A3245]">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-[#A3E635] uppercase tracking-wider flex items-center gap-2">
+                    <Monitor className="w-3.5 h-3.5" />
+                    <span>5. Tizim talablari (PC)</span>
+                  </h4>
+                  <span className="text-[11px] text-gray-400">
+                    O‘yin sahifasidagi texnik talablar (har bir o‘yinga alohida kiritiladi)
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {/* Minimal talablar */}
+                  <div className="p-4 rounded-xl bg-[#0B0D12] border border-[#2A3245] space-y-3">
+                    <div className="flex items-center justify-between border-b border-[#2A3245] pb-2">
+                      <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                        <Cpu className="w-3.5 h-3.5 text-gray-400" />
+                        Minimal talablar
+                      </span>
+                      <span className="text-[10px] text-gray-400 font-mono">720p / 30 FPS</span>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                          Operatsion tizim (OS)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Windows 7 / 8.1 / 10 (64-bit)"
+                          value={formData.minimumRequirements?.os || ''}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              minimumRequirements: {
+                                ...(prev.minimumRequirements || {
+                                  os: '',
+                                  processor: '',
+                                  memory: '',
+                                  graphics: '',
+                                  directX: '',
+                                  storage: ''
+                                }),
+                                os: e.target.value
+                              }
+                            }))
+                          }
+                          className="w-full px-3 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs text-white focus:outline-none focus:border-[#A3E635]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                          Protsessor (CPU)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Intel Core i3-2100T / AMD FX 6100"
+                          value={formData.minimumRequirements?.processor || ''}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              minimumRequirements: {
+                                ...(prev.minimumRequirements || {
+                                  os: '',
+                                  processor: '',
+                                  memory: '',
+                                  graphics: '',
+                                  directX: '',
+                                  storage: ''
+                                }),
+                                processor: e.target.value
+                              }
+                            }))
+                          }
+                          className="w-full px-3 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs text-white focus:outline-none focus:border-[#A3E635]"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                            Operativ xotira (RAM)
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="8 GB RAM"
+                            value={formData.minimumRequirements?.memory || ''}
+                            onChange={(e) =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                minimumRequirements: {
+                                  ...(prev.minimumRequirements || {
+                                    os: '',
+                                    processor: '',
+                                    memory: '',
+                                    graphics: '',
+                                    directX: '',
+                                    storage: ''
+                                  }),
+                                  memory: e.target.value
+                                }
+                              }))
+                            }
+                            className="w-full px-3 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs text-white focus:outline-none focus:border-[#A3E635]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                            DirectX
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Versiya 11"
+                            value={formData.minimumRequirements?.directX || ''}
+                            onChange={(e) =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                minimumRequirements: {
+                                  ...(prev.minimumRequirements || {
+                                    os: '',
+                                    processor: '',
+                                    memory: '',
+                                    graphics: '',
+                                    directX: '',
+                                    storage: ''
+                                }),
+                                directX: e.target.value
+                              }
+                            }))
+                          }
+                          className="w-full px-3 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs text-white focus:outline-none focus:border-[#A3E635]"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                        Videokarta (GPU)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="GeForce GTX 650 Ti (2 GB) / Radeon HD 7750"
+                        value={formData.minimumRequirements?.graphics || ''}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            minimumRequirements: {
+                              ...(prev.minimumRequirements || {
+                                os: '',
+                                processor: '',
+                                memory: '',
+                                graphics: '',
+                                directX: '',
+                                storage: ''
+                              }),
+                              graphics: e.target.value
+                            }
+                          }))
+                        }
+                        className="w-full px-3 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs text-white focus:outline-none focus:border-[#A3E635]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                        Bo‘sh disk maydoni (Storage)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="25 GB bo‘sh joy"
+                        value={formData.minimumRequirements?.storage || ''}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            minimumRequirements: {
+                              ...(prev.minimumRequirements || {
+                                os: '',
+                                processor: '',
+                                memory: '',
+                                graphics: '',
+                                directX: '',
+                                storage: ''
+                              }),
+                              storage: e.target.value
+                            }
+                          }))
+                        }
+                        className="w-full px-3 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs text-white focus:outline-none focus:border-[#A3E635]"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tavsiya etilgan */}
+                <div className="p-4 rounded-xl bg-[#0B0D12] border border-[#A3E635]/30 space-y-3 shadow-accent-glow/5">
+                  <div className="flex items-center justify-between border-b border-[#2A3245] pb-2">
+                    <span className="text-xs font-bold text-[#A3E635] flex items-center gap-1.5">
+                      <Cpu className="w-3.5 h-3.5 text-[#A3E635]" />
+                      Tavsiya etilgan
+                    </span>
+                    <span className="text-[10px] text-[#A3E635] font-mono">1080p / 60 FPS</span>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                        Operatsion tizim (OS)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Windows 10 / 11 (64-bit)"
+                        value={formData.recommendedRequirements?.os || ''}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            recommendedRequirements: {
+                              ...(prev.recommendedRequirements || {
+                                os: '',
+                                processor: '',
+                                memory: '',
+                                graphics: '',
+                                directX: '',
+                                storage: ''
+                              }),
+                              os: e.target.value
+                            }
+                          }))
+                        }
+                        className="w-full px-3 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs text-white focus:outline-none focus:border-[#A3E635]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                        Protsessor (CPU)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Intel Core i5-3570K / AMD Ryzen 3 1300X"
+                        value={formData.recommendedRequirements?.processor || ''}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            recommendedRequirements: {
+                              ...(prev.recommendedRequirements || {
+                                os: '',
+                                processor: '',
+                                memory: '',
+                                graphics: '',
+                                directX: '',
+                                storage: ''
+                              }),
+                              processor: e.target.value
+                            }
+                          }))
+                        }
+                        className="w-full px-3 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs text-white focus:outline-none focus:border-[#A3E635]"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                          Operativ xotira (RAM)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="16 GB RAM"
+                          value={formData.recommendedRequirements?.memory || ''}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              recommendedRequirements: {
+                                ...(prev.recommendedRequirements || {
+                                  os: '',
+                                  processor: '',
+                                  memory: '',
+                                  graphics: '',
+                                  directX: '',
+                                  storage: ''
+                                }),
+                                memory: e.target.value
+                              }
+                            }))
+                          }
+                          className="w-full px-3 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs text-white focus:outline-none focus:border-[#A3E635]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                          DirectX
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Versiya 11 yoki 12"
+                          value={formData.recommendedRequirements?.directX || ''}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              recommendedRequirements: {
+                                ...(prev.recommendedRequirements || {
+                                  os: '',
+                                  processor: '',
+                                  memory: '',
+                                  graphics: '',
+                                  directX: '',
+                                  storage: ''
+                                }),
+                                directX: e.target.value
+                              }
+                            }))
+                          }
+                          className="w-full px-3 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs text-white focus:outline-none focus:border-[#A3E635]"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                        Videokarta (GPU)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="GeForce GTX 960 (4 GB) / Radeon R9 290"
+                        value={formData.recommendedRequirements?.graphics || ''}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            recommendedRequirements: {
+                              ...(prev.recommendedRequirements || {
+                                os: '',
+                                processor: '',
+                                memory: '',
+                                graphics: '',
+                                directX: '',
+                                storage: ''
+                              }),
+                              graphics: e.target.value
+                            }
+                          }))
+                        }
+                        className="w-full px-3 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs text-white focus:outline-none focus:border-[#A3E635]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                        Bo‘sh disk maydoni (Storage)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="25 GB bo‘sh joy (SSD tavsiya etiladi)"
+                        value={formData.recommendedRequirements?.storage || ''}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            recommendedRequirements: {
+                              ...(prev.recommendedRequirements || {
+                                os: '',
+                                processor: '',
+                                memory: '',
+                                graphics: '',
+                                directX: '',
+                                storage: ''
+                              }),
+                              storage: e.target.value
+                            }
+                          }))
+                        }
+                        className="w-full px-3 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs text-white focus:outline-none focus:border-[#A3E635]"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer Buttons */}
               <div className="pt-5 border-t border-[#2A3245] flex items-center justify-end gap-3 sticky bottom-0 bg-[#141821] pb-2">
                 <button
                   type="button"

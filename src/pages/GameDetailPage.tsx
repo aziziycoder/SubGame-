@@ -677,91 +677,96 @@ export const GameDetailPage: React.FC = () => {
             </section>
 
             {/* D. Verified System Requirements */}
-            <section className="bg-[#141821] rounded-2xl p-5 sm:p-8 border border-[#2A3245]">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-white">
-                    Tizim talablari (PC)
-                  </h2>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Rasmiy tekshirilgan texnik ma‘lumotlar
-                  </p>
-                </div>
-                <Monitor className="w-6 h-6 text-gray-400 shrink-0" />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                {/* Minimum */}
-                <div className="bg-[#0B0D12] p-4 sm:p-5 rounded-xl border border-[#2A3245] space-y-3">
-                  <div className="flex items-center justify-between border-b border-[#2A3245] pb-2">
-                    <h3 className="font-bold text-white text-sm">Minimal talablar</h3>
-                    <span className="text-[11px] text-gray-400">720p / 30 FPS</span>
+            {Boolean(
+              (game.minimumRequirements && Object.values(game.minimumRequirements).some((v) => typeof v === 'string' && v.trim())) ||
+              (game.recommendedRequirements && Object.values(game.recommendedRequirements).some((v) => typeof v === 'string' && v.trim()))
+            ) && (
+              <section className="bg-[#141821] rounded-2xl p-5 sm:p-8 border border-[#2A3245]">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-white">
+                      Tizim talablari (PC)
+                    </h2>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Rasmiy tekshirilgan texnik ma‘lumotlar
+                    </p>
                   </div>
-
-                  <div className="text-xs space-y-2.5">
-                    <div>
-                      <span className="text-gray-500 block">Operatsion tizim</span>
-                      <span className="text-gray-200">{game.minimumRequirements.os}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500 block">Protsessor</span>
-                      <span className="text-gray-200">{game.minimumRequirements.processor}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500 block">Operativ xotira (RAM)</span>
-                      <span className="text-gray-200">{game.minimumRequirements.memory}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500 block">Videokarta (GPU)</span>
-                      <span className="text-gray-200">{game.minimumRequirements.graphics}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500 block">DirectX</span>
-                      <span className="text-gray-200">{game.minimumRequirements.directX}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500 block">Bo‘sh disk maydoni</span>
-                      <span className="text-gray-200">{game.minimumRequirements.storage}</span>
-                    </div>
-                  </div>
+                  <Monitor className="w-6 h-6 text-gray-400 shrink-0" />
                 </div>
 
-                {/* Recommended */}
-                <div className="bg-[#0B0D12] p-4 sm:p-5 rounded-xl border border-[#A3E635]/30 space-y-3 shadow-accent-glow">
-                  <div className="flex items-center justify-between border-b border-[#2A3245] pb-2">
-                    <h3 className="font-bold text-[#A3E635] text-sm">Tavsiya etilgan</h3>
-                    <span className="text-[11px] text-[#A3E635]">1080p / 60 FPS</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                  {/* Minimum */}
+                  <div className="bg-[#0B0D12] p-4 sm:p-5 rounded-xl border border-[#2A3245] space-y-3">
+                    <div className="flex items-center justify-between border-b border-[#2A3245] pb-2">
+                      <h3 className="font-bold text-white text-sm">Minimal talablar</h3>
+                      <span className="text-[11px] text-gray-400">720p / 30 FPS</span>
+                    </div>
+
+                    <div className="text-xs space-y-2.5">
+                      <div>
+                        <span className="text-gray-500 block">Operatsion tizim</span>
+                        <span className="text-gray-200">{game.minimumRequirements?.os || '—'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block">Protsessor</span>
+                        <span className="text-gray-200">{game.minimumRequirements?.processor || '—'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block">Operativ xotira (RAM)</span>
+                        <span className="text-gray-200">{game.minimumRequirements?.memory || '—'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block">Videokarta (GPU)</span>
+                        <span className="text-gray-200">{game.minimumRequirements?.graphics || '—'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block">DirectX</span>
+                        <span className="text-gray-200">{game.minimumRequirements?.directX || '—'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block">Bo‘sh disk maydoni</span>
+                        <span className="text-gray-200">{game.minimumRequirements?.storage || '—'}</span>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="text-xs space-y-2.5">
-                    <div>
-                      <span className="text-gray-500 block">Operatsion tizim</span>
-                      <span className="text-gray-200">{game.recommendedRequirements.os}</span>
+                  {/* Recommended */}
+                  <div className="bg-[#0B0D12] p-4 sm:p-5 rounded-xl border border-[#A3E635]/30 space-y-3 shadow-accent-glow">
+                    <div className="flex items-center justify-between border-b border-[#2A3245] pb-2">
+                      <h3 className="font-bold text-[#A3E635] text-sm">Tavsiya etilgan</h3>
+                      <span className="text-[11px] text-[#A3E635]">1080p / 60 FPS</span>
                     </div>
-                    <div>
-                      <span className="text-gray-500 block">Protsessor</span>
-                      <span className="text-gray-200">{game.recommendedRequirements.processor}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500 block">Operativ xotira (RAM)</span>
-                      <span className="text-gray-200">{game.recommendedRequirements.memory}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500 block">Videokarta (GPU)</span>
-                      <span className="text-gray-200">{game.recommendedRequirements.graphics}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500 block">DirectX</span>
-                      <span className="text-gray-200">{game.recommendedRequirements.directX}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500 block">Bo‘sh disk maydoni</span>
-                      <span className="text-gray-200">{game.recommendedRequirements.storage}</span>
+
+                    <div className="text-xs space-y-2.5">
+                      <div>
+                        <span className="text-gray-500 block">Operatsion tizim</span>
+                        <span className="text-gray-200">{game.recommendedRequirements?.os || '—'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block">Protsessor</span>
+                        <span className="text-gray-200">{game.recommendedRequirements?.processor || '—'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block">Operativ xotira (RAM)</span>
+                        <span className="text-gray-200">{game.recommendedRequirements?.memory || '—'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block">Videokarta (GPU)</span>
+                        <span className="text-gray-200">{game.recommendedRequirements?.graphics || '—'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block">DirectX</span>
+                        <span className="text-gray-200">{game.recommendedRequirements?.directX || '—'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block">Bo‘sh disk maydoni</span>
+                        <span className="text-gray-200">{game.recommendedRequirements?.storage || '—'}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            )}
           </div>
 
           {/* Right Sidebar: Store & Actions (4 cols on desktop) */}
