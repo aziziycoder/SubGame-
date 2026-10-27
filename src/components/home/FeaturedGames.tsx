@@ -1,18 +1,20 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { getGames } from '../../services/gamesService';
 import type { Game } from '../../types/game';
-import { GameCard } from '../game/GameCard';
-import { ArrowRight, ChevronLeft, ChevronRight, Sparkles, Loader2, RotateCcw } from 'lucide-react';
-
+import {
+  ArrowRight,
+  Sparkles,
+  Loader2,
+  CheckCircle2,
+  Clock,
+  Flame,
+  Gamepad2,
+} from 'lucide-react';
 
 export const FeaturedGames: React.FC = () => {
-  const sliderRef = useRef<HTMLDivElement>(null);
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-  const [activeFilter, setActiveFilter] = useState<'ready' | 'inProgress' | 'upcoming' | null>(null);
 
   useEffect(() => {
     getGames()
@@ -37,6 +39,7 @@ export const FeaturedGames: React.FC = () => {
       } else if (s === 'jarayonda' || s === 'ishlab chiqilmoqda') {
         inProgress++;
       } else {
+        // 'tez kunda', 'rejada', 'tekshirilmoqda'
         upcoming++;
       }
     });
@@ -44,219 +47,135 @@ export const FeaturedGames: React.FC = () => {
     return { ready, inProgress, upcoming, total: games.length };
   }, [games]);
 
-  const filteredGames = useMemo(() => {
-    if (!activeFilter) return games;
-    return games.filter((game) => {
-      const s = (game.subtitleStatus || '').trim().toLowerCase();
-      if (activeFilter === 'ready') return s === 'tayyor';
-      if (activeFilter === 'inProgress') return s === 'jarayonda' || s === 'ishlab chiqilmoqda';
-      if (activeFilter === 'upcoming') return s !== 'tayyor' && s !== 'jarayonda' && s !== 'ishlab chiqilmoqda';
-      return true;
-    });
-  }, [games, activeFilter]);
-
-  const checkScroll = () => {
-    if (sliderRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = sliderRef.current;
-      setCanScrollLeft(scrollLeft > 15);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 15);
-    }
-  };
-
-  useEffect(() => {
-    const el = sliderRef.current;
-    if (el) {
-      el.addEventListener('scroll', checkScroll, { passive: true });
-      checkScroll();
-      return () => el.removeEventListener('scroll', checkScroll);
-    }
-  }, [filteredGames]);
-
-  // Auto-scroll games slider every 6 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (sliderRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = sliderRef.current;
-        if (scrollLeft + clientWidth >= scrollWidth - 20) {
-          sliderRef.current.scrollTo({ left: 0, behavior: 'smooth' });
-        } else {
-          sliderRef.current.scrollBy({ left: 380, behavior: 'smooth' });
-        }
-      }
-    }, 6000);
-    return () => clearInterval(interval);
-  }, [filteredGames]);
-
-  const scroll = (direction: 'left' | 'right') => {
-    if (sliderRef.current) {
-      const { clientWidth } = sliderRef.current;
-      const scrollAmount = direction === 'left' ? -clientWidth * 0.75 : clientWidth * 0.75;
-      sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
-
   return (
-    <section className="py-16 bg-[#0B0D12] relative overflow-hidden">
+    <section className="py-14 bg-[#0B0D12] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header with Slider Navigation Controls */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 pb-4 border-b border-[#2A3245]/60">
+        {/* Section Header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
           <div>
             <div className="flex items-center gap-2 text-xs font-bold text-[#A3E635] uppercase tracking-wider mb-2">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>O‘yinlar to‘plami</span>
+              <span>Platforma ko‘rsatkichlari</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              O‘zbekcha subtitr bilan o‘yna
+              O‘zbekcha subtitrlar statistikasi
             </h2>
             <p className="text-sm text-[#9CA3AF] mt-1 max-w-xl">
-              Tayyorlangan va ishlab chiqilayotgan barcha o‘yinlar. Slayder orqali o‘zingizga ma‘qul o‘yinni tanlang.
+              Platformamizda tayyorlangan, tarjima qilinayotgan va rejalashtirilgan barcha o‘yinlar.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-            {/* Live Subtitle Statistics */}
-            <div className="flex items-center gap-1.5 sm:gap-2 p-1 rounded-2xl bg-[#141821] border border-[#2A3245]">
-              {/* Tayyor Stat Pill */}
-              <button
-                onClick={() => setActiveFilter(activeFilter === 'ready' ? null : 'ready')}
-                className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  activeFilter === 'ready'
-                    ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/25 ring-2 ring-emerald-400/30'
-                    : 'text-gray-300 hover:text-white hover:bg-white/5'
-                }`}
-                title="Tayyor subtitrli o‘yinlar (Filtrlash uchun bosing)"
-              >
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
-                <span>Tayyor</span>
-                <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
-                    activeFilter === 'ready'
-                      ? 'bg-black/25 text-white'
-                      : 'bg-emerald-500/15 text-emerald-400'
-                  }`}
-                >
-                  {stats.ready} ta
-                </span>
-              </button>
-
-              {/* Jarayonda Stat Pill */}
-              <button
-                onClick={() => setActiveFilter(activeFilter === 'inProgress' ? null : 'inProgress')}
-                className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  activeFilter === 'inProgress'
-                    ? 'bg-sky-500 text-white shadow-sm shadow-sky-500/25 ring-2 ring-sky-400/30'
-                    : 'text-gray-300 hover:text-white hover:bg-white/5'
-                }`}
-                title="Jarayondagi subtitrli o‘yinlar (Filtrlash uchun bosing)"
-              >
-                <span className="w-2 h-2 rounded-full bg-sky-400 shrink-0 animate-pulse" />
-                <span>Jarayonda</span>
-                <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
-                    activeFilter === 'inProgress'
-                      ? 'bg-black/25 text-white'
-                      : 'bg-sky-500/15 text-sky-400'
-                  }`}
-                >
-                  {stats.inProgress} ta
-                </span>
-              </button>
-
-              {/* Tez kunda Stat Pill */}
-              <button
-                onClick={() => setActiveFilter(activeFilter === 'upcoming' ? null : 'upcoming')}
-                className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  activeFilter === 'upcoming'
-                    ? 'bg-amber-500 text-white shadow-sm shadow-amber-500/25 ring-2 ring-amber-400/30'
-                    : 'text-gray-300 hover:text-white hover:bg-white/5'
-                }`}
-                title="Tez kunda chiqadigan subtitrli o‘yinlar (Filtrlash uchun bosing)"
-              >
-                <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
-                <span>Tez kunda</span>
-                <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
-                    activeFilter === 'upcoming'
-                      ? 'bg-black/25 text-white'
-                      : 'bg-amber-500/15 text-amber-400'
-                  }`}
-                >
-                  {stats.upcoming} ta
-                </span>
-              </button>
-
-              {/* Reset to All if filtered */}
-              {activeFilter && (
-                <button
-                  onClick={() => setActiveFilter(null)}
-                  className="flex items-center gap-1 px-2 py-1 text-[11px] font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
-                  title="Barcha o‘yinlarni ko‘rsatish"
-                >
-                  <RotateCcw className="w-3 h-3" />
-                  <span className="hidden sm:inline">Barchasi</span>
-                </button>
-              )}
-            </div>
-
-            {/* Slider Arrow Buttons */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => scroll('left')}
-                disabled={!canScrollLeft}
-                aria-label="Oldingi o‘yinlar"
-                className={`p-2.5 rounded-xl border transition-all ${
-                  canScrollLeft
-                    ? 'bg-[#141821] border-[#2A3245] text-white hover:border-[#A3E635] hover:bg-[#1A1F2A]'
-                    : 'bg-[#141821]/40 border-[#2A3245]/40 text-gray-600 cursor-not-allowed'
-                }`}
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => scroll('right')}
-                disabled={!canScrollRight}
-                aria-label="Keyingi o‘yinlar"
-                className={`p-2.5 rounded-xl border transition-all ${
-                  canScrollRight
-                    ? 'bg-[#141821] border-[#2A3245] text-white hover:border-[#A3E635] hover:bg-[#1A1F2A]'
-                    : 'bg-[#141821]/40 border-[#2A3245]/40 text-gray-600 cursor-not-allowed'
-                }`}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-
-            <Link
-              to="/games"
-              className="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold text-[#A3E635] hover:text-[#84CC16] ml-2 group"
-            >
-              <span>Katalog</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-          </div>
+          <Link
+            to="/games"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] text-xs sm:text-sm font-bold hover:bg-[#84CC16] transition-all shadow-accent-glow self-start sm:self-auto shrink-0 group"
+          >
+            <span>Barcha o‘yinlar katalogi</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
         </div>
 
-        {/* Horizontal Slider Track */}
-        <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">
+        {/* Minimalist Aesthetic Statistics Banner Card (Exact style requested) */}
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#10131A] via-[#141822] to-[#181D28] border border-[#2A3245] p-8 sm:p-12 shadow-2xl">
+          {/* Decorative Geometric Mandala Rosette Watermark on the Right */}
+          <div className="absolute -right-14 -top-14 -bottom-14 w-64 sm:w-80 md:w-96 pointer-events-none opacity-[0.14] text-gray-300 flex items-center justify-center overflow-hidden">
+            <svg
+              viewBox="0 0 200 200"
+              className="w-full h-full fill-none stroke-current"
+              strokeWidth="1.2"
+            >
+              <circle cx="100" cy="100" r="92" />
+              <circle cx="100" cy="100" r="78" />
+              <circle cx="100" cy="100" r="62" />
+              <circle cx="100" cy="100" r="46" />
+              <circle cx="100" cy="100" r="30" />
+              <circle cx="100" cy="100" r="15" />
+              {[
+                0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180, 202.5, 225, 247.5, 270, 292.5, 315,
+                337.5,
+              ].map((angle) => (
+                <g key={angle} transform={`rotate(${angle} 100 100)`}>
+                  <path d="M 100 8 L 108 38 L 100 58 L 92 38 Z" />
+                  <path d="M 100 22 L 114 54 L 100 74 L 86 54 Z" />
+                  <path d="M 95 8 L 100 0 L 105 8" />
+                </g>
+              ))}
+            </svg>
+          </div>
+
           {loading ? (
-            <div className="py-20 flex flex-col items-center justify-center gap-3">
+            <div className="py-12 flex flex-col items-center justify-center gap-3 relative z-10">
               <Loader2 className="w-8 h-8 text-[#A3E635] animate-spin" />
-              <p className="text-xs text-gray-400">O‘yinlar yuklanmoqda...</p>
+              <p className="text-xs text-gray-400">Statistika yuklanmoqda...</p>
             </div>
           ) : (
-            <div
-              ref={sliderRef}
-              className="flex gap-6 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth scrollbar-none"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {filteredGames.map((game, idx) => (
-                <div
-                  key={game.id}
-                  className="w-[85vw] sm:w-[360px] md:w-[380px] lg:w-[380px] shrink-0 snap-start"
-                >
-                  <GameCard game={game} priority={idx < 2} />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 relative z-10">
+              {/* 1. Tayyor subtitrlar */}
+              <Link
+                to="/games?status=Tayyor"
+                className="flex flex-col items-center text-center group cursor-pointer transition-all duration-300 hover:-translate-y-1"
+                title="Tayyor subtitrli o‘yinlarni ko‘rish"
+              >
+                <div className="mb-3 text-white group-hover:text-[#A3E635] transition-colors">
+                  <CheckCircle2 className="w-7 h-7 sm:w-8 sm:h-8 stroke-[1.75]" />
                 </div>
-              ))}
+                <span className="text-xs sm:text-sm text-gray-400 group-hover:text-gray-200 transition-colors font-medium mb-3">
+                  Tayyor
+                </span>
+                <span className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#E8D7B8] font-light tracking-wider group-hover:text-[#A3E635] transition-colors">
+                  {stats.ready}
+                </span>
+              </Link>
+
+              {/* 2. Jarayonda */}
+              <Link
+                to="/games?status=Jarayonda"
+                className="flex flex-col items-center text-center group cursor-pointer transition-all duration-300 hover:-translate-y-1"
+                title="Jarayondagi subtitrli o‘yinlarni ko‘rish"
+              >
+                <div className="mb-3 text-white group-hover:text-sky-400 transition-colors">
+                  <Clock className="w-7 h-7 sm:w-8 sm:h-8 stroke-[1.75]" />
+                </div>
+                <span className="text-xs sm:text-sm text-gray-400 group-hover:text-gray-200 transition-colors font-medium mb-3">
+                  Jarayonda
+                </span>
+                <span className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#E8D7B8] font-light tracking-wider group-hover:text-sky-400 transition-colors">
+                  {stats.inProgress}
+                </span>
+              </Link>
+
+              {/* 3. Tez kunda */}
+              <Link
+                to="/games?status=Tez+kunda"
+                className="flex flex-col items-center text-center group cursor-pointer transition-all duration-300 hover:-translate-y-1"
+                title="Tez kunda chiqadigan subtitrli o‘yinlarni ko‘rish"
+              >
+                <div className="mb-3 text-white group-hover:text-amber-400 transition-colors">
+                  <Flame className="w-7 h-7 sm:w-8 sm:h-8 stroke-[1.75]" />
+                </div>
+                <span className="text-xs sm:text-sm text-gray-400 group-hover:text-gray-200 transition-colors font-medium mb-3">
+                  Tez kunda
+                </span>
+                <span className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#E8D7B8] font-light tracking-wider group-hover:text-amber-400 transition-colors">
+                  {stats.upcoming}
+                </span>
+              </Link>
+
+              {/* 4. Jami o‘yinlar */}
+              <Link
+                to="/games"
+                className="flex flex-col items-center text-center group cursor-pointer transition-all duration-300 hover:-translate-y-1"
+                title="Barcha o‘yinlar katalogini ochish"
+              >
+                <div className="mb-3 text-white group-hover:text-emerald-400 transition-colors">
+                  <Gamepad2 className="w-7 h-7 sm:w-8 sm:h-8 stroke-[1.75]" />
+                </div>
+                <span className="text-xs sm:text-sm text-gray-400 group-hover:text-gray-200 transition-colors font-medium mb-3">
+                  Jami o‘yinlar
+                </span>
+                <span className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#E8D7B8] font-light tracking-wider group-hover:text-emerald-400 transition-colors">
+                  {stats.total}
+                </span>
+              </Link>
             </div>
           )}
         </div>
