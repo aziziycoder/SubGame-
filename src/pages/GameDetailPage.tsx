@@ -212,19 +212,19 @@ export const GameDetailPage: React.FC = () => {
                 <div className="flex flex-wrap items-center gap-1.5">
                   <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
                   
-                  {/* Compact Price Tag on Mobile */}
-                  <span
-                    className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black tracking-wide border shadow-sm ${
-                      priceInfo.isPaid
-                        ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
-                        : priceInfo.isFree
-                        ? 'bg-[#A3E635]/20 text-[#A3E635] border-[#A3E635]/40'
-                        : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                    }`}
-                  >
-                    <Tag className="w-3 h-3" />
-                    <span>{priceInfo.text}</span>
-                  </span>
+                  {/* Compact Price Tag on Mobile - Only shown if game is ready */}
+                  {game.subtitleStatus === 'Tayyor' && (
+                    <span
+                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black tracking-wide border shadow-sm ${
+                        priceInfo.isPaid
+                          ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
+                          : 'bg-[#A3E635]/20 text-[#A3E635] border-[#A3E635]/40'
+                      }`}
+                    >
+                      <Tag className="w-3 h-3" />
+                      <span>{priceInfo.text}</span>
+                    </span>
+                  )}
                 </div>
 
                 <h1 className="text-xl font-black text-white tracking-tight leading-tight line-clamp-2">
@@ -248,19 +248,19 @@ export const GameDetailPage: React.FC = () => {
               <div className="hidden sm:flex flex-wrap items-center gap-2 sm:gap-3">
                 <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
                 
-                {/* Prominent Subtitle Price Tag */}
-                <div
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-black tracking-wide border shadow-md ${
-                    priceInfo.isPaid
-                      ? 'bg-sky-500/20 text-sky-300 border-sky-500/40 shadow-sky-500/20'
-                      : priceInfo.isFree
-                      ? 'bg-[#A3E635]/20 text-[#A3E635] border-[#A3E635]/40 shadow-lime-500/20'
-                      : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                  }`}
-                >
-                  <Tag className="w-3.5 h-3.5" />
-                  <span>Subtitr narxi: {priceInfo.text}</span>
-                </div>
+                {/* Prominent Subtitle Price Tag - Only shown if game is ready */}
+                {game.subtitleStatus === 'Tayyor' && (
+                  <div
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-black tracking-wide border shadow-md ${
+                      priceInfo.isPaid
+                        ? 'bg-sky-500/20 text-sky-300 border-sky-500/40 shadow-sky-500/20'
+                        : 'bg-[#A3E635]/20 text-[#A3E635] border-[#A3E635]/40 shadow-lime-500/20'
+                    }`}
+                  >
+                    <Tag className="w-3.5 h-3.5" />
+                    <span>Subtitr narxi: {priceInfo.text}</span>
+                  </div>
+                )}
 
                 <span className="text-xs font-mono text-gray-300 bg-[#141821] px-2.5 py-0.5 rounded-full border border-[#2A3245]">
                   {game.releaseYear}
@@ -555,28 +555,29 @@ export const GameDetailPage: React.FC = () => {
                   </strong>
                 </div>
 
-                <div className="p-4 rounded-xl bg-[#0B0D12] border border-[#2A3245] sm:col-span-2 flex items-center justify-between">
-                  <div>
-                    <span className="text-xs text-gray-500 uppercase tracking-wider block mb-0.5">
-                      Subtitr Litsenziya Narxi
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      1 ta kompyuter uchun rasmiy faollashtirish
-                    </span>
+                {/* Subtitle License Price - Only shown if game is ready */}
+                {game.subtitleStatus === 'Tayyor' && (
+                  <div className="p-4 rounded-xl bg-[#0B0D12] border border-[#2A3245] sm:col-span-2 flex items-center justify-between">
+                    <div>
+                      <span className="text-xs text-gray-500 uppercase tracking-wider block mb-0.5">
+                        Subtitr Litsenziya Narxi
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        1 ta kompyuter uchun rasmiy faollashtirish
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-sm font-black border ${
+                        priceInfo.isPaid
+                          ? 'bg-sky-500/15 text-sky-300 border-sky-500/40 shadow-sm shadow-sky-500/20'
+                          : 'bg-[#A3E635]/15 text-[#A3E635] border-[#A3E635]/40 shadow-sm shadow-lime-500/20'
+                      }`}>
+                        <Tag className="w-4 h-4" />
+                        <span>{priceInfo.text}</span>
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-sm font-black border ${
-                      priceInfo.isPaid
-                        ? 'bg-sky-500/15 text-sky-300 border-sky-500/40 shadow-sm shadow-sky-500/20'
-                        : priceInfo.isFree
-                        ? 'bg-[#A3E635]/15 text-[#A3E635] border-[#A3E635]/40 shadow-sm shadow-lime-500/20'
-                        : 'bg-amber-500/15 text-amber-300 border-amber-500/40'
-                    }`}>
-                      <Tag className="w-4 h-4" />
-                      <span>{priceInfo.text}</span>
-                    </span>
-                  </div>
-                </div>
+                )}
               </div>
 
               <div className="p-4 rounded-xl bg-[#1A1F2A] border border-[#2A3245] space-y-2 mb-4">
@@ -697,9 +698,8 @@ export const GameDetailPage: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   {/* Minimum */}
                   <div className="bg-[#0B0D12] p-4 sm:p-5 rounded-xl border border-[#2A3245] space-y-3">
-                    <div className="flex items-center justify-between border-b border-[#2A3245] pb-2">
+                    <div className="border-b border-[#2A3245] pb-2">
                       <h3 className="font-bold text-white text-sm">Minimal talablar</h3>
-                      <span className="text-[11px] text-gray-400">720p / 30 FPS</span>
                     </div>
 
                     <div className="text-xs space-y-2.5">
@@ -732,9 +732,8 @@ export const GameDetailPage: React.FC = () => {
 
                   {/* Recommended */}
                   <div className="bg-[#0B0D12] p-4 sm:p-5 rounded-xl border border-[#A3E635]/30 space-y-3 shadow-accent-glow">
-                    <div className="flex items-center justify-between border-b border-[#2A3245] pb-2">
+                    <div className="border-b border-[#2A3245] pb-2">
                       <h3 className="font-bold text-[#A3E635] text-sm">Tavsiya etilgan</h3>
-                      <span className="text-[11px] text-[#A3E635]">1080p / 60 FPS</span>
                     </div>
 
                     <div className="text-xs space-y-2.5">
@@ -791,7 +790,7 @@ export const GameDetailPage: React.FC = () => {
                     ADMIN
                   </span>
                 </div>
-              ) : (
+              ) : game.subtitleStatus === 'Tayyor' ? (
                 <div className="p-3.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] flex items-center justify-between">
                   <div>
                     <span className="text-[11px] text-gray-400 block font-medium">Subtitr litsenziyasi:</span>
@@ -801,15 +800,13 @@ export const GameDetailPage: React.FC = () => {
                     <span className={`text-base sm:text-lg font-black tracking-tight ${
                       priceInfo.isPaid
                         ? 'text-sky-300'
-                        : priceInfo.isFree
-                        ? 'text-[#A3E635]'
-                        : 'text-amber-400'
+                        : 'text-[#A3E635]'
                     }`}>
                       {priceInfo.text}
                     </span>
                   </div>
                 </div>
-              )}
+              ) : null}
 
               <h3 className="text-base sm:text-lg font-bold text-white">
                 1 Akkaunt = 1 Qurilma

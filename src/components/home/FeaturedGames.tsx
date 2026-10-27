@@ -4,6 +4,7 @@ import { getGames } from '../../services/gamesService';
 import type { Game } from '../../types/game';
 import { GameCard } from '../game/GameCard';
 import { ArrowRight, ChevronLeft, ChevronRight, Sparkles, Loader2 } from 'lucide-react';
+import { getGamePriceInfo } from '../../services/paymentService';
 
 export const FeaturedGames: React.FC = () => {
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -11,7 +12,7 @@ export const FeaturedGames: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
-  const [filterTab, setFilterTab] = useState<'all' | 'ready' | 'upcoming'>('all');
+  const [filterTab, setFilterTab] = useState<'all' | 'ready' | 'upcoming' | 'free' | 'paid'>('all');
 
   useEffect(() => {
     getGames()
@@ -26,6 +27,9 @@ export const FeaturedGames: React.FC = () => {
   const filteredGames = games.filter((game) => {
     if (filterTab === 'ready') return game.subtitleStatus === 'Tayyor';
     if (filterTab === 'upcoming') return game.subtitleStatus !== 'Tayyor';
+    const priceInfo = getGamePriceInfo(game);
+    if (filterTab === 'free') return priceInfo.isFree;
+    if (filterTab === 'paid') return priceInfo.isPaid;
     return true;
   });
 
@@ -119,6 +123,26 @@ export const FeaturedGames: React.FC = () => {
                 }`}
               >
                 Kutilayotgan
+              </button>
+              <button
+                onClick={() => setFilterTab('free')}
+                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
+                  filterTab === 'free'
+                    ? 'bg-[#A3E635] text-[#0B0D12]'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                Tekin (Bepul)
+              </button>
+              <button
+                onClick={() => setFilterTab('paid')}
+                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
+                  filterTab === 'paid'
+                    ? 'bg-sky-400 text-[#0B0D12]'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                Pullik
               </button>
             </div>
 

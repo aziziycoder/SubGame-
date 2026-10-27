@@ -4,7 +4,8 @@ import { GENRES, SUBTITLE_STATUSES } from '../data/games';
 import { getGames } from '../services/gamesService';
 import type { Game } from '../types/game';
 import { GameCard } from '../components/game/GameCard';
-import { Search, Filter, RotateCcw, Layers, Loader2 } from 'lucide-react';
+import { Search, Filter, RotateCcw, Layers, Loader2, Tag } from 'lucide-react';
+import { getGamePriceInfo } from '../services/paymentService';
 
 export const CatalogPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -15,6 +16,7 @@ export const CatalogPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [selectedGenre, setSelectedGenre] = useState<string>('Barchasi');
   const [selectedStatus, setSelectedStatus] = useState<string>('Barchasi');
+  const [selectedPrice, setSelectedPrice] = useState<'all' | 'free' | 'paid'>('all');
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'title'>('newest');
 
   useEffect(() => {
@@ -60,7 +62,14 @@ export const CatalogPage: React.FC = () => {
       const matchesStatus =
         selectedStatus === 'Barchasi' || subtitleStatus === selectedStatus;
 
-      return matchesSearch && matchesGenre && matchesStatus;
+      // Price filter (Tekin / Pullik)
+      const priceInfo = getGamePriceInfo(game);
+      const matchesPrice =
+        selectedPrice === 'all' ||
+        (selectedPrice === 'free' && priceInfo.isFree) ||
+        (selectedPrice === 'paid' && priceInfo.isPaid);
+
+      return matchesSearch && matchesGenre && matchesStatus && matchesPrice;
     }).sort((a, b) => {
       const yearA = Number(a?.releaseYear) || 0;
       const yearB = Number(b?.releaseYear) || 0;
@@ -69,12 +78,13 @@ export const CatalogPage: React.FC = () => {
       if (sortBy === 'title') return (a?.title || '').localeCompare(b?.title || '');
       return 0;
     });
-  }, [games, searchQuery, selectedGenre, selectedStatus, sortBy]);
+  }, [games, searchQuery, selectedGenre, selectedStatus, selectedPrice, sortBy]);
 
   const resetFilters = () => {
     setSearchQuery('');
     setSelectedGenre('Barchasi');
     setSelectedStatus('Barchasi');
+    setSelectedPrice('all');
     setSortBy('newest');
     setSearchParams({});
   };
@@ -83,6 +93,7 @@ export const CatalogPage: React.FC = () => {
     searchQuery.trim() !== '' ||
     selectedGenre !== 'Barchasi' ||
     selectedStatus !== 'Barchasi' ||
+    selectedPrice !== 'all' ||
     sortBy !== 'newest';
 
   return (
@@ -105,8 +116,8 @@ export const CatalogPage: React.FC = () => {
         {/* Filter Controls Bar */}
         <div className="bg-[#141821] border border-[#2A3245] rounded-2xl p-5 mb-8 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-            {/* Search Input (5 cols) */}
-            <div className="md:col-span-5 relative">
+            {/* Search Input (4 cols) */}
+            <div className="md:col-span-4 relative">
               <input
                 type="text"
                 placeholder="O‘yin nomi, janri yoki studiyani qidiring..."
@@ -139,16 +150,29 @@ export const CatalogPage: React.FC = () => {
               </select>
             </div>
 
-            {/* Sort Dropdown (3 cols) */}
-            <div className="md:col-span-3">
+            {/* Price Filter (2 cols) */}
+            <div className="md:col-span-2">
+              <select
+                value={selectedPrice}
+                onChange={(e) => setSelectedPrice(e.target.value as any)}
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-white text-sm focus:outline-none focus:border-[#A3E635] transition-colors"
+              >
+                <option value="all">Narx: Barchasi</option>
+                <option value="free">Tekin (Bepul)</option>
+                <option value="paid">Pullik</option>
+              </select>
+            </div>
+
+            {/* Sort Dropdown (2 cols) */}
+            <div className="md:col-span-2">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-white text-sm focus:outline-none focus:border-[#A3E635] transition-colors"
               >
-                <option value="newest">Yil bo‘yicha: Eng yangilar</option>
-                <option value="oldest">Yil bo‘yicha: Avvalgilari</option>
-                <option value="title">Nom bo‘yicha: A-Z</option>
+                <option value="newest">Yil: Yangi</option>
+                <option value="oldest">Yil: Avvalgi</option>
+                <option value="title">Nom: A-Z</option>
               </select>
             </div>
 
@@ -164,6 +188,43 @@ export const CatalogPage: React.FC = () => {
                 </button>
               )}
             </div>
+          </div>
+
+          {/* Price Quick Filter Chips */}
+          <div className="pt-2 border-t border-[#2A3245]/60 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider shrink-0 mr-1 flex items-center gap-1">
+              <Tag className="w-3 h-3 text-[#A3E635]" /> Narx:
+            </span>
+            <button
+              onClick={() => setSelectedPrice('all')}
+              className={`text-xs px-3 py-1.5 rounded-lg shrink-0 transition-all ${
+                selectedPrice === 'all'
+                  ? 'bg-[#A3E635] text-[#0B0D12] font-bold shadow-accent-glow'
+                  : 'bg-[#0B0D12] text-gray-300 hover:text-white border border-[#2A3245]'
+              }`}
+            >
+              Barchasi
+            </button>
+            <button
+              onClick={() => setSelectedPrice('free')}
+              className={`text-xs px-3 py-1.5 rounded-lg shrink-0 transition-all ${
+                selectedPrice === 'free'
+                  ? 'bg-[#A3E635] text-[#0B0D12] font-bold shadow-accent-glow'
+                  : 'bg-[#0B0D12] text-[#A3E635] hover:text-white border border-[#A3E635]/40 hover:bg-[#A3E635]/10'
+              }`}
+            >
+              Tekin (Bepul)
+            </button>
+            <button
+              onClick={() => setSelectedPrice('paid')}
+              className={`text-xs px-3 py-1.5 rounded-lg shrink-0 transition-all ${
+                selectedPrice === 'paid'
+                  ? 'bg-sky-400 text-[#0B0D12] font-bold shadow-md shadow-sky-400/20'
+                  : 'bg-[#0B0D12] text-sky-300 hover:text-white border border-sky-500/40 hover:bg-sky-500/10'
+              }`}
+            >
+              Pullik subtitrlar
+            </button>
           </div>
 
           {/* Genre Quick Filter Chips */}

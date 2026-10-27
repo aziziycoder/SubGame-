@@ -1336,12 +1336,11 @@ export const AdminPage: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {/* Minimal talablar */}
                   <div className="p-4 rounded-xl bg-[#0B0D12] border border-[#2A3245] space-y-3">
-                    <div className="flex items-center justify-between border-b border-[#2A3245] pb-2">
+                    <div className="border-b border-[#2A3245] pb-2">
                       <span className="text-xs font-bold text-white flex items-center gap-1.5">
                         <Cpu className="w-3.5 h-3.5 text-gray-400" />
                         Minimal talablar
                       </span>
-                      <span className="text-[10px] text-gray-400 font-mono">720p / 30 FPS</span>
                     </div>
 
                     <div className="space-y-2.5">
@@ -1518,12 +1517,11 @@ export const AdminPage: React.FC = () => {
 
                 {/* Tavsiya etilgan */}
                 <div className="p-4 rounded-xl bg-[#0B0D12] border border-[#A3E635]/30 space-y-3 shadow-accent-glow/5">
-                  <div className="flex items-center justify-between border-b border-[#2A3245] pb-2">
+                  <div className="border-b border-[#2A3245] pb-2">
                     <span className="text-xs font-bold text-[#A3E635] flex items-center gap-1.5">
                       <Cpu className="w-3.5 h-3.5 text-[#A3E635]" />
                       Tavsiya etilgan
                     </span>
-                    <span className="text-[10px] text-[#A3E635] font-mono">1080p / 60 FPS</span>
                   </div>
 
                   <div className="space-y-2.5">
