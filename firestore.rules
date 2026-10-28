@@ -21,7 +21,8 @@ service cloud.firestore {
     // Collection: licenses
     // Document ID: licenseId (e.g. {userId}_{gameId})
     // Fields: id, userId, userEmail, userName, userPhoto, gameId, gameTitle, gameSlug,
-    //         status ('active' | 'revoked'), hwid, boundAt, boundDeviceName, createdAt
+    //         status ('active' | 'revoked'), hwid, boundAt, boundDeviceName, createdAt,
+    //         paymentProvider, paidAmount, paymentRef, revokedReason
     //
     // Collection: issues
     // Document ID: issueId
@@ -102,11 +103,44 @@ service cloud.firestore {
 
     // Game licenses:
     // Read: Open to allow desktop launcher unauthenticated check for HWID binding and activation
-    // Create/Update: Open to allow desktop launcher and web users to claim licenses and bind hardware ID
+    // Create: Admin can create any; Click webhook can create with payment metadata; regular users can claim only free games (!= 'stray')
+    // Update: Admin can update all; Launcher can only bind HWID on active licenses without modifying immutable fields
     // Delete: Admin only
     match /licenses/{licenseId} {
       allow read: if true;
-      allow create, update: if true;
+      allow create: if isAdmin() || (
+        // Click Webhook payment fulfillment (unauthenticated REST API)
+        (
+          'paymentProvider' in request.resource.data &&
+          request.resource.data.paymentProvider == 'click' &&
+          'paidAmount' in request.resource.data &&
+          request.resource.data.paidAmount is int &&
+          request.resource.data.paidAmount > 0 &&
+          'paymentRef' in request.resource.data &&
+          request.resource.data.paymentRef is string
+        ) ||
+        // Regular users / launcher claiming free games (stray and paid games are blocked)
+        (
+          'gameId' in request.resource.data &&
+          request.resource.data.gameId is string &&
+          request.resource.data.gameId != 'stray' &&
+          'userId' in request.resource.data &&
+          request.resource.data.userId is string &&
+          'status' in request.resource.data &&
+          request.resource.data.status == 'active'
+        )
+      );
+      allow update: if isAdmin() || (
+        resource.data.status == 'active' &&
+        // Only allow setting HWID if not already set, or matching current
+        (!('hwid' in resource.data) || resource.data.hwid == null || resource.data.hwid == request.resource.data.hwid) &&
+        // Immutable critical fields:
+        request.resource.data.userId == resource.data.userId &&
+        request.resource.data.gameId == resource.data.gameId &&
+        request.resource.data.status == resource.data.status &&
+        // Only hwid, boundDeviceName, boundAt, or updatedAt can change
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hwid', 'boundDeviceName', 'boundAt', 'updatedAt'])
+      );
       allow delete: if isAdmin();
     }
 
