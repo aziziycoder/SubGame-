@@ -18,6 +18,10 @@ export interface GameLicenseItem {
   hwid?: string | null;
   boundAt?: any;
   boundDeviceName?: string | null;
+  paymentProvider?: string;
+  paymentRef?: string;
+  paidAmount?: number;
+  revokedReason?: string;
   createdAt?: any;
 }
 
@@ -99,6 +103,10 @@ export const fetchAllLicensesWithStats = async (
         hwid: data.hwid || null,
         boundAt: data.boundAt || null,
         boundDeviceName: data.boundDeviceName || null,
+        paymentProvider: data.paymentProvider || undefined,
+        paymentRef: data.paymentRef || undefined,
+        paidAmount: data.paidAmount || undefined,
+        revokedReason: data.revokedReason || undefined,
         createdAt: data.createdAt || null
       };
 

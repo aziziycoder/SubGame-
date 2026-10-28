@@ -196,6 +196,45 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const unpaidLicenses = useMemo(() => {
+    return licenses.filter((lic) => {
+      // Samir Bekturganov (Click official payer) - ALWAYS keep!
+      if (lic.userId === 'TbCgC6mgoxS2W9X5xF9jGJOnIko2') return false;
+      if (lic.paymentProvider === 'click' || (lic.paidAmount && lic.paidAmount > 0)) return false;
+      return lic.status === 'revoked';
+    });
+  }, [licenses]);
+
+  const handleCleanUnpaidLicenses = async () => {
+    if (unpaidLicenses.length === 0) {
+      showToast('O‘chiriladigan to‘xtatilgan / to‘lovsiz litsenziyalar topilmadi', 'success');
+      return;
+    }
+
+    if (
+      !window.confirm(
+        `Bazada to‘lovsiz olingan va to‘xtatilgan ${unpaidLicenses.length} ta litsenziya mavjud.\n\nEslatma: Samir Bekturganov (Click orqali to‘lagan rasmiy xaridor) saqlab qolinadi!\n\nQolgan ${unpaidLicenses.length} ta litsenziyani butunlay o‘chirib tashlashni tasdiqlaysizmi?`
+      )
+    ) {
+      return;
+    }
+
+    setActionLoading('clean_unpaid');
+    let deleted = 0;
+    try {
+      for (const lic of unpaidLicenses) {
+        const res = await deleteLicense(lic.id);
+        if (res.success) deleted++;
+      }
+      showToast(`${deleted} ta to‘lovsiz litsenziya muvaffaqiyatli butunlay o‘chirildi!`, 'success');
+      await loadData(true);
+    } catch (err: any) {
+      showToast('O‘chirishda xatolik: ' + err.message, 'error');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const formatDate = (timestamp: any): string => {
     if (!timestamp) return 'Noma’lum';
     try {
@@ -542,6 +581,19 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
             </div>
           )}
 
+          {/* Delete Unpaid Licenses */}
+          {unpaidLicenses.length > 0 && (
+            <button
+              onClick={handleCleanUnpaidLicenses}
+              disabled={actionLoading === 'clean_unpaid' || refreshing || loading}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/40 text-xs font-black transition-all disabled:opacity-50 cursor-pointer shadow-md"
+              title="To‘lovsiz olingan litsenziyalarni bazadan butunlay o‘chirib tozalash"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>To‘lovsizlarni chopish ({unpaidLicenses.length})</span>
+            </button>
+          )}
+
           {/* Export to CSV */}
           <button
             onClick={exportToCSV}
@@ -768,8 +820,14 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
                                     </div>
                                   </div>
 
-                                  {/* Status Badge */}
-                                  <div>
+                                  {/* Status & Payment Badges */}
+                                  <div className="flex flex-col items-end gap-1 shrink-0">
+                                    {claimant.paymentProvider === 'click' && (
+                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                                        ✓ Click ({claimant.paidAmount || 5000} so‘m)
+                                      </span>
+                                    )}
+
                                     {claimant.status === 'active' ? (
                                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#A3E635]/15 text-[#A3E635] border border-[#A3E635]/30">
                                         Faol
@@ -777,6 +835,12 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
                                     ) : (
                                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-500/15 text-red-400 border border-red-500/30">
                                         To‘xtatilgan
+                                      </span>
+                                    )}
+
+                                    {claimant.revokedReason && (
+                                      <span className="text-[10px] text-red-400 font-medium text-right max-w-[130px] truncate" title={claimant.revokedReason}>
+                                        ⚠️ {claimant.revokedReason}
                                       </span>
                                     )}
                                   </div>
@@ -1000,17 +1064,29 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
 
                         {/* Status */}
                         <td className="px-6 py-4">
-                          {lic.status === 'active' ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-[#A3E635]/15 text-[#A3E635] border border-[#A3E635]/30">
-                              <CheckCircle2 className="w-3 h-3" />
-                              Faol
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-red-500/15 text-red-400 border border-red-500/30">
-                              <AlertCircle className="w-3 h-3" />
-                              To‘xtatilgan
-                            </span>
-                          )}
+                          <div className="space-y-1">
+                            {lic.paymentProvider === 'click' && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                                ✓ Click ({lic.paidAmount || 5000} so‘m)
+                              </span>
+                            )}
+                            {lic.status === 'active' ? (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-[#A3E635]/15 text-[#A3E635] border border-[#A3E635]/30">
+                                <CheckCircle2 className="w-3 h-3" />
+                                Faol
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-red-500/15 text-red-400 border border-red-500/30">
+                                <AlertCircle className="w-3 h-3" />
+                                To‘xtatilgan
+                              </span>
+                            )}
+                            {lic.revokedReason && (
+                              <span className="text-[10px] text-red-400 block font-mono">
+                                {lic.revokedReason}
+                              </span>
+                            )}
+                          </div>
                         </td>
 
                         {/* Actions */}
