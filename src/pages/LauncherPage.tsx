@@ -28,11 +28,11 @@ export const LauncherPage: React.FC = () => {
     },
     {
       step: '02',
-      title: 'Dasturni ishga tushiring',
+      title: 'Administrator sifatida ishga tushiring',
       description:
-        'Yuklab olingan faylni ikki marta bosing. Agar Windows SmartScreen «Himoyalanmagan dastur» deb ogohlantirsa, «Подробнее (More info)» havolasini bosing va «Выполнить в любом случае (Run anyway)»ni tanlang.',
-      icon: AlertTriangle,
-      tip: 'Dastur 100% toza va xavfsiz.'
+        'Yuklab olingan «SubGame-Launcher.exe» ustiga sichqonchaning o‘ng tugmasini bosing va «Administrator nomidan ishga tushirish» («Run as administrator»)ni tanlang. Bu launcherni o‘yin kataloglariga (Steam, Program Files) subtitr modlarini to‘siqsiz ulashi uchun zarur.',
+      icon: ShieldCheck,
+      tip: 'Sichqonchaning o‘ng tugmasi -> «Run as administrator»'
     },
     {
       step: '03',
@@ -156,19 +156,38 @@ export const LauncherPage: React.FC = () => {
           </div>
         </div>
 
-        {/* SmartScreen Alert Note */}
-        <div className="mb-20 p-6 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-4">
-          <AlertTriangle className="w-6 h-6 text-amber-400 shrink-0 mt-0.5" />
-          <div className="space-y-1.5 text-xs sm:text-sm text-gray-300">
-            <strong className="text-amber-300 block text-base font-bold">
-              Windows SmartScreen «Himoyalanmagan dastur» deb chiqarsa nima qilish kerak?
-            </strong>
-            <p className="leading-relaxed">
-              SubGame mustaqil loyiha bo‘lib, xorijiy qimmatbaho korporativ sertifikatga ega emas. Shu sababli Windows yangi yuklab olingan dasturni ilk bor ochganda xavfsizlik ogohlantirishini ko‘rsatadi.
-            </p>
-            <p className="leading-relaxed font-semibold text-white">
-              Yechim: Oynadagi <span className="text-[#A3E635]">«Подробнее (More info)»</span> yozuvini bosing, so‘ngra pastda chiqqan <span className="text-[#A3E635]">«Выполнить в любом случае (Run anyway)»</span> tugmasini bosing. Dastur mutlaqo toza va xavfsiz.
-            </p>
+        {/* Important notices: Administrator privileges & SmartScreen */}
+        <div className="mb-20 grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Run as Administrator Alert */}
+          <div className="p-6 rounded-2xl bg-[#A3E635]/10 border border-[#A3E635]/30 flex items-start gap-4">
+            <ShieldCheck className="w-6 h-6 text-[#A3E635] shrink-0 mt-0.5" />
+            <div className="space-y-1.5 text-xs sm:text-sm text-gray-300">
+              <strong className="text-[#A3E635] block text-base font-bold">
+                Nega «Administrator nomidan ishga tushirish» kerak?
+              </strong>
+              <p className="leading-relaxed">
+                Zamonaviy o‘yinlar ko‘pincha himoyalangan papkalarda (<code className="text-[#A3E635] bg-[#0B0D12] px-1.5 py-0.5 rounded">C:\Program Files</code>, Steam yoki Epic Games) joylashgan bo‘ladi.
+              </p>
+              <p className="leading-relaxed font-semibold text-white">
+                Launcherni oddiy ochganda Windows o‘yin papkasiga fayl yozishni cheklashi mumkin. Doimo dastur ustiga <span className="text-[#A3E635]">o‘ng tugmani bosib</span>, <span className="text-[#A3E635]">«Administrator nomidan ishga tushirish» («Run as administrator»)</span> qilib kiring.
+              </p>
+            </div>
+          </div>
+
+          {/* SmartScreen Alert Note */}
+          <div className="p-6 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-4">
+            <AlertTriangle className="w-6 h-6 text-amber-400 shrink-0 mt-0.5" />
+            <div className="space-y-1.5 text-xs sm:text-sm text-gray-300">
+              <strong className="text-amber-300 block text-base font-bold">
+                Windows SmartScreen «Himoyalanmagan dastur» deb chiqarsa:
+              </strong>
+              <p className="leading-relaxed">
+                SubGame mustaqil loyiha bo‘lib, xorijiy qimmatbaho korporativ sertifikatga ega emas. Shu sababli Windows dasturni ilk bor ochganda xavfsizlik ogohlantirishini ko‘rsatishi mumkin.
+              </p>
+              <p className="leading-relaxed font-semibold text-white">
+                Yechim: <span className="text-amber-300">«Подробнее (More info)»</span> yozuvini bosing, so‘ng pastda chiqqan <span className="text-amber-300">«Выполнить в любом случае (Run anyway)»</span> tugmasini bosing. Dastur mutlaqo toza va xavfsiz.
+              </p>
+            </div>
           </div>
         </div>
 

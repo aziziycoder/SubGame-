@@ -287,7 +287,7 @@ export const AdminPage: React.FC = () => {
         {
           step: 1,
           title: 'SubGame Launcherni oching',
-          description: 'SubGame Launcher ilovasini ishga tushiring.'
+          description: 'SubGame Launcher ilovasini administrator sifatida ishga tushiring (Run as administrator).'
         },
         {
           step: 2,
@@ -559,7 +559,7 @@ export const AdminPage: React.FC = () => {
         {
           step: 1,
           title: 'SubGame Launcherni oching',
-          description: 'SubGame Launcher ilovasini ishga tushiring.'
+          description: 'SubGame Launcher ilovasini administrator sifatida ishga tushiring (Run as administrator).'
         },
         {
           step: 2,
