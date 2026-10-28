@@ -11,7 +11,9 @@ import {
   FolderCheck,
   Gamepad2,
   ArrowRight,
-  LifeBuoy
+  LifeBuoy,
+  Play,
+  ExternalLink
 } from 'lucide-react';
 import { TelegramLogo } from '../components/common/BrandLogos';
 import { FaqSection } from '../components/home/FaqSection';
@@ -83,6 +85,13 @@ export const LauncherPage: React.FC = () => {
               <Download className="w-5 h-5" />
               <span>Launcherni yuklab olish (.exe)</span>
             </a>
+            <a
+              href="#video-guide"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-[#141821] text-gray-200 hover:text-white border border-[#2A3245] hover:border-red-500/50 font-bold text-sm transition-all group"
+            >
+              <Play className="w-4 h-4 text-red-400 fill-red-400/30 group-hover:fill-red-400 transition-all" />
+              <span>Video qo‘llanma</span>
+            </a>
             <Link
               to="/games"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-[#141821] text-gray-200 hover:text-white border border-[#2A3245] hover:border-gray-500 font-bold text-sm transition-all"
@@ -106,6 +115,52 @@ export const LauncherPage: React.FC = () => {
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
               100% Xavfsiz & Toza
             </span>
+          </div>
+        </div>
+
+        {/* Video Guide Section */}
+        <div id="video-guide" className="mb-20 scroll-mt-28">
+          <div className="text-center max-w-2xl mx-auto mb-8">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-500/15 border border-red-500/30 text-red-400 text-xs font-bold mb-3 shadow-sm">
+              <Play className="w-3.5 h-3.5 fill-current" />
+              <span>Rasmiy Video Qo‘llanma</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white mb-3 tracking-tight">
+              Launcherni ishlatish va subtitr ulash videosi
+            </h2>
+            <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
+              Dasturni yuklab olish, «Administrator sifatida ishga tushirish» va o‘yinlarga o‘zbekcha subtitrlarni ulash jarayonini 2 daqiqalik video orqali ko‘ring.
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <div className="relative rounded-3xl overflow-hidden border-2 border-[#2A3245] shadow-2xl bg-[#141821] group hover:border-[#A3E635]/60 transition-all duration-300 hover:shadow-card-glow">
+              <div className="relative aspect-video w-full bg-[#0B0D12]">
+                <iframe
+                  src="https://www.youtube.com/embed/C8SLXjdf5PE?rel=0"
+                  title="SubGame Launcher o'rnatish va subtitr ulash bo'yicha video qo'llanma"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full border-0"
+                />
+              </div>
+
+              <div className="p-4 sm:p-5 bg-gradient-to-r from-[#141821] via-[#1A1F2A] to-[#141821] border-t border-[#2A3245] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2 text-gray-300">
+                  <Sparkles className="w-4 h-4 text-[#A3E635] shrink-0" />
+                  <span>Videoda: Launcherni ochish, «Run as administrator», o‘yin papkasini ko‘rsatish va 1 bosishda o‘ynash</span>
+                </div>
+                <a
+                  href="https://youtu.be/C8SLXjdf5PE"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 font-bold text-red-400 hover:text-red-300 transition-colors shrink-0"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>YouTube'da ochish</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 

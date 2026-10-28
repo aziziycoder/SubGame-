@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Download, Gamepad2, ArrowRight } from 'lucide-react';
+import { Search, Download, Gamepad2, ArrowRight, Play, ExternalLink } from 'lucide-react';
 
 export const HowItWorksSection: React.FC = () => {
   const steps = [
@@ -89,6 +89,41 @@ export const HowItWorksSection: React.FC = () => {
               </div>
             );
           })}
+        </div>
+
+        {/* Video Guide Callout Banner */}
+        <div className="mt-14 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-[#1A1F2A] via-[#141821] to-[#1A1F2A] border border-[#2A3245] flex flex-col lg:flex-row items-center justify-between gap-6 shadow-xl">
+          <div className="space-y-2 text-center lg:text-left max-w-xl">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold">
+              <Play className="w-3 h-3 fill-current" />
+              <span>Video Qo‘llanma</span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-white">
+              Launcherni ishlatish va subtitr ulash videosi
+            </h3>
+            <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">
+              O‘yinlarga o‘zbekcha subtitrlarni qanday ulash va launcherni administrator sifatida ishga tushirishni 2 daqiqalik video orqali o‘rganing.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
+            <Link
+              to="/launcher#video-guide"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#A3E635] text-[#0B0D12] hover:bg-[#84CC16] font-bold text-sm shadow-md transition-all hover:scale-105"
+            >
+              <Play className="w-4 h-4 fill-current" />
+              <span>Videoni tomosha qilish</span>
+            </Link>
+            <a
+              href="https://youtu.be/C8SLXjdf5PE"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-[#141821] text-gray-300 hover:text-white border border-[#2A3245] hover:border-red-500/50 font-bold text-sm transition-all"
+            >
+              <ExternalLink className="w-4 h-4 text-red-400" />
+              <span>YouTube'da ochish</span>
+            </a>
+          </div>
         </div>
 
         {/* Bottom Callout */}

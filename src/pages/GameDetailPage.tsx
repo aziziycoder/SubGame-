@@ -616,7 +616,17 @@ export const GameDetailPage: React.FC = () => {
                     Fayllarni to‘g‘ri joylashtirish bo‘yicha bosqichma-bosqich yo‘riqnoma
                   </p>
                 </div>
-                <FolderOpen className="w-6 h-6 text-[#A3E635] shrink-0" />
+                <div className="flex items-center gap-2">
+                  <Link
+                    to="/launcher#video-guide"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold transition-all shrink-0"
+                    title="Launcherni o'rnatish va ishlatish bo'yicha video qo'llanma"
+                  >
+                    <Play className="w-3.5 h-3.5 fill-current" />
+                    <span>Video qo‘llanma</span>
+                  </Link>
+                  <FolderOpen className="hidden sm:block w-5 h-5 text-[#A3E635] shrink-0" />
+                </div>
               </div>
 
               <div className="space-y-4 sm:space-y-6">
