@@ -23,7 +23,8 @@ import {
   FileCheck,
   ShoppingCart,
   Monitor,
-  Cpu
+  Cpu,
+  KeyRound
 } from 'lucide-react';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage } from '../services/firebase';
@@ -38,11 +39,12 @@ import type { Game, SubtitleStatus, OfficialStoreLink } from '../types/game';
 import { useAuth } from '../context/AuthContext';
 import { SliderManager } from '../components/admin/SliderManager';
 import { UserManager } from '../components/admin/UserManager';
+import { LicenseStatsManager } from '../components/admin/LicenseStatsManager';
 import { SteamLogo, EpicGamesLogo } from '../components/common/BrandLogos';
 
 export const AdminPage: React.FC = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'games' | 'sliders' | 'users'>('games');
+  const [activeTab, setActiveTab] = useState<'games' | 'sliders' | 'users' | 'licenses'>('games');
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -824,6 +826,25 @@ export const AdminPage: React.FC = () => {
               Boshqaruv
             </span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('licenses')}
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              activeTab === 'licenses'
+                ? 'bg-[#A3E635] text-[#0B0D12] shadow-accent-glow'
+                : 'text-gray-400 hover:text-white hover:bg-[#141821] border border-transparent'
+            }`}
+          >
+            <KeyRound className="w-4 h-4" />
+            <span>Litsenziyalar & Statistika</span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                activeTab === 'licenses' ? 'bg-black/20 text-[#0B0D12]' : 'bg-[#1E2533] text-gray-400'
+              }`}
+            >
+              Statistika
+            </span>
+          </button>
         </div>
 
         {activeTab === 'games' ? (
@@ -1016,8 +1037,10 @@ export const AdminPage: React.FC = () => {
           </>
         ) : activeTab === 'sliders' ? (
           <SliderManager games={games} />
-        ) : (
+        ) : activeTab === 'users' ? (
           <UserManager />
+        ) : (
+          <LicenseStatsManager games={games} />
         )}
       </main>
 
