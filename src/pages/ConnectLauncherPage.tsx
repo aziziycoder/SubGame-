@@ -16,7 +16,7 @@ export const ConnectLauncherPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const urlCode = searchParams.get('code') || '';
   const [code, setCode] = useState(urlCode);
-  const { user, signInWithGoogle } = useAuth();
+  const { user, signInWithGoogle, isAdmin, userProfile } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [approved, setApproved] = useState(false);
@@ -72,6 +72,8 @@ export const ConnectLauncherPage: React.FC = () => {
           email: currentUser.email || '',
           displayName: currentUser.displayName || 'SubGame Foydalanuvchisi',
           photoURL: currentUser.photoURL || '',
+          role: userProfile?.role || (isAdmin ? 'admin' : 'user'),
+          isAdmin: Boolean(isAdmin),
         },
       });
 
