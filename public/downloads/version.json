@@ -1,8 +1,8 @@
 {
-  "version": "1.0.6",
+  "version": "1.0.7",
   "downloadUrl": "https://www.subgame.uz/downloads/SubGame-Launcher.exe",
   "patchUrl": "https://www.subgame.uz/downloads/update-bundle.zip",
   "patchSize": "937 KB",
-  "changelog": "Admin akkauntlar uchun barcha o‘yinlarga VIP to‘liq kirish (VIP O‘ynash) huquqi va Donat tugmasi qo‘shildi.",
+  "changelog": "Barcha admin akkauntlar (imuz21029@gmail.com va Firestore admin rollari) uchun VIP to‘liq ochiq holati qo‘shildi.",
   "releaseDate": "2026-10-28"
 }

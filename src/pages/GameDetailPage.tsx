@@ -346,8 +346,8 @@ export const GameDetailPage: React.FC = () => {
                         to="/launcher"
                         className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-bold text-xs sm:text-sm hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer whitespace-nowrap h-11 sm:h-10.5"
                       >
-                        <Download className="w-4 h-4" />
-                        <span>Launcherni yuklab olish</span>
+                        <Play className="w-4 h-4 fill-current" />
+                        <span>{isAdmin ? 'Launcherda o‘ynash (VIP Admin)' : 'Launcherni ochish'}</span>
                       </Link>
                     )
                   ) : (
@@ -892,8 +892,8 @@ export const GameDetailPage: React.FC = () => {
                         to="/launcher"
                         className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-xs hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
                       >
-                        <Download className="w-4 h-4" />
-                        <span>Launcherni yuklab olish (.exe)</span>
+                        <Play className="w-4 h-4 fill-current" />
+                        <span>{isAdmin ? 'Launcherda o‘ynash (VIP Admin)' : 'Launcherni yuklab olish (.exe)'}</span>
                       </Link>
                     </div>
                   )}

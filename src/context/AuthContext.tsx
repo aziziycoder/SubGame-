@@ -18,7 +18,10 @@ import {
 import { auth, db, googleProvider } from '../services/firebase';
 import type { GameLicense, UserProfile } from '../types/auth';
 
-export const ADMIN_EMAILS = ['azizbekgulomovweb@gmail.com'];
+export const ADMIN_EMAILS = [
+  'azizbekgulomovweb@gmail.com',
+  'imuz21029@gmail.com'
+];
 
 interface AuthContextType {
   user: User | null;
