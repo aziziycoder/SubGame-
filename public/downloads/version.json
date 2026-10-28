@@ -1,8 +1,8 @@
 {
-  "version": "1.0.4",
+  "version": "1.0.5",
   "downloadUrl": "https://www.subgame.uz/downloads/SubGame-Launcher.exe",
   "patchUrl": "https://www.subgame.uz/downloads/update-bundle.zip",
-  "patchSize": "936 KB",
-  "changelog": "Litsenziyalash xavfsizligi yangilandi: O‘yinlar faqat rasmiy saytdan olingandan so‘ng ishga tushiriladi.",
+  "patchSize": "937 KB",
+  "changelog": "Loyiha rivojiga hissa qo‘shish uchun Donat (taps.uz/subgame) tugmasi qo‘shildi.",
   "releaseDate": "2026-10-28"
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { SITE_CONFIG } from '../../config/site';
-import { ArrowUp, Shield, Sparkles, MessageSquare } from 'lucide-react';
+import { ArrowUp, Shield, Sparkles, MessageSquare, HeartHandshake } from 'lucide-react';
 import { TelegramLogo } from '../common/BrandLogos';
 
 interface FooterProps {
@@ -36,7 +36,7 @@ export const Footer: React.FC<FooterProps> = ({
             <p className="text-sm text-gray-400 leading-relaxed max-w-sm">
               O‘zbek geymerlari uchun sevimli videoo‘yinlarni ona tilida o‘ynash va hikoyasidan to‘liq bahramand bo‘lish imkonini yaratuvchi erkin jamoat platformasi.
             </p>
-            <div className="flex items-center gap-3 pt-2">
+            <div className="flex items-center gap-3 pt-2 flex-wrap">
               <a
                 href={SITE_CONFIG.telegramUrl}
                 target="_blank"
@@ -44,7 +44,16 @@ export const Footer: React.FC<FooterProps> = ({
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-500/15 text-sky-400 border border-sky-500/30 hover:bg-sky-500/25 transition-all text-xs font-semibold"
               >
                 <TelegramLogo className="w-4 h-4 shrink-0" />
-                <span>Telegram kanalimiz</span>
+                <span>Telegram</span>
+              </a>
+              <a
+                href={SITE_CONFIG.donationUrl || 'https://taps.uz/subgame'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25 transition-all text-xs font-semibold"
+              >
+                <HeartHandshake className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>Donat (taps.uz)</span>
               </a>
             </div>
           </div>

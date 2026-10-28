@@ -7,7 +7,6 @@ import {
   Heart,
   Menu,
   X,
-  Sparkles,
   Info,
   Layers,
   Home,
@@ -15,7 +14,8 @@ import {
   Shield,
   User,
   LogOut,
-  Laptop
+  Laptop,
+  HeartHandshake
 } from 'lucide-react';
 import { TelegramLogo } from '../common/BrandLogos';
 // Lazy-load modal to avoid bundling with Navbar
@@ -143,15 +143,17 @@ export const Navbar: React.FC = () => {
                 <UserMenu />
               </div>
 
-              {/* Suggest Game Button (Visible on wide screens) */}
-              <button
-                onClick={() => setIsSuggestModalOpen(true)}
-                title="Yangi o‘yin taklif qilish"
-                className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#141821] hover:bg-[#1A1F2A] text-gray-200 border border-[#2A3245] hover:border-[#A3E635]/50 transition-colors cursor-pointer"
+              {/* Donate Button (taps.uz/subgame) */}
+              <a
+                href={SITE_CONFIG.donationUrl || 'https://taps.uz/subgame'}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Loyihani qo‘llab-quvvatlash (Donat)"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 text-amber-300 border border-amber-500/35 hover:border-amber-400 hover:text-white hover:bg-amber-500/25 transition-all shadow-sm shadow-amber-500/10 hover:scale-105 cursor-pointer"
               >
-                <Sparkles className="w-3.5 h-3.5 text-[#A3E635]" />
-                <span>Taklif qilish</span>
-              </button>
+                <HeartHandshake className="w-3.5 h-3.5 text-amber-400" />
+                <span>Donat</span>
+              </a>
 
               {/* Favorites Link (Desktop only) */}
               <Link
@@ -363,16 +365,16 @@ export const Navbar: React.FC = () => {
             </div>
 
             <div className="pt-4 pb-2">
-              <button
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setIsSuggestModalOpen(true);
-                }}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-sm font-bold text-[#A3E635] bg-[#A3E635]/10 border border-[#A3E635]/30 hover:bg-[#A3E635]/20 cursor-pointer"
+              <a
+                href={SITE_CONFIG.donationUrl || 'https://taps.uz/subgame'}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-sm font-bold text-amber-300 bg-amber-500/15 border border-amber-500/35 hover:bg-amber-500/25 transition-all cursor-pointer shadow-md"
               >
-                <Sparkles className="w-4 h-4" />
-                <span>O‘zbekcha subtitr taklif qilish</span>
-              </button>
+                <HeartHandshake className="w-4 h-4 text-amber-400" />
+                <span>Loyihani qo‘llab-quvvatlash (Donat)</span>
+              </a>
             </div>
           </div>
         )}
