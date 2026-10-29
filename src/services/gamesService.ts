@@ -38,9 +38,23 @@ function cleanGameData(data: Record<string, any>): Record<string, any> {
  * e.g., If subtitleStatus is 'Tayyor', fields should not display 'Kutilmoqda' or 'O‘yin hozirda tayyorlanish bosqichida'.
  */
 export function normalizeGameData(game: Game): Game {
-  if (game.subtitleStatus === 'Tayyor') {
-    const copy = { ...game };
+  const copy = { ...game };
 
+  // 0. Ensure officialStoreLinks has default Steam/GOG links if missing
+  if (!copy.officialStoreLinks || copy.officialStoreLinks.length === 0) {
+    if (copy.slug === 'rusty-lake-paradise' || copy.id === 'rusty-lake-paradise') {
+      copy.officialStoreLinks = [
+        { name: 'Steam', url: 'https://store.steampowered.com/app/744190/Rusty_Lake_Paradise/', priceNote: 'Steam rasmiy do‘koni' },
+        { name: 'GOG', url: 'https://www.gog.com/en/game/rusty_lake_paradise', priceNote: 'GOG rasmiy do‘koni' }
+      ];
+    } else if (copy.slug === 'mafia-definitive-edition' || copy.id === 'mafia-definitive-edition') {
+      copy.officialStoreLinks = [
+        { name: 'Steam', url: 'https://store.steampowered.com/app/1030840/Mafia_Definitive_Edition/', priceNote: 'Steam rasmiy sahifasi' }
+      ];
+    }
+  }
+
+  if (copy.subtitleStatus === 'Tayyor') {
     // 1. Subtitle Translation Type
     if (!copy.subtitleTranslationType || /kutilmoqda|tez kunda/i.test(copy.subtitleTranslationType)) {
       copy.subtitleTranslationType = 'To‘liq adabiy o‘zbekcha tarjima';
