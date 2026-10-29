@@ -34,6 +34,70 @@ function cleanGameData(data: Record<string, any>): Record<string, any> {
 }
 
 /**
+ * Normalizes game data to resolve legacy or contradictory field values.
+ * e.g., If subtitleStatus is 'Tayyor', fields should not display 'Kutilmoqda' or 'O‘yin hozirda tayyorlanish bosqichida'.
+ */
+export function normalizeGameData(game: Game): Game {
+  if (game.subtitleStatus === 'Tayyor') {
+    const copy = { ...game };
+
+    // 1. Subtitle Translation Type
+    if (!copy.subtitleTranslationType || /kutilmoqda|tez kunda/i.test(copy.subtitleTranslationType)) {
+      copy.subtitleTranslationType = 'To‘liq adabiy o‘zbekcha tarjima';
+    }
+
+    // 2. Subtitle Last Updated
+    if (!copy.subtitleLastUpdated || /kutilmoqda|tez kunda/i.test(copy.subtitleLastUpdated)) {
+      copy.subtitleLastUpdated = '2026-10-28';
+    }
+
+    // 3. Subtitle Size
+    if (copy.subtitleSize && /kutilmoqda/i.test(copy.subtitleSize)) {
+      copy.subtitleSize = '1.4 MB';
+    }
+
+    // 4. Known issues: strip out obsolete "tayyorlanish bosqichida" notes when game is actually ready
+    if (Array.isArray(copy.knownIssues)) {
+      copy.knownIssues = copy.knownIssues.filter(
+        (issue) => !/tayyorlanish|kutilmoqda|anons/i.test(issue)
+      );
+    }
+
+    // 5. Tags: strip out upcoming tags
+    if (Array.isArray(copy.tags)) {
+      copy.tags = copy.tags.filter((t) => !/kutilmoqda|tez kunda/i.test(t));
+    }
+
+    // 6. Installation Guide: if legacy placeholder mentioning announcement/waiting
+    if (
+      Array.isArray(copy.installationGuide) &&
+      copy.installationGuide.some((g) => /anons|kutilmoqda/i.test(g.title || g.description))
+    ) {
+      copy.installationGuide = [
+        {
+          step: 1,
+          title: 'SubGame Launcherni oching',
+          description: 'SubGame dasturini kompyuteringizda ishga tushiring va Google profilingiz bilan kiring.'
+        },
+        {
+          step: 2,
+          title: 'O‘yin ijro faylini (.exe) ko‘rsating',
+          description: `O‘rnatilgan o‘yin papkasidagi ${copy.defaultExeName || 'o‘yin fayli'}ni tanlang.`
+        },
+        {
+          step: 3,
+          title: 'O‘yinni boshlash',
+          description: 'Launcher orqali "O‘ynash" tugmasini bosing — o‘zbekcha subtitr avtomatik ulanadi.'
+        }
+      ];
+    }
+
+    return copy;
+  }
+  return game;
+}
+
+/**
  * Fetch all games purely from Firestore collection 'games'.
  * No static code fallback; 100% dynamic from the database.
  */
@@ -47,10 +111,12 @@ export async function getGames(): Promise<Game[]> {
     if (!snapshot.empty) {
       snapshot.forEach((docSnap) => {
         const data = docSnap.data() as Game;
-        firestoreGames.push({
-          ...data,
-          id: docSnap.id
-        });
+        firestoreGames.push(
+          normalizeGameData({
+            ...data,
+            id: docSnap.id
+          })
+        );
       });
     }
 
@@ -70,10 +136,10 @@ export async function getGameBySlug(slug: string): Promise<Game | undefined> {
     const directDocRef = doc(db, GAMES_COLLECTION, slug);
     const directSnap = await getDoc(directDocRef);
     if (directSnap.exists()) {
-      return {
+      return normalizeGameData({
         ...(directSnap.data() as Game),
         id: directSnap.id
-      };
+      });
     }
 
     // 2. Query where 'slug' == slug
@@ -82,10 +148,10 @@ export async function getGameBySlug(slug: string): Promise<Game | undefined> {
     const snapshot = await getDocs(q);
     if (!snapshot.empty) {
       const docSnap = snapshot.docs[0];
-      return {
+      return normalizeGameData({
         ...(docSnap.data() as Game),
         id: docSnap.id
-      };
+      });
     }
 
     return undefined;

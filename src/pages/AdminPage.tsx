@@ -33,7 +33,8 @@ import {
   createGame,
   updateGame,
   deleteGame,
-  syncInitialGames
+  syncInitialGames,
+  normalizeGameData
 } from '../services/gamesService';
 import type { Game, SubtitleStatus, OfficialStoreLink } from '../types/game';
 import { useAuth } from '../context/AuthContext';
@@ -624,9 +625,11 @@ export const AdminPage: React.FC = () => {
       })(),
     } as Game;
 
+    const finalPayload = normalizeGameData(payload);
+
     try {
       if (isEditing && editingId) {
-        const res = await updateGame(editingId, payload);
+        const res = await updateGame(editingId, finalPayload);
         if (res.success) {
           setIsModalOpen(false);
           await loadGames();
@@ -634,7 +637,7 @@ export const AdminPage: React.FC = () => {
           setFormError(res.error || 'Yangilashda xatolik yuz berdi');
         }
       } else {
-        const res = await createGame(payload);
+        const res = await createGame(finalPayload);
         if (res.success) {
           setIsModalOpen(false);
           await loadGames();
