@@ -410,30 +410,6 @@ export const GameDetailPage: React.FC = () => {
                     </a>
                   )}
 
-                  {/* Official Store Links (Steam, Epic Games) */}
-                  {game.officialStoreLinks?.map((store) => {
-                    const nameLower = store.name.toLowerCase();
-                    const isSteam = nameLower.includes('steam');
-                    const isEpic = nameLower.includes('epic');
-                    if (!isSteam && !isEpic) return null;
-
-                    return (
-                      <a
-                        key={store.name + store.url}
-                        href={store.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title={`${store.name} rasmiy sahifasi`}
-                        className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1A202C] text-gray-200 hover:text-white border border-[#2A3245] hover:border-[#A3E635]/60 font-semibold text-xs sm:text-sm transition-all whitespace-nowrap h-11"
-                      >
-                        {isSteam && <SteamLogo className="w-4 h-4 shrink-0" />}
-                        {isEpic && <EpicGamesLogo className="w-4 h-4 shrink-0" />}
-                        <span>{store.name}</span>
-                        <ExternalLink className="w-3 h-3 text-gray-400 shrink-0" />
-                      </a>
-                    );
-                  })}
-
                   {/* Favorite & Share Buttons */}
                   <button
                     onClick={() => toggleFavorite(game.id)}
