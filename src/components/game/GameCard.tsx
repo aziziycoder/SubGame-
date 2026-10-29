@@ -3,15 +3,16 @@ import { Link } from 'react-router-dom';
 import type { Game } from '../../types/game';
 import { SubtitleStatusBadge } from '../common/Badge';
 import { useFavorites } from '../../context/FavoritesContext';
-import { Heart, Monitor, ArrowRight, ShieldCheck, Tag, Sparkles } from 'lucide-react';
+import { Heart, Monitor, ArrowRight, ShieldCheck, Tag, Sparkles, Users } from 'lucide-react';
 import { getGamePriceInfo } from '../../services/paymentService';
 
 interface GameCardProps {
   game: Game;
   priority?: boolean;
+  claimCount?: number;
 }
 
-export const GameCard: React.FC<GameCardProps> = ({ game, priority = false }) => {
+export const GameCard: React.FC<GameCardProps> = ({ game, priority = false, claimCount }) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorited = isFavorite(game.id);
   const priceInfo = getGamePriceInfo(game);
@@ -36,17 +37,29 @@ export const GameCard: React.FC<GameCardProps> = ({ game, priority = false }) =>
           )}
         </div>
 
-        <button
-          onClick={handleFavoriteClick}
-          aria-label={favorited ? 'Sevimlilardan o‘chirish' : 'Sevimlilarga qo‘shish'}
-          className={`p-1.5 rounded-lg transition-all ${
-            favorited
-              ? 'bg-rose-500/20 text-rose-500 border border-rose-500/40'
-              : 'text-gray-400 hover:text-white bg-[#0B0D12] hover:bg-white/10 border border-[#2A3245]'
-          }`}
-        >
-          <Heart className={`w-4 h-4 ${favorited ? 'fill-rose-500' : ''}`} />
-        </button>
+        <div className="flex items-center gap-2">
+          {typeof claimCount === 'number' && claimCount > 0 && (
+            <span
+              className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-300 bg-cyan-500/15 border border-cyan-500/35 px-2 py-0.5 rounded-full shadow-sm"
+              title={`${claimCount} nafar o‘yinchi subtitrni olgan`}
+            >
+              <Users className="w-3 h-3 text-cyan-400" />
+              <span>{claimCount}</span>
+            </span>
+          )}
+
+          <button
+            onClick={handleFavoriteClick}
+            aria-label={favorited ? 'Sevimlilardan o‘chirish' : 'Sevimlilarga qo‘shish'}
+            className={`p-1.5 rounded-lg transition-all ${
+              favorited
+                ? 'bg-rose-500/20 text-rose-500 border border-rose-500/40'
+                : 'text-gray-400 hover:text-white bg-[#0B0D12] hover:bg-white/10 border border-[#2A3245]'
+            }`}
+          >
+            <Heart className={`w-4 h-4 ${favorited ? 'fill-rose-500' : ''}`} />
+          </button>
+        </div>
       </div>
 
       {/* Media / Poster: Exact Steam Header 460:215 ratio, 100% Uncropped */}

@@ -8,6 +8,7 @@ import { ReportIssueModal } from '../components/home/ReportIssueModal';
 import { ClickPaymentModal } from '../components/payment/ClickPaymentModal';
 import { ClickLogo, SteamLogo, EpicGamesLogo } from '../components/common/BrandLogos';
 import { getGamePriceInfo } from '../services/paymentService';
+import { fetchSingleGameLicenseStats, type GameLicenseCountStats } from '../services/licensesService';
 import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -30,7 +31,8 @@ import {
   Laptop,
   Tag,
   X,
-  ShoppingCart
+  ShoppingCart,
+  Users
 } from 'lucide-react';
 
 export const GameDetailPage: React.FC = () => {
@@ -68,6 +70,15 @@ export const GameDetailPage: React.FC = () => {
   const [copiedPath, setCopiedPath] = useState<string | null>(null);
   const [shared, setShared] = useState(false);
   const [isClickModalOpen, setIsClickModalOpen] = useState(false);
+  const [claimedStats, setClaimedStats] = useState<GameLicenseCountStats>({ total: 0, bound: 0 });
+
+  useEffect(() => {
+    if (game?.id) {
+      fetchSingleGameLicenseStats(game.id, game.slug)
+        .then((stats) => setClaimedStats(stats))
+        .catch(() => {});
+    }
+  }, [game?.id, game?.slug]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -75,6 +86,7 @@ export const GameDetailPage: React.FC = () => {
       setClaimSuccess(true);
       if (game && user) {
         claimLicense(game.id, game.title, game.slug).then(() => {
+          setClaimedStats((prev) => ({ ...prev, total: prev.total + 1 }));
           // Clean URL params so it doesn't re-trigger on refresh
           const url = new URL(window.location.href);
           url.searchParams.delete('payment');
@@ -139,6 +151,7 @@ export const GameDetailPage: React.FC = () => {
       const res = await claimLicense(game.id, game.title, game.slug);
       if (res.success) {
         setClaimSuccess(true);
+        setClaimedStats((prev) => ({ ...prev, total: prev.total + 1 }));
         setTimeout(() => setClaimSuccess(false), 5000);
       }
     } catch (e) {
@@ -225,6 +238,17 @@ export const GameDetailPage: React.FC = () => {
                       <span>{priceInfo.text}</span>
                     </span>
                   )}
+
+                  {/* Claim count on Mobile */}
+                  {claimedStats.total > 0 && (
+                    <span
+                      className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/35 shadow-sm"
+                      title={`${claimedStats.total} ta o‘yinchi olgan`}
+                    >
+                      <Users className="w-3 h-3 text-cyan-400" />
+                      <span>{claimedStats.total} ta o‘yinchi</span>
+                    </span>
+                  )}
                 </div>
 
                 <h1 className="text-xl font-black text-white tracking-tight leading-tight line-clamp-2">
@@ -259,6 +283,17 @@ export const GameDetailPage: React.FC = () => {
                   >
                     <Tag className="w-3.5 h-3.5" />
                     <span>Subtitr narxi: {priceInfo.text}</span>
+                  </div>
+                )}
+
+                {/* Claimed Players count */}
+                {claimedStats.total > 0 && (
+                  <div
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/35 shadow-sm"
+                    title={`${claimedStats.total} nafar o‘yinchi ushbu subtitrni o‘z hisobiga biriktirgan`}
+                  >
+                    <Users className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>{claimedStats.total} ta o‘yinchi olgan</span>
                   </div>
                 )}
 
@@ -578,6 +613,26 @@ export const GameDetailPage: React.FC = () => {
                     </div>
                   </div>
                 )}
+
+                {/* Claimed Players Stat */}
+                {claimedStats.total > 0 && (
+                  <div className="p-4 rounded-xl bg-[#0B0D12] border border-[#2A3245] sm:col-span-2 flex items-center justify-between">
+                    <div>
+                      <span className="text-xs text-gray-500 uppercase tracking-wider block mb-0.5">
+                        O‘yinchilar statistikasi
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        Subtitrni olgan faol foydalanuvchilar soni
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-sm font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/40 shadow-sm">
+                        <Users className="w-4 h-4 text-cyan-400" />
+                        <span>{claimedStats.total} ta {claimedStats.bound > 0 ? `(${claimedStats.bound} ta PC da)` : ''}</span>
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="p-4 rounded-xl bg-[#1A1F2A] border border-[#2A3245] space-y-2 mb-4">
@@ -825,6 +880,18 @@ export const GameDetailPage: React.FC = () => {
               <p className="text-xs text-gray-300 leading-relaxed">
                 Subtitrlar xavfsiz va faqat sizning Google akkauntingiz orqali <strong>1 ta kompyuterga</strong> avtomatik bog‘lanadi. Boshqa kompyuterlarga nusxalashdan himoyalangan.
               </p>
+
+              {claimedStats.total > 0 && (
+                <div className="p-3 rounded-xl bg-[#0B0D12] border border-cyan-500/30 flex items-center justify-between text-xs">
+                  <span className="text-gray-400 flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-cyan-400" />
+                    Olingan litsenziyalar:
+                  </span>
+                  <span className="font-bold text-cyan-300">
+                    {claimedStats.total} ta {claimedStats.bound > 0 ? `(${claimedStats.bound} ta kompyuterda)` : ''}
+                  </span>
+                </div>
+              )}
 
               {game.subtitleStatus === 'Tayyor' ? (
                 <div className="space-y-3 pt-1">

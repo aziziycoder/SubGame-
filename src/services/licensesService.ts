@@ -1,6 +1,8 @@
 import {
   collection,
-  getDocs
+  getDocs,
+  query,
+  where
 } from 'firebase/firestore';
 import { db } from './firebase';
 import type { Game } from '../types/game';
@@ -213,3 +215,96 @@ export const fetchAllLicensesWithStats = async (
     throw error;
   }
 };
+
+export interface GameLicenseCountStats {
+  total: number;
+  bound: number;
+}
+
+/**
+ * Fetch active license counts grouped by gameId and gameSlug.
+ * Returns a dictionary mapping gameId/gameSlug -> { total, bound }
+ */
+export const fetchGameLicenseCounts = async (): Promise<Record<string, GameLicenseCountStats>> => {
+  try {
+    const q = query(collection(db, 'licenses'), where('status', '==', 'active'));
+    const snap = await getDocs(q);
+    const map: Record<string, GameLicenseCountStats> = {};
+
+    snap.forEach((d) => {
+      const data = d.data();
+      const gid = data.gameId;
+      const slug = data.gameSlug;
+      const isBound = Boolean(data.hwid);
+
+      const keys = new Set<string>();
+      if (gid) keys.add(gid);
+      if (slug) keys.add(slug);
+
+      keys.forEach((key) => {
+        if (!map[key]) {
+          map[key] = { total: 0, bound: 0 };
+        }
+        map[key].total += 1;
+        if (isBound) {
+          map[key].bound += 1;
+        }
+      });
+    });
+
+    return map;
+  } catch (err) {
+    console.warn('Failed to fetch game license counts:', err);
+    return {};
+  }
+};
+
+/**
+ * Fetch active license count and bound stats for a specific game by ID and optional slug.
+ */
+export const fetchSingleGameLicenseStats = async (
+  gameId: string,
+  slug?: string
+): Promise<GameLicenseCountStats> => {
+  try {
+    const seenLicenseIds = new Set<string>();
+    let total = 0;
+    let bound = 0;
+
+    // 1. Check by gameId
+    const q1 = query(
+      collection(db, 'licenses'),
+      where('gameId', '==', gameId),
+      where('status', '==', 'active')
+    );
+    const snap1 = await getDocs(q1);
+    snap1.forEach((d) => {
+      seenLicenseIds.add(d.id);
+      total += 1;
+      if (d.data().hwid) bound += 1;
+    });
+
+    // 2. Also check if stored by slug if different
+    if (slug && slug !== gameId) {
+      const q2 = query(
+        collection(db, 'licenses'),
+        where('gameId', '==', slug),
+        where('status', '==', 'active')
+      );
+      const snap2 = await getDocs(q2);
+      snap2.forEach((d) => {
+        if (!seenLicenseIds.has(d.id)) {
+          seenLicenseIds.add(d.id);
+          total += 1;
+          if (d.data().hwid) bound += 1;
+        }
+      });
+    }
+
+    return { total, bound };
+  } catch (err) {
+    console.warn(`Failed to fetch license stats for game ${gameId}:`, err);
+    return { total: 0, bound: 0 };
+  }
+};
+

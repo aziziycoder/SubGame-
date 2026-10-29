@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { getGames } from '../services/gamesService';
 import type { Game } from '../types/game';
 import { GameCard } from '../components/game/GameCard';
+import { fetchGameLicenseCounts, type GameLicenseCountStats } from '../services/licensesService';
 import {
   Search,
   RotateCcw,
@@ -22,12 +23,13 @@ export const CatalogPage: React.FC = () => {
   const initialPrice = (searchParams.get('price') as any) || 'all';
 
   const [games, setGames] = useState<Game[]>([]);
+  const [licenseStats, setLicenseStats] = useState<Record<string, GameLicenseCountStats>>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [selectedGenre, setSelectedGenre] = useState<string>(initialGenre);
   const [selectedStatus, setSelectedStatus] = useState<string>(initialStatus);
   const [selectedPrice, setSelectedPrice] = useState<'all' | 'free' | 'paid'>(initialPrice);
-  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'title'>('newest');
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'title' | 'popular'>('newest');
 
   const genreScrollRef = useRef<HTMLDivElement>(null);
 
@@ -44,6 +46,17 @@ export const CatalogPage: React.FC = () => {
       .catch((err) => {
         console.error('Katalog o‘yinlarini yuklashda xatolik:', err);
         if (isMounted) setLoading(false);
+      });
+
+    // Also fetch license claims stats in parallel
+    fetchGameLicenseCounts()
+      .then((counts) => {
+        if (isMounted) {
+          setLicenseStats(counts);
+        }
+      })
+      .catch((err) => {
+        console.warn('Litsenziyalar statistikasini yuklashda xatolik:', err);
       });
 
     return () => {
@@ -141,6 +154,11 @@ export const CatalogPage: React.FC = () => {
 
       return matchesSearch && matchesGenre && matchesStatus && matchesPrice;
     }).sort((a, b) => {
+      if (sortBy === 'popular') {
+        const countA = (licenseStats[a?.id]?.total || (a?.slug ? licenseStats[a.slug]?.total : 0)) || 0;
+        const countB = (licenseStats[b?.id]?.total || (b?.slug ? licenseStats[b.slug]?.total : 0)) || 0;
+        if (countB !== countA) return countB - countA;
+      }
       const yearA = Number(a?.releaseYear) || 0;
       const yearB = Number(b?.releaseYear) || 0;
       if (sortBy === 'newest') return yearB - yearA;
@@ -148,7 +166,7 @@ export const CatalogPage: React.FC = () => {
       if (sortBy === 'title') return (a?.title || '').localeCompare(b?.title || '');
       return 0;
     });
-  }, [games, searchQuery, selectedGenre, selectedStatus, selectedPrice, sortBy]);
+  }, [games, licenseStats, searchQuery, selectedGenre, selectedStatus, selectedPrice, sortBy]);
 
   const scrollGenres = (direction: 'left' | 'right') => {
     if (genreScrollRef.current) {
@@ -293,6 +311,7 @@ export const CatalogPage: React.FC = () => {
                   }`}
                 >
                   <option value="newest" className="bg-[#141821] text-white">Saralash: Yangi</option>
+                  <option value="popular" className="bg-[#141821] text-white">Saralash: Ommabop (Ko‘p olingan)</option>
                   <option value="oldest" className="bg-[#141821] text-white">Saralash: Avvalgi</option>
                   <option value="title" className="bg-[#141821] text-white">Saralash: A–Z</option>
                 </select>
@@ -450,9 +469,16 @@ export const CatalogPage: React.FC = () => {
           </div>
         ) : filteredGames.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredGames.map((game) => (
-              <GameCard key={game.id} game={game} />
-            ))}
+            {filteredGames.map((game) => {
+              const claimCount = licenseStats[game.id]?.total || (game.slug ? licenseStats[game.slug]?.total : 0) || 0;
+              return (
+                <GameCard
+                  key={game.id}
+                  game={game}
+                  claimCount={claimCount}
+                />
+              );
+            })}
           </div>
         ) : (
           <div className="py-20 text-center bg-[#141821] rounded-3xl border border-[#2A3245] p-8 max-w-xl mx-auto shadow-2xl space-y-4">

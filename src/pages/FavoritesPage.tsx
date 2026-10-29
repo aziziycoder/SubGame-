@@ -4,14 +4,17 @@ import { useFavorites } from '../context/FavoritesContext';
 import { getGames } from '../services/gamesService';
 import type { Game } from '../types/game';
 import { GameCard } from '../components/game/GameCard';
+import { fetchGameLicenseCounts, type GameLicenseCountStats } from '../services/licensesService';
 import { Heart, ArrowLeft, Layers } from 'lucide-react';
 
 export const FavoritesPage: React.FC = () => {
   const { favoriteIds } = useFavorites();
   const [games, setGames] = useState<Game[]>([]);
+  const [licenseStats, setLicenseStats] = useState<Record<string, GameLicenseCountStats>>({});
 
   useEffect(() => {
     getGames().then(setGames);
+    fetchGameLicenseCounts().then(setLicenseStats).catch(() => {});
   }, []);
 
   const favoriteGames = games.filter((game) =>
@@ -52,9 +55,16 @@ export const FavoritesPage: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {favoriteGames.map((game) => (
-                <GameCard key={game.id} game={game} />
-              ))}
+              {favoriteGames.map((game) => {
+                const claimCount = licenseStats[game.id]?.total || (game.slug ? licenseStats[game.slug]?.total : 0) || 0;
+                return (
+                  <GameCard
+                    key={game.id}
+                    game={game}
+                    claimCount={claimCount}
+                  />
+                );
+              })}
             </div>
           </div>
         ) : (
