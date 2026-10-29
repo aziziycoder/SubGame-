@@ -51,6 +51,16 @@ export function normalizeGameData(game: Game): Game {
       copy.officialStoreLinks = [
         { name: 'Steam', url: 'https://store.steampowered.com/app/1030840/Mafia_Definitive_Edition/', priceNote: 'Steam rasmiy sahifasi' }
       ];
+      copy.subtitleStatus = 'Tayyor';
+      copy.targetFileName = 'stringtable_en.sds,stringtable_ru.sds';
+      copy.targetRelativeDir = 'sds_retail/string_tables';
+      copy.defaultExeName = 'mafiadefinitiveedition.exe';
+      copy.keyPrefix = 'SUB-MAFI';
+      copy.subtitleSize = '1.6 MB';
+      copy.subtitleVersion = 'v1.0.0';
+      copy.subtitlePrice = 'Bepul';
+      copy.price = 'Tekin';
+      copy.subtitleFormat = 'SubGame Launcher himoyalangan lokalizatsiyasi (.sds)';
     }
   }
 

@@ -1,9 +1,9 @@
 {
-  "version": "1.0.8",
+  "version": "1.0.9",
   "downloadUrl": "https://www.subgame.uz/downloads/SubGame-Launcher.exe",
   "patchUrl": "https://www.subgame.uz/downloads/update-bundle.zip",
   "patchSize": "938 KB",
-  "minRequiredVersion": "1.0.7",
-  "changelog": "Xavfsizlik tizimi va majburiy yangilanish (Force Update) joriy qilindi.",
+  "minRequiredVersion": "1.0.9",
+  "changelog": "Mafia: Definitive Edition va ko‘p faylli subtitrlarni qo‘llab-quvvatlash joriy qilindi.",
   "releaseDate": "2026-10-29"
 }
