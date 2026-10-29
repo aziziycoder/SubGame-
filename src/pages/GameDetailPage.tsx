@@ -223,7 +223,9 @@ export const GameDetailPage: React.FC = () => {
               {/* Title & Badges on Mobile (only visible on mobile next to poster) */}
               <div className="flex-1 min-w-0 sm:hidden space-y-2 pt-0.5">
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
+                  {game.subtitleStatus !== 'Tayyor' && (
+                    <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
+                  )}
                   
                   {/* Compact Price Tag on Mobile - Only shown if game is ready */}
                   {game.subtitleStatus === 'Tayyor' && (
@@ -243,10 +245,10 @@ export const GameDetailPage: React.FC = () => {
                   {claimedStats.total > 0 && (
                     <span
                       className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/35 shadow-sm"
-                      title={`${claimedStats.total} ta o‘yinchi olgan`}
+                      title={`${claimedStats.total} ta olingan`}
                     >
                       <Users className="w-3 h-3 text-cyan-400" />
-                      <span>{claimedStats.total} ta o‘yinchi</span>
+                      <span>{claimedStats.total} ta olingan</span>
                     </span>
                   )}
                 </div>
@@ -270,7 +272,9 @@ export const GameDetailPage: React.FC = () => {
             <div className="space-y-3 sm:space-y-3.5 flex-1 min-w-0 w-full">
               {/* Desktop Badges (hidden on mobile) */}
               <div className="hidden sm:flex flex-wrap items-center gap-2 sm:gap-3">
-                <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
+                {game.subtitleStatus !== 'Tayyor' && (
+                  <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
+                )}
                 
                 {/* Prominent Subtitle Price Tag - Only shown if game is ready */}
                 {game.subtitleStatus === 'Tayyor' && (
@@ -286,14 +290,14 @@ export const GameDetailPage: React.FC = () => {
                   </div>
                 )}
 
-                {/* Claimed Players count */}
+                {/* Claimed count */}
                 {claimedStats.total > 0 && (
                   <div
                     className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/35 shadow-sm"
-                    title={`${claimedStats.total} nafar o‘yinchi ushbu subtitrni o‘z hisobiga biriktirgan`}
+                    title={`${claimedStats.total} ta subtitr foydalanuvchilar tomonidan olingan`}
                   >
                     <Users className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>{claimedStats.total} ta o‘yinchi olgan</span>
+                    <span>{claimedStats.total} ta olingan</span>
                   </div>
                 )}
 
@@ -549,7 +553,9 @@ export const GameDetailPage: React.FC = () => {
                 <h2 className="text-xl sm:text-2xl font-bold text-white">
                   O‘zbekcha subtitr haqida
                 </h2>
-                <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
+                {game.subtitleStatus !== 'Tayyor' && (
+                  <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
