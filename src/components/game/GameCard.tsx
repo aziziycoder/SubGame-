@@ -25,16 +25,10 @@ export const GameCard: React.FC<GameCardProps> = ({ game, priority = false, clai
 
   return (
     <div className="group relative bg-[#1A1F2A] rounded-2xl border border-[#2A3245] hover:border-[#A3E635]/60 transition-all duration-300 hover:shadow-card-glow flex flex-col overflow-hidden">
-      {/* Top Header Bar: Status Badge, Version & Favorite button (Outside the image so art and logos are 100% visible) */}
+      {/* Top Header Bar: Status Badge & Favorite button */}
       <div className="flex items-center justify-between px-3.5 py-2.5 bg-[#141821] border-b border-[#2A3245]">
         <div className="flex items-center gap-2">
           <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
-          {game.subtitleStatus === 'Tayyor' && (
-            <span className="inline-flex items-center gap-1 text-[11px] font-mono text-[#A3E635] bg-[#0B0D12] px-2 py-0.5 rounded border border-[#A3E635]/30">
-              <ShieldCheck className="w-3 h-3" />
-              <span>{game.subtitleVersion}</span>
-            </span>
-          )}
         </div>
 
         <div className="flex items-center gap-2">
