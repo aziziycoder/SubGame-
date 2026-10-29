@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { TelegramLogo } from '../components/common/BrandLogos';
 import { FaqSection } from '../components/home/FaqSection';
+import { SITE_CONFIG } from '../config/site';
 
 export const LauncherPage: React.FC = () => {
   const steps = [
@@ -303,7 +304,7 @@ export const LauncherPage: React.FC = () => {
           </p>
           <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
             <a
-              href="https://t.me/subgame_uz"
+              href={SITE_CONFIG.telegramUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#229ED9] text-white font-extrabold text-sm hover:bg-[#1D93D2] transition-all hover:scale-105 shadow-md shadow-sky-500/20"

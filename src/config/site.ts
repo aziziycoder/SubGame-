@@ -2,7 +2,7 @@ export const SITE_CONFIG = {
   name: 'SubGame',
   tagline: 'O‘zbekcha subtitrli videoo‘yinlar platformasi',
   description: 'Sevimli videoo‘yinlaringizni o‘zbekcha subtitrlar bilan o‘ynang. Har bir hikoyani o‘z tilingizda his qiling.',
-  telegramUrl: 'https://t.me/tarjimaoyinlar', // Configurable Telegram link
+  telegramUrl: 'https://tarjimaoyinlar.t.me', // Configurable Telegram link
   telegramChannelName: '@tarjimaoyinlar',
   donationUrl: 'https://taps.uz/subgame', // Official donation page on taps.uz
   githubUrl: 'https://github.com',
