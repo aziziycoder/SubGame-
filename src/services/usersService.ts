@@ -1,6 +1,7 @@
 import {
   collection,
   getDocs,
+  getDoc,
   doc,
   setDoc,
   updateDoc,
@@ -324,6 +325,110 @@ export const cleanupOrphanedLicenses = async (): Promise<{
       success: false,
       deletedCount: 0,
       error: error?.message || 'Yetim litsenziyalarni tozalashda xatolik yuz berdi.',
+    };
+  }
+};
+
+export interface GrantLicenseParams {
+  userId: string;
+  userEmail: string;
+  userName?: string;
+  userPhoto?: string | null;
+  gameId: string;
+  gameTitle: string;
+  gameSlug: string;
+  paymentProvider?: 'admin_grant' | 'manual_paid' | 'click' | 'payme' | 'other' | string;
+  paidAmount?: number;
+  adminNote?: string;
+  grantedBy?: string;
+}
+
+/**
+ * Grant a game license directly to a user by an admin.
+ * Sets license status to 'active', hwid to null (unbound, so user can bind on first launcher launch).
+ */
+export const grantLicenseToUser = async (
+  params: GrantLicenseParams
+): Promise<{ success: boolean; licenseId?: string; error?: string }> => {
+  try {
+    const {
+      userId,
+      userEmail,
+      userName,
+      userPhoto,
+      gameId,
+      gameTitle,
+      gameSlug,
+      paymentProvider = 'admin_grant',
+      paidAmount = 0,
+      adminNote = '',
+      grantedBy = 'Admin'
+    } = params;
+
+    if (!userId || !gameId) {
+      return { success: false, error: 'Foydalanuvchi yoki o‘yin tanlanmagan!' };
+    }
+
+    const licenseId = `${userId}_${gameId}`;
+    const licenseRef = doc(db, 'licenses', licenseId);
+    const existingSnap = await getDoc(licenseRef);
+
+    if (existingSnap.exists()) {
+      const data = existingSnap.data();
+      if (data.status === 'active') {
+        return {
+          success: false,
+          error: `Ushbu foydalanuvchida "${gameTitle}" o‘yini uchun allaqachon faol litsenziya mavjud!`
+        };
+      }
+
+      // If it existed but was revoked/inactive, reactivate it with new grant details
+      await setDoc(
+        licenseRef,
+        {
+          status: 'active',
+          paymentProvider,
+          paidAmount: typeof paidAmount === 'number' ? paidAmount : 0,
+          adminNote: adminNote || '',
+          grantedBy: grantedBy || 'Admin',
+          updatedAt: serverTimestamp()
+        },
+        { merge: true }
+      );
+
+      return { success: true, licenseId };
+    }
+
+    // Create brand new license
+    const newLicense = {
+      id: licenseId,
+      userId,
+      userEmail: userEmail || '',
+      userName: userName || userEmail?.split('@')[0] || 'Foydalanuvchi',
+      userPhoto: userPhoto || null,
+      gameId,
+      gameTitle: gameTitle || 'Noma’lum o‘yin',
+      gameSlug: gameSlug || gameId,
+      status: 'active',
+      hwid: null,
+      boundAt: null,
+      boundDeviceName: null,
+      paymentProvider,
+      paidAmount: typeof paidAmount === 'number' ? paidAmount : 0,
+      adminNote: adminNote || '',
+      grantedBy: grantedBy || 'Admin',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+
+    await setDoc(licenseRef, newLicense);
+
+    return { success: true, licenseId };
+  } catch (error: any) {
+    console.error('Error granting license to user:', error);
+    return {
+      success: false,
+      error: error?.message || 'Litsenziya berishda xatolik yuz berdi.'
     };
   }
 };

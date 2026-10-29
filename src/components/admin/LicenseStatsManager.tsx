@@ -33,6 +33,7 @@ import {
   toggleLicenseStatus,
   deleteLicense
 } from '../../services/usersService';
+import { GrantLicenseModal } from './GrantLicenseModal';
 
 interface LicenseStatsManagerProps {
   games: Game[];
@@ -60,6 +61,7 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [isGrantModalOpen, setIsGrantModalOpen] = useState(false);
 
   const showToast = (text: string, type: 'success' | 'error' = 'success') => {
     setToastMessage({ text, type });
@@ -593,6 +595,15 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
               <span>To‘lovsizlarni chopish ({unpaidLicenses.length})</span>
             </button>
           )}
+
+          {/* Grant License button */}
+          <button
+            onClick={() => setIsGrantModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#A3E635] hover:bg-[#8ece28] text-[#0B0D12] text-xs font-black transition-all cursor-pointer shadow-md shadow-[#A3E635]/20"
+          >
+            <KeyRound className="w-3.5 h-3.5" />
+            <span>Litsenziya berish</span>
+          </button>
 
           {/* Export to CSV */}
           <button
@@ -1147,6 +1158,17 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
           </div>
         </div>
       )}
+
+      {/* Grant License Modal */}
+      <GrantLicenseModal
+        isOpen={isGrantModalOpen}
+        onClose={() => setIsGrantModalOpen(false)}
+        onSuccess={(msg) => {
+          showToast(msg, 'success');
+          loadData(true);
+        }}
+        games={games}
+      />
     </div>
   );
 };

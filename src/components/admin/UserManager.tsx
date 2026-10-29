@@ -19,8 +19,10 @@ import {
   Check,
   RotateCcw,
   ChevronRight,
-  Trash2
+  Trash2,
+  KeyRound
 } from 'lucide-react';
+import type { Game } from '../../types/game';
 import type { UserWithLicenses, UserRole } from '../../types/auth';
 import {
   getAllUsersWithLicenses,
@@ -32,8 +34,13 @@ import {
   type UserStats
 } from '../../services/usersService';
 import { ADMIN_EMAILS } from '../../context/AuthContext';
+import { GrantLicenseModal } from './GrantLicenseModal';
 
-export const UserManager: React.FC = () => {
+interface UserManagerProps {
+  games?: Game[];
+}
+
+export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
   const [users, setUsers] = useState<UserWithLicenses[]>([]);
   const [stats, setStats] = useState<UserStats>({
     totalUsers: 0,
@@ -53,6 +60,8 @@ export const UserManager: React.FC = () => {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [isGrantModalOpen, setIsGrantModalOpen] = useState(false);
+  const [grantTargetUser, setGrantTargetUser] = useState<UserWithLicenses | null>(null);
 
   const showToast = (text: string, type: 'success' | 'error' = 'success') => {
     setToastMessage({ text, type });
@@ -410,6 +419,17 @@ export const UserManager: React.FC = () => {
           )}
 
           <button
+            onClick={() => {
+              setGrantTargetUser(null);
+              setIsGrantModalOpen(true);
+            }}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#A3E635] hover:bg-[#8ece28] text-[#0B0D12] text-sm font-black transition-all cursor-pointer shadow-lg shadow-[#A3E635]/20"
+          >
+            <KeyRound className="w-4 h-4" />
+            <span>Litsenziya berish</span>
+          </button>
+
+          <button
             onClick={() => loadData(true)}
             disabled={refreshing || loading}
             className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1E2533] text-gray-200 hover:text-white border border-[#2A3245] text-sm font-bold transition-all disabled:opacity-50 cursor-pointer"
@@ -582,6 +602,20 @@ export const UserManager: React.FC = () => {
                             </span>
                           )}
 
+                          {/* Grant License quick button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setGrantTargetUser(item);
+                              setIsGrantModalOpen(true);
+                            }}
+                            title="Foydalanuvchiga yangi o‘yin litsenziyasi biriktirish"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#A3E635]/10 hover:bg-[#A3E635]/20 text-[#A3E635] border border-[#A3E635]/30 text-xs font-bold transition-all"
+                          >
+                            <KeyRound className="w-3.5 h-3.5" />
+                            <span className="hidden xl:inline">Litsenziya</span>
+                          </button>
+
                           {/* Open Details */}
                           <button
                             onClick={() => {
@@ -739,14 +773,27 @@ export const UserManager: React.FC = () => {
 
               {/* Claimed Games / Licenses List */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <h4 className="text-sm font-bold text-white flex items-center gap-2">
                     <Gamepad2 className="w-4 h-4 text-[#A3E635]" />
                     <span>Olingan O‘yin Litsenziyalari va Bog‘langan Qurilmalar</span>
                   </h4>
-                  <span className="text-xs text-gray-400 font-mono">
-                    Jami: {selectedUser.licenses?.length || 0} ta
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setGrantTargetUser(selectedUser);
+                        setIsGrantModalOpen(true);
+                      }}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#A3E635] hover:bg-[#8ece28] text-[#0B0D12] text-xs font-black transition-all shadow-md shadow-[#A3E635]/20 cursor-pointer"
+                    >
+                      <KeyRound className="w-3.5 h-3.5" />
+                      <span>Litsenziya berish</span>
+                    </button>
+                    <span className="text-xs text-gray-400 font-mono">
+                      Jami: {selectedUser.licenses?.length || 0} ta
+                    </span>
+                  </div>
                 </div>
 
                 {(!selectedUser.licenses || selectedUser.licenses.length === 0) ? (
@@ -892,6 +939,22 @@ export const UserManager: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Grant License Modal */}
+      <GrantLicenseModal
+        isOpen={isGrantModalOpen}
+        onClose={() => {
+          setIsGrantModalOpen(false);
+          setGrantTargetUser(null);
+        }}
+        onSuccess={(msg) => {
+          showToast(msg, 'success');
+          loadData(true);
+        }}
+        games={games}
+        users={users}
+        preselectedUser={grantTargetUser}
+      />
     </div>
   );
 };

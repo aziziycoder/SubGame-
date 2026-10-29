@@ -1041,7 +1041,7 @@ export const AdminPage: React.FC = () => {
         ) : activeTab === 'sliders' ? (
           <SliderManager games={games} />
         ) : activeTab === 'users' ? (
-          <UserManager />
+          <UserManager games={games} />
         ) : (
           <LicenseStatsManager games={games} />
         )}
