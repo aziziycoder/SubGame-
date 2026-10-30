@@ -118,11 +118,8 @@ export async function createClickOrder({
   customAmount,
 }: CreateOrderParams): Promise<CreateOrderResult> {
   const amount = customAmount ?? (parseGamePrice(game.subtitlePrice) || parseGamePrice(game.price) || 15000);
-  // Generate compact, safe orderId (max 42 chars) to prevent Click merchant_trans_id truncation (50-char limit in Click)
-  const shortTimestamp = Date.now().toString(36);
-  const randSuffix = Math.random().toString(36).substring(2, 6);
-  const cleanGameId = game.id.substring(0, 18);
-  const orderId = `ORD_${shortTimestamp}_${cleanGameId}_${randSuffix}`;
+  // Encode userId and gameId with '__' delimiter to ensure clean parsing in webhook
+  const orderId = `${userId}__${game.slug || game.id}`;
 
   // 1. Create order record in Firestore
   const orderRef = doc(db, 'orders', orderId);

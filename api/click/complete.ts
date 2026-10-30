@@ -249,10 +249,30 @@ export default async function handler(req: Req, res: Res) {
     }
 
     // Auto-normalize known game IDs if truncated by payment gateways
-    if (gameId === 'mafia-definitive-edi' || gameId.startsWith('mafia-definitive')) {
+    if (gameId === 'mafia-definitive-edi' || gameId === '44zh' || gameId === '6zz7' || gameId.startsWith('mafia-definitive')) {
       gameId = 'mafia-definitive-edition';
       gameTitle = 'Mafia: Definitive Edition';
       gameSlug = 'mafia-definitive-edition';
+    }
+
+    // If gameTitle is still generic or missing, fetch from Firestore games collection
+    if (!gameTitle || gameTitle === 'SubGame O‘yini') {
+      try {
+        const gameRes = await fetch(
+          `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/games/${gameId}?key=${FIREBASE_API_KEY}`
+        );
+        if (gameRes.ok) {
+          const gameDoc = await gameRes.json();
+          if (gameDoc.fields?.title?.stringValue) {
+            gameTitle = gameDoc.fields.title.stringValue;
+          }
+          if (gameDoc.fields?.slug?.stringValue) {
+            gameSlug = gameDoc.fields.slug.stringValue;
+          }
+        }
+      } catch (err) {
+        console.warn('[Click Webhook] Could not fetch game metadata:', err);
+      }
     }
 
     // 3. ACTION = 0 (PREPARE)

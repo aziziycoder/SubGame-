@@ -237,6 +237,46 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
     }
   };
 
+  const corruptedLicenses = useMemo(() => {
+    const validGameIds = new Set(games.flatMap((g) => [g.id, g.slug]));
+    return licenses.filter((lic) => {
+      const isCorruptedTitle = lic.gameTitle === 'SubGame O‘yini' || lic.gameTitle === 'SubGame O\'yini';
+      const isKnownCorruptedId = ['44zh', '6zz7', 'mafia-definitive-edi'].includes(lic.gameId) || ['44zh', '6zz7', 'mafia-definitive-edi'].includes(lic.gameSlug);
+      const isInvalidGame = !validGameIds.has(lic.gameId) && !validGameIds.has(lic.gameSlug);
+      return isCorruptedTitle || isKnownCorruptedId || isInvalidGame;
+    });
+  }, [licenses, games]);
+
+  const handleCleanCorruptedLicenses = async () => {
+    if (corruptedLicenses.length === 0) {
+      showToast('Xato yoki test litsenziyalar topilmadi', 'success');
+      return;
+    }
+
+    if (
+      !window.confirm(
+        `Bazada noto‘g‘ri yoki test paytida hosil bo‘lgan ${corruptedLicenses.length} ta xato litsenziya topildi (masalan, "SubGame O'yini" va qisqa ID-li yozuvlar).\n\nUlarni butunlay o‘chirib tozalashni tasdiqlaysizmi?`
+      )
+    ) {
+      return;
+    }
+
+    setActionLoading('clean_corrupted');
+    let deleted = 0;
+    try {
+      for (const lic of corruptedLicenses) {
+        const res = await deleteLicense(lic.id);
+        if (res.success) deleted++;
+      }
+      showToast(`${deleted} ta xato litsenziya muvaffaqiyatli butunlay o‘chirildi!`, 'success');
+      await loadData(true);
+    } catch (err: any) {
+      showToast('O‘chirishda xatolik: ' + err.message, 'error');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const formatDate = (timestamp: any): string => {
     if (!timestamp) return 'Noma’lum';
     try {
@@ -581,6 +621,19 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
                 Yopish
               </button>
             </div>
+          )}
+
+          {/* Delete Corrupted Test Licenses */}
+          {corruptedLicenses.length > 0 && (
+            <button
+              onClick={handleCleanCorruptedLicenses}
+              disabled={actionLoading === 'clean_corrupted' || refreshing || loading}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 border border-amber-500/40 text-xs font-black transition-all disabled:opacity-50 cursor-pointer shadow-md"
+              title="Noto‘g‘ri yoki test paytida hosil bo‘lgan xato litsenziyalarni butunlay tozalash"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Xato litsenziyalarni tozalash ({corruptedLicenses.length})</span>
+            </button>
           )}
 
           {/* Delete Unpaid Licenses */}
