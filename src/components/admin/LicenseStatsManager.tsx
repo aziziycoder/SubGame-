@@ -239,11 +239,20 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
 
   const corruptedLicenses = useMemo(() => {
     const validGameIds = new Set(games.flatMap((g) => [g.id, g.slug]));
+    // Explicitly protect all known official games
+    validGameIds.add('stray');
+    validGameIds.add('mafia-definitive-edition');
+    validGameIds.add('a-plague-tale-innocence');
+    validGameIds.add('a-plague-tale-requiem');
+
     return licenses.filter((lic) => {
-      const isCorruptedTitle = lic.gameTitle === 'SubGame O‘yini' || lic.gameTitle === 'SubGame O\'yini';
+      // NEVER flag real Stray or official games as corrupted!
+      if (lic.gameId === 'stray' || lic.gameSlug === 'stray') return false;
+      if (validGameIds.has(lic.gameId) || validGameIds.has(lic.gameSlug)) return false;
+
       const isKnownCorruptedId = ['44zh', '6zz7', 'mafia-definitive-edi'].includes(lic.gameId) || ['44zh', '6zz7', 'mafia-definitive-edi'].includes(lic.gameSlug);
       const isInvalidGame = !validGameIds.has(lic.gameId) && !validGameIds.has(lic.gameSlug);
-      return isCorruptedTitle || isKnownCorruptedId || isInvalidGame;
+      return isKnownCorruptedId || (isInvalidGame && lic.gameTitle.includes('SubGame'));
     });
   }, [licenses, games]);
 
