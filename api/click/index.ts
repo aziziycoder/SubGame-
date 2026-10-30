@@ -248,6 +248,13 @@ export default async function handler(req: Req, res: Res) {
       });
     }
 
+    // Auto-normalize known game IDs if truncated by payment gateways
+    if (gameId === 'mafia-definitive-edi' || gameId.startsWith('mafia-definitive')) {
+      gameId = 'mafia-definitive-edition';
+      gameTitle = 'Mafia: Definitive Edition';
+      gameSlug = 'mafia-definitive-edition';
+    }
+
     // 3. ACTION = 0 (PREPARE)
     if (action === 0) {
       await updateOrderRest(merchant_trans_id, {
