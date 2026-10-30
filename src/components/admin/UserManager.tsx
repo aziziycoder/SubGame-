@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Users,
   ShieldCheck,
@@ -18,6 +18,7 @@ import {
   Copy,
   Check,
   RotateCcw,
+  ChevronLeft,
   ChevronRight,
   Trash2,
   KeyRound
@@ -62,6 +63,9 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [isGrantModalOpen, setIsGrantModalOpen] = useState(false);
   const [grantTargetUser, setGrantTargetUser] = useState<UserWithLicenses | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const USERS_PER_PAGE = 100;
+  const tableTopRef = useRef<HTMLDivElement>(null);
 
   const showToast = (text: string, type: 'success' | 'error' = 'success') => {
     setToastMessage({ text, type });
@@ -278,6 +282,41 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
     });
   }, [users, searchQuery, roleFilter]);
 
+  // Reset to first page when search query or role filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, roleFilter]);
+
+  // 100 users per page pagination
+  const totalPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE) || 1;
+  const validCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
+
+  const paginatedUsers = useMemo(() => {
+    const startIndex = (validCurrentPage - 1) * USERS_PER_PAGE;
+    return filteredUsers.slice(startIndex, startIndex + USERS_PER_PAGE);
+  }, [filteredUsers, validCurrentPage]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages || newPage === validCurrentPage) return;
+    setCurrentPage(newPage);
+    if (tableTopRef.current) {
+      tableTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const getPaginationItems = (current: number, total: number) => {
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    if (current <= 3) {
+      return [1, 2, 3, 4, '...', total];
+    }
+    if (current >= total - 2) {
+      return [1, '...', total - 3, total - 2, total - 1, total];
+    }
+    return [1, '...', current - 1, current, current + 1, '...', total];
+  };
+
   return (
     <div className="space-y-6">
       {/* Toast Notification */}
@@ -458,6 +497,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
         </div>
       ) : (
         <div className="bg-[#141821] border border-[#2A3245] rounded-2xl overflow-hidden shadow-xl">
+          <div ref={tableTopRef} className="scroll-mt-24" />
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-gray-300">
               <thead className="bg-[#0B0D12] text-xs uppercase tracking-wider text-gray-400 border-b border-[#2A3245]">
@@ -471,7 +511,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2A3245]">
-                {filteredUsers.map((item) => {
+                {paginatedUsers.map((item) => {
                   const isMaster = ADMIN_EMAILS.some((e) => e.toLowerCase() === (item.email || '').toLowerCase());
                   const isRoleLoading = actionLoading === `role_${item.uid}`;
 
@@ -635,6 +675,68 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Controls for Users (100 per page) */}
+          {totalPages > 1 && (
+            <div className="px-6 py-4 bg-[#0B0D12] border-t border-[#2A3245] flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-xs text-gray-400 font-medium">
+                <span>Ko‘rsatilmoqda: </span>
+                <strong className="text-white">
+                  {(validCurrentPage - 1) * USERS_PER_PAGE + 1}–{Math.min(validCurrentPage * USERS_PER_PAGE, filteredUsers.length)}
+                </strong>
+                <span> / Jami </span>
+                <strong className="text-[#A3E635]">{filteredUsers.length} ta</strong>
+                <span> foydalanuvchi (Sahifa {validCurrentPage} / {totalPages})</span>
+              </div>
+
+              <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                <button
+                  onClick={() => handlePageChange(validCurrentPage - 1)}
+                  disabled={validCurrentPage === 1}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#141821] border border-[#2A3245] text-xs font-bold text-gray-300 hover:text-white hover:border-[#A3E635] disabled:opacity-40 disabled:hover:border-[#2A3245] disabled:hover:text-gray-300 disabled:cursor-not-allowed transition-all cursor-pointer"
+                  title="Oldingi sahifa"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Oldingi</span>
+                </button>
+
+                {getPaginationItems(validCurrentPage, totalPages).map((item, idx) => {
+                  if (item === '...') {
+                    return (
+                      <span key={`u-ellipsis-${idx}`} className="px-2 py-1 text-xs text-gray-500 font-bold select-none">
+                        ...
+                      </span>
+                    );
+                  }
+                  const pageNum = Number(item);
+                  const isActive = pageNum === validCurrentPage;
+                  return (
+                    <button
+                      key={`u-page-${pageNum}`}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`min-w-8 h-8 px-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        isActive
+                          ? 'bg-[#A3E635] text-[#0B0D12] font-black shadow-md shadow-[#A3E635]/20 scale-105'
+                          : 'bg-[#141821] text-gray-400 hover:text-white hover:border-[#A3E635] border border-[#2A3245]'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+
+                <button
+                  onClick={() => handlePageChange(validCurrentPage + 1)}
+                  disabled={validCurrentPage === totalPages}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#141821] border border-[#2A3245] text-xs font-bold text-gray-300 hover:text-white hover:border-[#A3E635] disabled:opacity-40 disabled:hover:border-[#2A3245] disabled:hover:text-gray-300 disabled:cursor-not-allowed transition-all cursor-pointer"
+                  title="Keyingi sahifa"
+                >
+                  <span className="hidden sm:inline">Keyingi</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

@@ -30,8 +30,11 @@ export const CatalogPage: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>(initialStatus);
   const [selectedPrice, setSelectedPrice] = useState<'all' | 'free' | 'paid'>(initialPrice);
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'title' | 'popular'>('newest');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const ITEMS_PER_PAGE = 12;
 
   const genreScrollRef = useRef<HTMLDivElement>(null);
+  const gamesGridRef = useRef<HTMLDivElement>(null);
 
   // Load games dynamically from Firestore database
   useEffect(() => {
@@ -167,6 +170,41 @@ export const CatalogPage: React.FC = () => {
       return 0;
     });
   }, [games, licenseStats, searchQuery, selectedGenre, selectedStatus, selectedPrice, sortBy]);
+
+  // Reset to first page when any search or filter criteria changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedGenre, selectedStatus, selectedPrice, sortBy]);
+
+  // Pagination calculation
+  const totalPages = Math.ceil(filteredGames.length / ITEMS_PER_PAGE) || 1;
+  const validCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
+
+  const paginatedGames = useMemo(() => {
+    const startIndex = (validCurrentPage - 1) * ITEMS_PER_PAGE;
+    return filteredGames.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredGames, validCurrentPage]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages || newPage === validCurrentPage) return;
+    setCurrentPage(newPage);
+    if (gamesGridRef.current) {
+      gamesGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const getPaginationItems = (current: number, total: number) => {
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    if (current <= 3) {
+      return [1, 2, 3, 4, '...', total];
+    }
+    if (current >= total - 2) {
+      return [1, '...', total - 3, total - 2, total - 1, total];
+    }
+    return [1, '...', current - 1, current, current + 1, '...', total];
+  };
 
   const scrollGenres = (direction: 'left' | 'right') => {
     if (genreScrollRef.current) {
@@ -462,23 +500,95 @@ export const CatalogPage: React.FC = () => {
         </div>
 
         {/* Games Grid or Empty State */}
+        <div ref={gamesGridRef} className="scroll-mt-28" />
+
         {loading ? (
           <div className="py-24 text-center flex flex-col items-center justify-center gap-3">
             <Loader2 className="w-8 h-8 text-[#A3E635] animate-spin" />
             <p className="text-sm text-gray-400 font-medium">O‘yinlar bazadan yuklanmoqda...</p>
           </div>
         ) : filteredGames.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredGames.map((game) => {
-              const claimCount = licenseStats[game.id]?.total || (game.slug ? licenseStats[game.slug]?.total : 0) || 0;
-              return (
-                <GameCard
-                  key={game.id}
-                  game={game}
-                  claimCount={claimCount}
-                />
-              );
-            })}
+          <div className="space-y-10">
+            {/* Grid of games */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {paginatedGames.map((game) => {
+                const claimCount = licenseStats[game.id]?.total || (game.slug ? licenseStats[game.slug]?.total : 0) || 0;
+                return (
+                  <GameCard
+                    key={game.id}
+                    game={game}
+                    claimCount={claimCount}
+                  />
+                );
+              })}
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="pt-6 border-t border-[#2A3245] flex flex-col sm:flex-row items-center justify-between gap-4">
+                {/* Count summary */}
+                <div className="text-xs text-gray-400 order-2 sm:order-1 font-medium">
+                  <span>Ko‘rsatilmoqda: </span>
+                  <strong className="text-white">
+                    {(validCurrentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(validCurrentPage * ITEMS_PER_PAGE, filteredGames.length)}
+                  </strong>
+                  <span> / Jami </span>
+                  <strong className="text-[#A3E635]">{filteredGames.length} ta</strong>
+                  <span> o‘yin (Sahifa {validCurrentPage} / {totalPages})</span>
+                </div>
+
+                {/* Page navigation buttons */}
+                <div className="flex items-center gap-1.5 order-1 sm:order-2 flex-wrap justify-center">
+                  {/* Previous Button */}
+                  <button
+                    onClick={() => handlePageChange(validCurrentPage - 1)}
+                    disabled={validCurrentPage === 1}
+                    className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs font-bold text-gray-300 hover:text-white hover:border-[#A3E635] disabled:opacity-40 disabled:hover:border-[#2A3245] disabled:hover:text-gray-300 disabled:cursor-not-allowed transition-all cursor-pointer"
+                    title="Oldingi sahifa"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span className="hidden sm:inline">Oldingi</span>
+                  </button>
+
+                  {/* Page numbers */}
+                  {getPaginationItems(validCurrentPage, totalPages).map((item, idx) => {
+                    if (item === '...') {
+                      return (
+                        <span key={`ellipsis-${idx}`} className="px-2 py-1 text-xs text-gray-500 font-bold select-none">
+                          ...
+                        </span>
+                      );
+                    }
+                    const pageNum = Number(item);
+                    const isActive = pageNum === validCurrentPage;
+                    return (
+                      <button
+                        key={`page-${pageNum}`}
+                        onClick={() => handlePageChange(pageNum)}
+                        className={`min-w-9 h-9 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                          isActive
+                            ? 'bg-[#A3E635] text-[#0B0D12] font-black shadow-lg shadow-[#A3E635]/20 scale-105'
+                            : 'bg-[#141821] text-gray-400 hover:text-white hover:border-[#A3E635] border border-[#2A3245]'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+
+                  {/* Next Button */}
+                  <button
+                    onClick={() => handlePageChange(validCurrentPage + 1)}
+                    disabled={validCurrentPage === totalPages}
+                    className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs font-bold text-gray-300 hover:text-white hover:border-[#A3E635] disabled:opacity-40 disabled:hover:border-[#2A3245] disabled:hover:text-gray-300 disabled:cursor-not-allowed transition-all cursor-pointer"
+                    title="Keyingi sahifa"
+                  >
+                    <span className="hidden sm:inline">Keyingi</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="py-20 text-center bg-[#141821] rounded-3xl border border-[#2A3245] p-8 max-w-xl mx-auto shadow-2xl space-y-4">
