@@ -65,7 +65,7 @@ export const LauncherPage: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#A3E635]/15 border border-[#A3E635]/40 text-[#A3E635] text-xs font-semibold mb-6 shadow-sm">
             <Sparkles className="w-4 h-4" />
-            <span>Rasmiy Windows Dasturi • Versiya 1.0.0</span>
+            <span>Rasmiy Windows Dasturi • Versiya 1.1.0</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-6">
