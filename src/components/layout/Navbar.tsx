@@ -78,16 +78,7 @@ export const Navbar: React.FC = () => {
             : 'bg-gradient-to-b from-[#0B0D12]/90 via-[#0B0D12]/50 to-transparent'
         }`}
       >
-        {/* Maintenance Notice Banner */}
-        <div className="bg-gradient-to-r from-amber-600/30 via-amber-500/40 to-amber-600/30 border-b border-amber-500/50 text-amber-200 py-1.5 px-4 text-center text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 backdrop-blur-md shadow-inner">
-          <span className="flex h-2 w-2 relative shrink-0">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-          </span>
-          <span className="leading-tight">
-            ⚠️ <strong>Texnik ishlar olib borilmoqda:</strong> Platformada texnik profilaktika jarayoni ketmoqda. Ayrim xizmatlarda vaqtinchalik uzilishlar bo‘lishi mumkin.
-          </span>
-        </div>
+
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-4">
