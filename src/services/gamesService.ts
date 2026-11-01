@@ -213,21 +213,38 @@ export async function getGameBySlug(slug: string): Promise<Game | undefined> {
 }
 
 /**
- * Create a new game in Firestore.
+ * Create a new game in Backend & Firestore.
  */
 export async function createGame(gameData: Game): Promise<{ success: boolean; id: string; error?: string }> {
+  const docId = gameData.slug || gameData.id || `game_${Date.now()}`;
+  const payload = cleanGameData({
+    ...gameData,
+    id: docId,
+  });
+
+  // 1. Try creating in Django REST Backend
   try {
-    const docId = gameData.slug || gameData.id || `game_${Date.now()}`;
-    const gameRef = doc(db, GAMES_COLLECTION, docId);
-
-    const payload = cleanGameData({
-      ...gameData,
-      id: docId,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+    const res = await fetchFromBackend<{ id?: string }>('api/v1/games/admin/manage/', {
+      method: 'POST',
+      body: JSON.stringify(payload),
     });
+    if (res && res.id) {
+      // Also update Firestore in background
+      setDoc(doc(db, GAMES_COLLECTION, docId), { ...payload, createdAt: serverTimestamp(), updatedAt: serverTimestamp() }, { merge: true }).catch(() => {});
+      return { success: true, id: res.id };
+    }
+  } catch (backendErr) {
+    console.warn('[Backend] Create game backend warning:', backendErr);
+  }
 
-    await setDoc(gameRef, payload, { merge: true });
+  // 2. Fallback to Firestore
+  try {
+    const gameRef = doc(db, GAMES_COLLECTION, docId);
+    await setDoc(gameRef, {
+      ...payload,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
     return { success: true, id: docId };
   } catch (error: any) {
     console.error('Error creating game in Firestore:', error);
@@ -236,17 +253,33 @@ export async function createGame(gameData: Game): Promise<{ success: boolean; id
 }
 
 /**
- * Update an existing game in Firestore.
- * Uses setDoc with merge:true so it succeeds even if document did not exist yet.
+ * Update an existing game in Backend & Firestore.
  */
 export async function updateGame(id: string, gameData: Partial<Game>): Promise<{ success: boolean; error?: string }> {
+  const cleaned = cleanGameData(gameData);
+
+  // 1. Try updating in Django REST Backend
+  try {
+    const res = await fetchFromBackend<{ id?: string }>(`api/v1/games/admin/manage/${id}/`, {
+      method: 'PUT',
+      body: JSON.stringify(cleaned),
+    });
+    if (res) {
+      // Also update Firestore in background
+      setDoc(doc(db, GAMES_COLLECTION, id), { ...cleaned, updatedAt: serverTimestamp() }, { merge: true }).catch(() => {});
+      return { success: true };
+    }
+  } catch (backendErr) {
+    console.warn('[Backend] Update game backend warning:', backendErr);
+  }
+
+  // 2. Fallback to Firestore
   try {
     const gameRef = doc(db, GAMES_COLLECTION, id);
-    const cleaned = cleanGameData({
-      ...gameData,
-      updatedAt: serverTimestamp()
-    });
-    await setDoc(gameRef, cleaned, { merge: true });
+    await setDoc(gameRef, {
+      ...cleaned,
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
     return { success: true };
   } catch (error: any) {
     console.error('Error updating game in Firestore:', error);
@@ -255,9 +288,19 @@ export async function updateGame(id: string, gameData: Partial<Game>): Promise<{
 }
 
 /**
- * Delete a game from Firestore.
+ * Delete a game from Backend & Firestore.
  */
 export async function deleteGame(id: string): Promise<{ success: boolean; error?: string }> {
+  // 1. Try deleting in Django REST Backend
+  try {
+    await fetchFromBackend(`api/v1/games/admin/manage/${id}/`, {
+      method: 'DELETE',
+    });
+  } catch (backendErr) {
+    console.warn('[Backend] Delete game backend warning:', backendErr);
+  }
+
+  // 2. Also delete from Firestore
   try {
     const gameRef = doc(db, GAMES_COLLECTION, id);
     await deleteDoc(gameRef);
