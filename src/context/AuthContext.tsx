@@ -187,6 +187,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const claimLicense = async (gameId: string, gameTitle: string, gameSlug: string) => {
+    const PAID_GAMES = ['stray', 'a-plague-tale-legacy'];
+    if (!isAdmin && (PAID_GAMES.includes(gameId) || PAID_GAMES.includes(gameSlug))) {
+      return {
+        success: false,
+        message: 'Ushbu o‘yin pullik. Litsenziya faqat to‘lov muvaffaqiyatli amalga oshirilganda avtomatik biriktiriladi.',
+      };
+    }
+
     if (!user) {
       try {
         await signInWithGoogle();

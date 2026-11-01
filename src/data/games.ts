@@ -10,6 +10,7 @@ export const GENRES = [
   'Barchasi',
   'Kvest',
   'Boshqotirma',
+  'Kooperativ',
   'Sarguzasht',
   'Action',
   'Stealth',

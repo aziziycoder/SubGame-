@@ -483,7 +483,7 @@ export const AdminPage: React.FC = () => {
   };
 
   const handleSyncInitial = async () => {
-    if (!window.confirm('Boshlang‘ich o‘yinlar (Innocence, Requiem, Outward 2, Level Devil) bazaga yuklansinmi? Mavjud o‘yinlaringiz sozlamalari saqlanadi.')) {
+    if (!window.confirm('Boshlang‘ich o‘yinlar (A Way Out, Innocence, Requiem, Outward 2, Level Devil) bazaga yuklansinmi? Mavjud o‘yinlaringiz sozlamalari saqlanadi.')) {
       return;
     }
     setSyncing(true);

@@ -618,5 +618,93 @@ export const INITIAL_GAMES_SEED: Game[] = [
     targetFileName: 'Paradise.swf',
     targetRelativeDir: '',
     keyPrefix: 'SUB-RLPA',
+  },
+  {
+    id: 'a-way-out',
+    slug: 'a-way-out',
+    title: 'A Way Out',
+    cover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1222700/library_600x900.jpg',
+    cardImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1222700/header.jpg',
+    heroImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1222700/library_hero.jpg',
+    gameplayVideoUrl: 'https://www.youtube.com/embed/_ApSmPvxz1o',
+    torrentUrl: 'https://itorrents-igruha.org/1297-a-way-out.html',
+    screenshots: [
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1222700/ss_a7f52388d8d64bf56170baf5bd223fbbb1d9a94a.1920x1080.jpg',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1222700/ss_55237e6d80cf3f9e2f3f0fa41d710a7ea35b022b.1920x1080.jpg',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1222700/ss_666b409c3d07150ef0ddccb179a25d44fb62c937.1920x1080.jpg',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1222700/ss_7348bdffb1dd4418175bcb91149f3b7daf30ecf8.1920x1080.jpg',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1222700/ss_106cea596e17899b75cc76901d6f67afa11d6fd3.1920x1080.jpg'
+    ],
+    shortDescription: 'Faqatgina ikki kishi birgalikda o‘ynashi uchun mo‘ljallangan noyob kinematik sarguzasht. Qamoqxonadan dadil qochishni rejalashtirayotgan Leo va Vinsent ismli ikki mahbusdan birining rolini o‘ynab, ozodlik yo‘lida bir-biringizga ishonishni o‘rganasiz.',
+    fullDescription: 'A Way Out — "Brothers: A Tale of Two Sons" va "It Takes Two" yaratuvchilaridan ikki kishilik mashhur kooperativ sarguzasht. O‘yin qahramonlari — bir-birini tanimaydigan, ammo umumiy dushmanga ega bo‘lgan ikki mahbus: qiziqqon, chaqqon Leo va bosiq, mulohazali Vinsent. Ularning qamoqdan qochishi tez orada qiziqarli, emotsional va kutilmagan burilishlarga boy sarguzashtga aylanadi. O‘yin butunlay ekran bo‘lingan (split-screen) rejimida kechadi va har bir vaziyatda ikki o‘yinchining o‘zaro hamkorligini talab qiladi.',
+    releaseYear: 2018,
+    developer: 'Hazelight Studios',
+    publisher: 'Electronic Arts',
+    genres: ['Action', 'Sarguzasht', 'Kooperativ'],
+    platforms: ['PC', 'PlayStation 4', 'Xbox One'],
+    officialStoreLinks: [
+      {
+        name: 'Steam',
+        url: 'https://store.steampowered.com/app/1222700/A_Way_Out/',
+        priceNote: 'Steam rasmiy sahifasi'
+      }
+    ],
+    price: 'Tez kunda',
+    priceNote: 'O‘yin subtitrlari tayyorlanmoqda, narxi tez kunda e’lon qilinadi.',
+    subtitleStatus: 'Tez kunda',
+    subtitleLanguage: 'O‘zbekcha (Lotin)',
+    subtitleVersion: 'v1.0.0',
+    subtitleLastUpdated: '2026-10-30',
+    subtitleCompatibility: 'Steam, EA App va barcha PC nashrlari (v1.2.0.2+)',
+    subtitleFormat: 'SubGame Launcher himoyalangan lokalizatsiyasi (UE4 PAK)',
+    subtitleSize: '1.8 MB',
+    subtitleDownloadUrl: '/launcher',
+    subtitlePrice: 'Tez kunda',
+    subtitleTranslationType: 'To‘liq professional o‘zbekcha tarjima (12,600+ satr)',
+    installationGuide: [
+      {
+        step: 1,
+        title: 'SubGame Launcherni yuklab oling',
+        description: 'SubGame Launcher ilovasini yuklab oling va oching. O‘rnatish talab etilmaydi.'
+      },
+      {
+        step: 2,
+        title: 'A Way Out o‘yinini tanlang',
+        description: 'Launcher katalogidan A Way Out kartasidagi "O‘rnatish" yoki "O‘ynash" tugmasini bosing va o‘yin papkasidagi AWayOut.exe faylini ko‘rsating.',
+        pathOrCommand: 'AWayOut.exe'
+      },
+      {
+        step: 3,
+        title: 'O‘yinni o‘zbek tilida boshlang',
+        description: 'Subtitrlar avtomatik ulanadi va o‘yin to‘liq o‘zbek tilida ochiladi!'
+      }
+    ],
+    knownIssues: [
+      'Subtitrlar to‘liq (12,601 satr) tarjima qilingan va sinovdan o‘tkazilgan.'
+    ],
+    minimumRequirements: {
+      os: 'Windows 7 / 8.1 / 10 (64-bit)',
+      processor: 'Intel Core i3-2100T (2.5 GHz) / AMD FX 6100',
+      memory: '8 GB RAM',
+      graphics: 'NVIDIA GeForce GTX 650 Ti (2 GB) / AMD Radeon HD 7750 (2 GB)',
+      directX: 'Versiya 11',
+      storage: '25 GB bo‘sh joy',
+      additionalNotes: 'O‘yin ikki kishi (klaviatura yoki geympad) bilan o‘ynaladi.'
+    },
+    recommendedRequirements: {
+      os: 'Windows 10 / 11 (64-bit)',
+      processor: 'Intel Core i5-3570K / AMD Ryzen 3 1300X',
+      memory: '16 GB RAM',
+      graphics: 'NVIDIA GeForce GTX 960 (4 GB) / AMD Radeon R9 290 (4 GB)',
+      directX: 'Versiya 11',
+      storage: '25 GB bo‘sh joy (SSD tavsiya etiladi)',
+      additionalNotes: '1080p 60 FPS silliq gameplay uchun tavsiya qilinadi.'
+    },
+    isFeatured: true,
+    tags: ['Tez kunda', 'Kooperativ', 'Qamoqdan qochish', 'Hit o‘yin', 'O‘zbekcha subtitr'],
+    defaultExeName: 'AWayOut.exe',
+    targetFileName: 'pakchunk99-WindowsNoEditor_Uzbek_P.pak',
+    targetRelativeDir: 'Haze1/Content/Paks',
+    keyPrefix: 'SUB-AWO'
   }
 ];
