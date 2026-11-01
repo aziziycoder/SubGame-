@@ -13,6 +13,7 @@ import {
 import { db } from './firebase';
 import type { Game } from '../types/game';
 import { INITIAL_GAMES_SEED } from '../data/initialGamesSeed';
+import { fetchFromBackend } from './apiClient';
 
 const GAMES_COLLECTION = 'games';
 
@@ -126,6 +127,17 @@ export function normalizeGameData(game: Game): Game {
  * No static code fallback; 100% dynamic from the database.
  */
 export async function getGames(): Promise<Game[]> {
+  // 1. Try fetching from Django REST Backend first
+  try {
+    const backendGames = await fetchFromBackend<Game[]>('api/v1/games/');
+    if (backendGames && Array.isArray(backendGames) && backendGames.length > 0) {
+      return backendGames.map((g) => normalizeGameData(g));
+    }
+  } catch (backendErr) {
+    console.warn('[Backend] Could not reach Django backend, checking Firestore fallback:', backendErr);
+  }
+
+  // 2. Fallback to Firestore
   try {
     const gamesRef = collection(db, GAMES_COLLECTION);
     const q = query(gamesRef, orderBy('releaseYear', 'desc'));
@@ -144,19 +156,34 @@ export async function getGames(): Promise<Game[]> {
       });
     }
 
-    return firestoreGames;
+    if (firestoreGames.length > 0) {
+      return firestoreGames;
+    }
   } catch (error) {
-    console.error('Failed to fetch games from Firestore:', error);
-    return [];
+    console.warn('Failed to fetch games from Firestore, falling back to initial seed:', error);
   }
+
+  // 3. Ultimate Fallback to Initial Seed
+  return INITIAL_GAMES_SEED.map((g) => normalizeGameData(g));
 }
 
 /**
- * Fetch a single game by slug or id directly from Firestore.
+ * Fetch a single game by slug or id directly from Firestore or Django Backend.
  */
 export async function getGameBySlug(slug: string): Promise<Game | undefined> {
+  // 1. Try fetching from Django Backend first
   try {
-    // 1. Direct document lookup by ID
+    const backendGame = await fetchFromBackend<Game>(`api/v1/games/${slug}/`);
+    if (backendGame && backendGame.title) {
+      return normalizeGameData(backendGame);
+    }
+  } catch {
+    // ignore
+  }
+
+  // 2. Fallback to Firestore
+  try {
+    // Direct document lookup by ID
     const directDocRef = doc(db, GAMES_COLLECTION, slug);
     const directSnap = await getDoc(directDocRef);
     if (directSnap.exists()) {
