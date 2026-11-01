@@ -72,13 +72,24 @@ export const Navbar: React.FC = () => {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isMobileMenuOpen
-            ? 'bg-[#0B0D12] border-b border-[#2A3245] py-3.5 shadow-2xl'
+            ? 'bg-[#0B0D12] border-b border-[#2A3245] shadow-2xl'
             : isScrolled
-            ? 'bg-[#0B0D12]/80 backdrop-blur-md border-b border-[#2A3245]/80 py-3 shadow-xl'
-            : 'bg-gradient-to-b from-[#0B0D12]/70 via-[#0B0D12]/20 to-transparent py-4'
+            ? 'bg-[#0B0D12]/95 backdrop-blur-md border-b border-[#2A3245]/80 shadow-xl'
+            : 'bg-gradient-to-b from-[#0B0D12]/90 via-[#0B0D12]/50 to-transparent'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Maintenance Notice Banner */}
+        <div className="bg-gradient-to-r from-amber-600/30 via-amber-500/40 to-amber-600/30 border-b border-amber-500/50 text-amber-200 py-1.5 px-4 text-center text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 backdrop-blur-md shadow-inner">
+          <span className="flex h-2 w-2 relative shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+          </span>
+          <span className="leading-tight">
+            ⚠️ <strong>Texnik ishlar olib borilmoqda:</strong> Platformada texnik profilaktika jarayoni ketmoqda. Ayrim xizmatlarda vaqtinchalik uzilishlar bo‘lishi mumkin.
+          </span>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2.5 group shrink-0">
