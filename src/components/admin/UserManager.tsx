@@ -21,7 +21,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Trash2,
-  KeyRound
+  KeyRound,
+  Download
 } from 'lucide-react';
 import type { Game } from '../../types/game';
 import type { UserWithLicenses, UserRole } from '../../types/auth';
@@ -102,6 +103,102 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
   useEffect(() => {
     loadData();
   }, []);
+
+  const handleExportFullBackup = async () => {
+    try {
+      showToast('Barcha ma’lumotlar to‘liq eksport qilinmoqda...', 'success');
+
+      // 1. All users
+      const exportedUsers = users.map((u) => ({
+        id: u.uid,
+        email: u.email,
+        displayName: (u.displayName || u.email?.split('@')[0] || 'User').slice(0, 255),
+        photoUrl: u.photoURL || '',
+        role: u.role,
+        isStaff: u.isAdmin,
+        isSuperuser: u.email === 'azizbekgulomovweb@gmail.com',
+        createdAt: u.createdAt || new Date().toISOString()
+      }));
+
+      // 2. All licenses
+      const allLics: any[] = [];
+      users.forEach((u) => {
+        (u.licenses || []).forEach((lic) => {
+          allLics.push({
+            id: lic.id,
+            userId: lic.userId,
+            userEmail: lic.userEmail,
+            userName: lic.userName,
+            userPhoto: lic.userPhoto,
+            gameId: lic.gameId,
+            gameTitle: lic.gameTitle,
+            gameSlug: lic.gameSlug,
+            status: lic.status,
+            hwid: lic.hwid,
+            boundAt: lic.boundAt,
+            boundDeviceName: lic.boundDeviceName,
+            paymentProvider: (lic as any).paymentProvider || 'none',
+            paymentRef: (lic as any).paymentRef || '',
+            paidAmount: (lic as any).paidAmount || 0,
+            createdAt: lic.createdAt || new Date().toISOString()
+          });
+        });
+      });
+
+      // 3. Orders (try fetching from Firestore orders collection)
+      let exportedOrders: any[] = [];
+      try {
+        const { collection, getDocs } = await import('firebase/firestore');
+        const { db } = await import('../../services/firebase');
+        const ordersSnap = await getDocs(collection(db, 'orders'));
+        exportedOrders = ordersSnap.docs.map((d) => ({
+          orderId: d.id,
+          ...d.data()
+        }));
+      } catch (e) {
+        console.warn('Orders direct fetch fallback to license payments:', e);
+      }
+
+      // If orders collection was empty or partial, supplement from paid licenses
+      if (exportedOrders.length === 0) {
+        allLics.forEach((lic) => {
+          if (lic.paymentProvider === 'click' || lic.paidAmount > 0) {
+            exportedOrders.push({
+              orderId: `${lic.userId}__${lic.gameSlug || lic.gameId}`,
+              userId: lic.userId,
+              userEmail: lic.userEmail,
+              gameId: lic.gameId,
+              gameSlug: lic.gameSlug,
+              gameTitle: lic.gameTitle,
+              amount: lic.paidAmount || 5000,
+              currency: 'UZS',
+              status: 'paid',
+              paymentProvider: lic.paymentProvider || 'click',
+              clickTransId: lic.paymentRef || '',
+              createdAt: lic.createdAt
+            });
+          }
+        });
+      }
+
+      const fullData = {
+        games: games.map((g) => ({ ...g })),
+        users: exportedUsers,
+        licenses: allLics,
+        orders: exportedOrders
+      };
+
+      const blob = new Blob([JSON.stringify(fullData, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'firestore_full_export.json';
+      a.click();
+
+      showToast(`Muvaffaqiyatli! ${exportedUsers.length} ta user va ${allLics.length} ta litsenziya yuklab olindi!`, 'success');
+    } catch (err: any) {
+      showToast('Eksportda xatolik: ' + err.message, 'error');
+    }
+  };
 
   const handleRoleChange = async (targetUser: UserWithLicenses, newRole: UserRole) => {
     const isMaster = ADMIN_EMAILS.some((e) => e.toLowerCase() === (targetUser.email || '').toLowerCase());
@@ -466,6 +563,16 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
           >
             <KeyRound className="w-4 h-4" />
             <span>Litsenziya berish</span>
+          </button>
+
+          <button
+            onClick={handleExportFullBackup}
+            disabled={loading || users.length === 0}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all cursor-pointer shadow-lg shadow-blue-600/25 disabled:opacity-50"
+            title="Barcha foydalanuvchilar va litsenziyalarni to‘liq JSON formatda yuklab olish"
+          >
+            <Download className="w-4 h-4" />
+            <span>To‘liq Eksport ({users.length})</span>
           </button>
 
           <button
