@@ -14,6 +14,7 @@ import {
 import { db } from './firebase';
 import type { UserProfile, GameLicense, UserWithLicenses, UserRole } from '../types/auth';
 import { ADMIN_EMAILS } from '../context/AuthContext';
+import { fetchFromBackend } from './apiClient';
 
 export interface UserStats {
   totalUsers: number;
@@ -31,6 +32,20 @@ export const getAllUsersWithLicenses = async (): Promise<{
   users: UserWithLicenses[];
   stats: UserStats;
 }> => {
+  // 1. Try fetching from Django REST Backend first (Fast, zero Firestore read quotas!)
+  try {
+    const backendData = await fetchFromBackend<{
+      users: UserWithLicenses[];
+      stats: UserStats;
+    }>('api/v1/auth/admin/users-with-licenses/');
+
+    if (backendData && Array.isArray(backendData.users) && backendData.users.length > 0) {
+      return backendData;
+    }
+  } catch (backendErr) {
+    console.warn('[Backend] Could not fetch users from Django API, falling back to Firestore:', backendErr);
+  }
+
   try {
     // 1. Fetch all users
     let usersSnapshot;
@@ -197,6 +212,16 @@ export const updateUserRole = async (
       };
     }
 
+    // 1. Update in Django REST Backend
+    try {
+      await fetchFromBackend(`api/v1/auth/admin/users/${userId}/role/`, {
+        method: 'PATCH',
+        body: JSON.stringify({ role: newRole }),
+      });
+    } catch (e) {
+      console.warn('[Backend] Role update sync error:', e);
+    }
+
     const userRef = doc(db, 'users', userId);
     await updateDoc(userRef, {
       role: newRole,
@@ -220,6 +245,16 @@ export const resetLicenseHwid = async (
   licenseId: string
 ): Promise<{ success: boolean; error?: string }> => {
   try {
+    // 1. Reset in Django REST Backend
+    try {
+      await fetchFromBackend(`api/v1/licenses/admin/${licenseId}/`, {
+        method: 'PATCH',
+        body: JSON.stringify({ action: 'reset_hwid' }),
+      });
+    } catch (e) {
+      console.warn('[Backend] HWID reset sync error:', e);
+    }
+
     const licenseRef = doc(db, 'licenses', licenseId);
     await updateDoc(licenseRef, {
       hwid: null,
@@ -245,6 +280,16 @@ export const toggleLicenseStatus = async (
   currentStatus: 'active' | 'revoked'
 ): Promise<{ success: boolean; error?: string }> => {
   try {
+    // 1. Toggle in Django REST Backend
+    try {
+      await fetchFromBackend(`api/v1/licenses/admin/${licenseId}/`, {
+        method: 'PATCH',
+        body: JSON.stringify({ action: 'toggle_status' }),
+      });
+    } catch (e) {
+      console.warn('[Backend] License status toggle sync error:', e);
+    }
+
     const nextStatus = currentStatus === 'active' ? 'revoked' : 'active';
     const licenseRef = doc(db, 'licenses', licenseId);
     await updateDoc(licenseRef, {
@@ -268,6 +313,15 @@ export const deleteLicense = async (
   licenseId: string
 ): Promise<{ success: boolean; error?: string }> => {
   try {
+    // 1. Delete in Django REST Backend
+    try {
+      await fetchFromBackend(`api/v1/licenses/admin/${licenseId}/`, {
+        method: 'DELETE',
+      });
+    } catch (e) {
+      console.warn('[Backend] License delete sync error:', e);
+    }
+
     const licenseRef = doc(db, 'licenses', licenseId);
     await deleteDoc(licenseRef);
     return { success: true };

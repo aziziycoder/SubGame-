@@ -1,6 +1,7 @@
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebase';
 import type { Game } from '../types/game';
+import { fetchFromBackend } from './apiClient';
 
 // Click Merchant Settings (loaded via environment variables)
 export const CLICK_CONFIG = {
@@ -117,6 +118,28 @@ export async function createClickOrder({
   game,
   customAmount,
 }: CreateOrderParams): Promise<CreateOrderResult> {
+  // 1. Try Backend order creation first
+  try {
+    const backendRes = await fetchFromBackend<{
+      orderId: string;
+      amount: number;
+      clickUrl: string;
+      isSandbox: boolean;
+    }>('api/v1/payments/order/', {
+      method: 'POST',
+      body: JSON.stringify({
+        gameId: game.id,
+        gameSlug: game.slug,
+        amount: customAmount,
+      }),
+    });
+    if (backendRes && backendRes.clickUrl) {
+      return backendRes;
+    }
+  } catch (err) {
+    console.warn('[Backend] Order creation via backend failed, using fallback:', err);
+  }
+
   const amount = customAmount ?? (parseGamePrice(game.subtitlePrice) || parseGamePrice(game.price) || 15000);
   // Encode userId and gameId with '__' delimiter to ensure clean parsing in webhook
   const orderId = `${userId}__${game.slug || game.id}`;

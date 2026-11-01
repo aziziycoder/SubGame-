@@ -6,6 +6,7 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebase';
 import type { Game } from '../types/game';
+import { fetchFromBackend } from './apiClient';
 
 export interface GameLicenseItem {
   id: string; // `${userId}_${gameId}`
@@ -66,57 +67,92 @@ export const fetchAllLicensesWithStats = async (
   stats: LicenseGlobalStats;
 }> => {
   try {
-    // 1. Fetch all users to have latest names/photos
-    const usersMap = new Map<string, { displayName?: string; photoURL?: string; email?: string }>();
-    try {
-      const usersSnap = await getDocs(collection(db, 'users'));
-      usersSnap.forEach((d) => {
-        const u = d.data();
-        usersMap.set(d.id, {
-          displayName: u.displayName,
-          photoURL: u.photoURL,
-          email: u.email
-        });
-      });
-    } catch (e) {
-      console.warn('Could not load users map for licenses:', e);
-    }
-
-    // 2. Fetch all licenses
-    const licensesSnap = await getDocs(collection(db, 'licenses'));
     const allLicenses: GameLicenseItem[] = [];
     const uniqueUserIds = new Set<string>();
 
-    licensesSnap.forEach((d) => {
-      const data = d.data();
-      const userId = data.userId || '';
-      const userProfile = usersMap.get(userId);
-
-      const license: GameLicenseItem = {
-        id: d.id,
-        userId,
-        userEmail: userProfile?.email || data.userEmail || 'Noma’lum email',
-        userName: userProfile?.displayName || data.userName || data.userEmail?.split('@')[0] || 'Foydalanuvchi',
-        userPhoto: userProfile?.photoURL || data.userPhoto || undefined,
-        gameId: data.gameId || 'noma-lum',
-        gameTitle: data.gameTitle || 'Noma’lum o‘yin',
-        gameSlug: data.gameSlug || (data.gameId ? String(data.gameId) : 'noma-lum'),
-        status: data.status === 'revoked' ? 'revoked' : 'active',
-        hwid: data.hwid || null,
-        boundAt: data.boundAt || null,
-        boundDeviceName: data.boundDeviceName || null,
-        paymentProvider: data.paymentProvider || undefined,
-        paymentRef: data.paymentRef || undefined,
-        paidAmount: data.paidAmount || undefined,
-        revokedReason: data.revokedReason || undefined,
-        createdAt: data.createdAt || null
-      };
-
-      allLicenses.push(license);
-      if (userId) {
-        uniqueUserIds.add(userId);
+    // 1. Try fetching from Django REST Backend first (Fast, zero Firestore read quotas!)
+    let loadedFromBackend = false;
+    try {
+      const backendLicenses = await fetchFromBackend<any[]>('api/v1/licenses/admin/');
+      if (backendLicenses && Array.isArray(backendLicenses) && backendLicenses.length > 0) {
+        backendLicenses.forEach((d) => {
+          const userId = d.userId || '';
+          allLicenses.push({
+            id: d.id,
+            userId,
+            userEmail: d.userEmail || 'Noma’lum email',
+            userName: d.userName || d.userEmail?.split('@')[0] || 'Foydalanuvchi',
+            userPhoto: d.userPhoto || undefined,
+            gameId: d.gameId || 'noma-lum',
+            gameTitle: d.gameTitle || 'Noma’lum o‘yin',
+            gameSlug: d.gameSlug || (d.gameId ? String(d.gameId) : 'noma-lum'),
+            status: d.status === 'revoked' ? 'revoked' : 'active',
+            hwid: d.hwid || null,
+            boundAt: d.boundAt || null,
+            boundDeviceName: d.boundDeviceName || null,
+            paymentProvider: d.payment_provider || undefined,
+            paidAmount: d.paid_amount || undefined,
+            createdAt: d.createdAt || d.created_at || null,
+          });
+          if (userId) {
+            uniqueUserIds.add(userId);
+          }
+        });
+        loadedFromBackend = true;
       }
-    });
+    } catch (backendErr) {
+      console.warn('[Backend] Could not load licenses from Django backend, falling back to Firestore:', backendErr);
+    }
+
+    // 2. Fallback to Firestore if backend was not available
+    if (!loadedFromBackend) {
+      const usersMap = new Map<string, { displayName?: string; photoURL?: string; email?: string }>();
+      try {
+        const usersSnap = await getDocs(collection(db, 'users'));
+        usersSnap.forEach((d) => {
+          const u = d.data();
+          usersMap.set(d.id, {
+            displayName: u.displayName,
+            photoURL: u.photoURL,
+            email: u.email
+          });
+        });
+      } catch (e) {
+        console.warn('Could not load users map for licenses:', e);
+      }
+
+      const licensesSnap = await getDocs(collection(db, 'licenses'));
+      licensesSnap.forEach((d) => {
+        const data = d.data();
+        const userId = data.userId || '';
+        const userProfile = usersMap.get(userId);
+
+        const license: GameLicenseItem = {
+          id: d.id,
+          userId,
+          userEmail: userProfile?.email || data.userEmail || 'Noma’lum email',
+          userName: userProfile?.displayName || data.userName || data.userEmail?.split('@')[0] || 'Foydalanuvchi',
+          userPhoto: userProfile?.photoURL || data.userPhoto || undefined,
+          gameId: data.gameId || 'noma-lum',
+          gameTitle: data.gameTitle || 'Noma’lum o‘yin',
+          gameSlug: data.gameSlug || (data.gameId ? String(data.gameId) : 'noma-lum'),
+          status: data.status === 'revoked' ? 'revoked' : 'active',
+          hwid: data.hwid || null,
+          boundAt: data.boundAt || null,
+          boundDeviceName: data.boundDeviceName || null,
+          paymentProvider: data.paymentProvider || undefined,
+          paymentRef: data.paymentRef || undefined,
+          paidAmount: data.paidAmount || undefined,
+          revokedReason: data.revokedReason || undefined,
+          createdAt: data.createdAt || null
+        };
+
+        allLicenses.push(license);
+        if (userId) {
+          uniqueUserIds.add(userId);
+        }
+      });
+    }
 
     // 3. Map games by ID and slug for metadata (images, genres)
     const gamesById = new Map<string, Game>();

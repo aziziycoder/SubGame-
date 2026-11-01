@@ -747,9 +747,12 @@ export const AdminPage: React.FC = () => {
           </div>
 
           <div className="p-5 rounded-2xl bg-[#141821] border border-[#A3E635]/20 space-y-2">
-            <span className="text-xs text-[#A3E635] uppercase tracking-wider block">Launcher Integratsiyasi</span>
+            <span className="text-xs text-[#A3E635] uppercase tracking-wider block">Backend & Baza</span>
             <div className="flex items-baseline justify-between">
-              <span className="text-xs text-gray-300 font-mono">Dinamik Firestore</span>
+              <span className="text-xs text-emerald-400 font-medium font-mono flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                SubGame API (PostgreSQL)
+              </span>
               <Sparkles className="w-5 h-5 text-[#A3E635]" />
             </div>
           </div>
