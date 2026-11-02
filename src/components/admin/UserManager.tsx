@@ -24,8 +24,10 @@ import {
   KeyRound,
   Download
 } from 'lucide-react';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { db } from '../../services/firebase';
 import type { Game } from '../../types/game';
-import type { UserWithLicenses, UserRole } from '../../types/auth';
+import type { UserWithLicenses, UserRole, GameLicense } from '../../types/auth';
 import {
   getAllUsersWithLicenses,
   updateUserRole,
@@ -103,6 +105,65 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
   useEffect(() => {
     loadData();
   }, []);
+
+  // Real-time listener for the currently selected user's licenses in Firestore
+  // Ensures any newly granted, toggled, or reset licenses appear immediately
+  useEffect(() => {
+    if (!isDetailModalOpen || !selectedUser?.uid) return;
+
+    try {
+      const q = query(collection(db, 'licenses'), where('userId', '==', selectedUser.uid));
+      const unsubscribe = onSnapshot(
+        q,
+        (snap) => {
+          const freshLicenses: GameLicense[] = [];
+          snap.forEach((docSnap) => {
+            freshLicenses.push({ id: docSnap.id, ...(docSnap.data() as any) });
+          });
+
+          // Sort latest first
+          freshLicenses.sort((a, b) => {
+            const timeA = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const timeB = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return timeB - timeA;
+          });
+
+          setSelectedUser((prev) => {
+            if (!prev || prev.uid !== selectedUser.uid) return prev;
+            return {
+              ...prev,
+              licenses: freshLicenses,
+              claimedGamesCount: freshLicenses.length,
+              activeLicensesCount: freshLicenses.filter((l) => l.status === 'active').length,
+              boundDevicesCount: freshLicenses.filter((l) => Boolean(l.hwid)).length,
+            };
+          });
+
+          setUsers((prevList) =>
+            prevList.map((u) => {
+              if (u.uid === selectedUser.uid) {
+                return {
+                  ...u,
+                  licenses: freshLicenses,
+                  claimedGamesCount: freshLicenses.length,
+                  activeLicensesCount: freshLicenses.filter((l) => l.status === 'active').length,
+                  boundDevicesCount: freshLicenses.filter((l) => Boolean(l.hwid)).length,
+                };
+              }
+              return u;
+            })
+          );
+        },
+        (err) => {
+          console.warn('Live license listener warning:', err);
+        }
+      );
+
+      return () => unsubscribe();
+    } catch (listenerErr) {
+      console.warn('Failed to attach live license listener:', listenerErr);
+    }
+  }, [isDetailModalOpen, selectedUser?.uid]);
 
   const handleExportFullBackup = async () => {
     try {
@@ -1156,8 +1217,41 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
           setIsGrantModalOpen(false);
           setGrantTargetUser(null);
         }}
-        onSuccess={(msg) => {
+        onSuccess={(msg, newLic, targetUid) => {
           showToast(msg, 'success');
+          if (newLic && targetUid) {
+            setSelectedUser((prev) => {
+              if (!prev || prev.uid !== targetUid) return prev;
+              const currentLicenses = prev.licenses || [];
+              const exists = currentLicenses.some((l) => l.gameId === newLic.gameId || l.id === newLic.id);
+              const updated = exists
+                ? currentLicenses.map((l) => (l.gameId === newLic.gameId || l.id === newLic.id ? newLic : l))
+                : [newLic, ...currentLicenses];
+              return {
+                ...prev,
+                licenses: updated,
+                claimedGamesCount: updated.length,
+                activeLicensesCount: updated.filter((l) => l.status === 'active').length,
+              };
+            });
+
+            setUsers((prevList) =>
+              prevList.map((u) => {
+                if (u.uid !== targetUid) return u;
+                const currentLicenses = u.licenses || [];
+                const exists = currentLicenses.some((l) => l.gameId === newLic.gameId || l.id === newLic.id);
+                const updated = exists
+                  ? currentLicenses.map((l) => (l.gameId === newLic.gameId || l.id === newLic.id ? newLic : l))
+                  : [newLic, ...currentLicenses];
+                return {
+                  ...u,
+                  licenses: updated,
+                  claimedGamesCount: updated.length,
+                  activeLicensesCount: updated.filter((l) => l.status === 'active').length,
+                };
+              })
+            );
+          }
           loadData(true);
         }}
         games={games}

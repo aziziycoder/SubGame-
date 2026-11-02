@@ -7,6 +7,7 @@ import {
   updateDoc,
   deleteDoc,
   query,
+  where,
   orderBy,
   writeBatch,
   serverTimestamp
@@ -403,7 +404,7 @@ export interface GrantLicenseParams {
  */
 export const grantLicenseToUser = async (
   params: GrantLicenseParams
-): Promise<{ success: boolean; licenseId?: string; error?: string }> => {
+): Promise<{ success: boolean; licenseId?: string; license?: GameLicense; error?: string }> => {
   try {
     const {
       userId,
@@ -426,6 +427,8 @@ export const grantLicenseToUser = async (
     const licenseId = `${userId}_${gameId}`;
     const licenseRef = doc(db, 'licenses', licenseId);
     const existingSnap = await getDoc(licenseRef);
+
+    let resultingLicense: GameLicense;
 
     if (existingSnap.exists()) {
       const data = existingSnap.data();
@@ -450,39 +453,94 @@ export const grantLicenseToUser = async (
         { merge: true }
       );
 
-      return { success: true, licenseId };
+      resultingLicense = {
+        ...data,
+        id: licenseId,
+        status: 'active',
+        paymentProvider,
+        paidAmount: typeof paidAmount === 'number' ? paidAmount : 0,
+        adminNote: adminNote || '',
+        grantedBy: grantedBy || 'Admin',
+        updatedAt: new Date().toISOString()
+      } as unknown as GameLicense;
+    } else {
+      // Create brand new license
+      const newLicense = {
+        id: licenseId,
+        userId,
+        userEmail: userEmail || '',
+        userName: userName || userEmail?.split('@')[0] || 'Foydalanuvchi',
+        userPhoto: userPhoto || null,
+        gameId,
+        gameTitle: gameTitle || 'Noma’lum o‘yin',
+        gameSlug: gameSlug || gameId,
+        status: 'active' as const,
+        hwid: null,
+        boundAt: null,
+        boundDeviceName: null,
+        paymentProvider,
+        paidAmount: typeof paidAmount === 'number' ? paidAmount : 0,
+        adminNote: adminNote || '',
+        grantedBy: grantedBy || 'Admin',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
+
+      await setDoc(licenseRef, newLicense);
+
+      resultingLicense = {
+        ...newLicense,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      } as unknown as GameLicense;
     }
 
-    // Create brand new license
-    const newLicense = {
-      id: licenseId,
-      userId,
-      userEmail: userEmail || '',
-      userName: userName || userEmail?.split('@')[0] || 'Foydalanuvchi',
-      userPhoto: userPhoto || null,
-      gameId,
-      gameTitle: gameTitle || 'Noma’lum o‘yin',
-      gameSlug: gameSlug || gameId,
-      status: 'active',
-      hwid: null,
-      boundAt: null,
-      boundDeviceName: null,
-      paymentProvider,
-      paidAmount: typeof paidAmount === 'number' ? paidAmount : 0,
-      adminNote: adminNote || '',
-      grantedBy: grantedBy || 'Admin',
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    };
+    // Sync to Django REST Backend so PostgreSQL / SQLite stays in sync
+    try {
+      await fetchFromBackend('api/v1/licenses/admin/', {
+        method: 'POST',
+        body: JSON.stringify({
+          userId,
+          userEmail,
+          userName,
+          userPhoto,
+          gameId,
+          gameTitle,
+          gameSlug,
+          paymentProvider,
+          paidAmount: typeof paidAmount === 'number' ? paidAmount : 0,
+          adminNote: adminNote || '',
+          grantedBy: grantedBy || 'Admin'
+        })
+      });
+    } catch (backendSyncErr) {
+      console.warn('[Backend] Django license grant sync warning (non-fatal):', backendSyncErr);
+    }
 
-    await setDoc(licenseRef, newLicense);
-
-    return { success: true, licenseId };
+    return { success: true, licenseId, license: resultingLicense };
   } catch (error: any) {
     console.error('Error granting license to user:', error);
     return {
       success: false,
       error: error?.message || 'Litsenziya berishda xatolik yuz berdi.'
     };
+  }
+};
+
+/**
+ * Fetch all active/revoked licenses for a specific user directly from Firestore.
+ */
+export const fetchUserLicensesFromFirestore = async (userId: string): Promise<GameLicense[]> => {
+  try {
+    const q = query(collection(db, 'licenses'), where('userId', '==', userId));
+    const snap = await getDocs(q);
+    const result: GameLicense[] = [];
+    snap.forEach((d) => {
+      result.push({ id: d.id, ...(d.data() as any) });
+    });
+    return result;
+  } catch (err) {
+    console.warn(`Failed to fetch licenses from Firestore for user ${userId}:`, err);
+    return [];
   }
 };

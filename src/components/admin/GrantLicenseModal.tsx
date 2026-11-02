@@ -13,14 +13,14 @@ import {
   RefreshCw
 } from 'lucide-react';
 import type { Game } from '../../types/game';
-import type { UserWithLicenses, UserProfile } from '../../types/auth';
+import type { UserWithLicenses, UserProfile, GameLicense } from '../../types/auth';
 import { grantLicenseToUser, getAllUsersWithLicenses } from '../../services/usersService';
 import { useAuth } from '../../context/AuthContext';
 
 interface GrantLicenseModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: (message: string) => void;
+  onSuccess: (message: string, license?: GameLicense, targetUserId?: string) => void;
   games: Game[];
   users?: UserWithLicenses[];
   preselectedUser?: UserWithLicenses | UserProfile | null;
@@ -176,7 +176,11 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
         return;
       }
 
-      onSuccess(`"${selectedGame.title}" litsenziyasi ${selectedUser.displayName || selectedUser.email} uchun muvaffaqiyatli berildi!`);
+      onSuccess(
+        `"${selectedGame.title}" litsenziyasi ${selectedUser.displayName || selectedUser.email} uchun muvaffaqiyatli berildi!`,
+        res.license,
+        selectedUser.uid
+      );
       onClose();
     } catch (err: any) {
       console.error('Error in grant license modal submit:', err);
