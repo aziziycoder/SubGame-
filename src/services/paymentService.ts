@@ -3,12 +3,12 @@ import { db } from './firebase';
 import type { Game } from '../types/game';
 import { fetchFromBackend } from './apiClient';
 
-// Click Merchant Settings (loaded via environment variables)
+// Click Merchant Settings (loaded via environment variables with safe production defaults)
 export const CLICK_CONFIG = {
-  serviceId: import.meta.env.VITE_CLICK_SERVICE_ID || '',
-  merchantId: import.meta.env.VITE_CLICK_MERCHANT_ID || '',
-  merchantUserId: import.meta.env.VITE_CLICK_MERCHANT_USER_ID || '',
-  isSandbox: import.meta.env.VITE_CLICK_SANDBOX === 'true' || !import.meta.env.VITE_CLICK_SERVICE_ID,
+  serviceId: import.meta.env.VITE_CLICK_SERVICE_ID || '114280',
+  merchantId: import.meta.env.VITE_CLICK_MERCHANT_ID || '46113',
+  merchantUserId: import.meta.env.VITE_CLICK_MERCHANT_USER_ID || '93476',
+  isSandbox: import.meta.env.VITE_CLICK_SANDBOX === 'true',
 };
 
 /**
