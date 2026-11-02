@@ -128,6 +128,8 @@ export async function createClickOrder({
     }>('api/v1/payments/order/', {
       method: 'POST',
       body: JSON.stringify({
+        userId,
+        userEmail,
         gameId: game.id,
         gameSlug: game.slug,
         amount: customAmount,
@@ -144,21 +146,25 @@ export async function createClickOrder({
   // Encode userId and gameId with '__' delimiter to ensure clean parsing in webhook
   const orderId = `${userId}__${game.slug || game.id}`;
 
-  // 1. Create order record in Firestore
-  const orderRef = doc(db, 'orders', orderId);
-  await setDoc(orderRef, {
-    orderId,
-    userId,
-    userEmail: userEmail || '',
-    gameId: game.id,
-    gameTitle: game.title,
-    gameSlug: game.slug,
-    amount,
-    currency: 'UZS',
-    status: 'pending',
-    paymentProvider: 'click',
-    createdAt: serverTimestamp(),
-  });
+  // 1. Create order record in Firestore (with graceful try-catch so permission errors don't block payment)
+  try {
+    const orderRef = doc(db, 'orders', orderId);
+    await setDoc(orderRef, {
+      orderId,
+      userId,
+      userEmail: userEmail || '',
+      gameId: game.id,
+      gameTitle: game.title,
+      gameSlug: game.slug,
+      amount,
+      currency: 'UZS',
+      status: 'pending',
+      paymentProvider: 'click',
+      createdAt: serverTimestamp(),
+    }, { merge: true });
+  } catch (firestoreErr) {
+    console.warn('[Firestore] Order creation fallback warning (proceeding to Click gateway):', firestoreErr);
+  }
 
   // 2. Return URL where Click redirects the user after payment
   const returnUrl = `${window.location.origin}/games/${game.slug}?payment=success&orderId=${orderId}`;

@@ -2,7 +2,11 @@
  * Central API Client for SubGame Backend (Django REST Framework / PostgreSQL)
  */
 export const BACKEND_API_URL =
-  import.meta.env.VITE_BACKEND_API_URL || 'https://api.subgame.uz';
+  import.meta.env.VITE_BACKEND_API_URL ||
+  (typeof window !== 'undefined' &&
+  (window.location.hostname === 'subgame.uz' || window.location.hostname.endsWith('.subgame.uz'))
+    ? ''
+    : 'https://api.subgame.uz');
 
 export function getAccessToken(): string | null {
   return localStorage.getItem('subgame_access_token');
