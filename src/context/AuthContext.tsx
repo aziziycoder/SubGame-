@@ -21,6 +21,7 @@ import { fetchFromBackend, setTokens, clearTokens } from '../services/apiClient'
 
 export const ADMIN_EMAILS = [
   'azizbekgulomovweb@gmail.com',
+  'azizbekgulomovcoder@gmail.com',
   'imuz21029@gmail.com'
 ];
 

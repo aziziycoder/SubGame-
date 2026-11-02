@@ -30,7 +30,31 @@ export async function fetchFromBackend<T = any>(
 ): Promise<T | null> {
   try {
     const url = `${BACKEND_API_URL.replace(/\/+$/, '')}/${endpoint.replace(/^\/+/, '')}`;
-    const token = getAccessToken();
+    let token = getAccessToken();
+
+    // If no JWT token is stored, attempt auto-exchange from active Firebase user
+    if (!token && typeof window !== 'undefined') {
+      try {
+        const { auth } = await import('./firebase');
+        if (auth.currentUser) {
+          const idToken = await auth.currentUser.getIdToken();
+          const exchangeRes = await fetch(`${BACKEND_API_URL.replace(/\/+$/, '')}/api/v1/auth/google/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_token: idToken }),
+          });
+          if (exchangeRes.ok) {
+            const authData = await exchangeRes.json();
+            if (authData.access) {
+              setTokens(authData.access, authData.refresh);
+              token = authData.access;
+            }
+          }
+        }
+      } catch (autoAuthErr) {
+        console.warn('[Backend API] Auto token exchange skipped:', autoAuthErr);
+      }
+    }
 
     const headers: Record<string, string> = {
       Accept: 'application/json',
@@ -42,7 +66,7 @@ export async function fetchFromBackend<T = any>(
     const res = await fetch(url, { ...options, headers });
 
     // Handle token expiration: attempt refresh once if 401
-    if (res.status === 401 && token) {
+    if (res.status === 401) {
       const refreshToken = localStorage.getItem('subgame_refresh_token');
       if (refreshToken) {
         try {
@@ -66,6 +90,33 @@ export async function fetchFromBackend<T = any>(
           clearTokens();
         }
       }
+
+      // If refresh failed or was absent, try one-time Firebase ID token re-exchange
+      try {
+        const { auth } = await import('./firebase');
+        if (auth.currentUser) {
+          const idToken = await auth.currentUser.getIdToken(true);
+          const exchangeRes = await fetch(`${BACKEND_API_URL.replace(/\/+$/, '')}/api/v1/auth/google/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_token: idToken }),
+          });
+          if (exchangeRes.ok) {
+            const authData = await exchangeRes.json();
+            if (authData.access) {
+              setTokens(authData.access, authData.refresh);
+              headers['Authorization'] = `Bearer ${authData.access}`;
+              const retryRes = await fetch(url, { ...options, headers });
+              if (retryRes.ok) {
+                return await retryRes.json();
+              }
+            }
+          }
+        }
+      } catch (retryExchangeErr) {
+        console.warn('[Backend API] Firebase re-exchange failed:', retryExchangeErr);
+      }
+
       return null;
     }
 
