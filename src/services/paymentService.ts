@@ -143,8 +143,9 @@ export async function createClickOrder({
   }
 
   const amount = customAmount ?? (parseGamePrice(game.subtitlePrice) || parseGamePrice(game.price) || 15000);
-  // Encode userId and gameId with '__' delimiter to ensure clean parsing in webhook
-  const orderId = `${userId}__${game.slug || game.id}`;
+  // Click limits merchant_trans_id to 50 characters: userId(28) + __(2) + slug(max 18) = 48 chars
+  const cleanSlug = (game.slug || game.id).substring(0, 18);
+  const orderId = `${userId}__${cleanSlug}`;
 
   // 1. Create order record in Firestore (with graceful try-catch so permission errors don't block payment)
   try {
