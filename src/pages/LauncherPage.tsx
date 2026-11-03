@@ -66,7 +66,7 @@ export const LauncherPage: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#A3E635]/15 border border-[#A3E635]/40 text-[#A3E635] text-xs font-semibold mb-6 shadow-sm">
             <Sparkles className="w-4 h-4" />
-            <span>Rasmiy Windows Dasturi • Versiya 1.2.0</span>
+            <span>Rasmiy Windows Dasturi • Versiya 1.3.0</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-6">
@@ -79,7 +79,7 @@ export const LauncherPage: React.FC = () => {
 
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#141821] border border-[#A3E635]/30 text-xs text-gray-300 mb-8 shadow-sm">
             <CheckCircle2 className="w-4 h-4 text-[#A3E635] shrink-0" />
-            <span>Yangi v1.2.0: Subtitrlar avtomatik tekshiruvi va o‘yindan oldin yangilash tizimi qo‘shildi</span>
+            <span>Yangi v1.3.0: Litsenziya tekshiruvi kuchaytirildi, qurilmani almashtirish osonlashdi</span>
           </div>
 
           {/* Download Action */}

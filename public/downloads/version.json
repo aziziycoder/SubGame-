@@ -1,9 +1,9 @@
 {
-  "version": "1.2.1",
+  "version": "1.3.0",
   "downloadUrl": "https://www.subgame.uz/downloads/SubGame-Launcher.exe",
   "patchUrl": "https://www.subgame.uz/downloads/update-bundle.zip",
-  "patchSize": "940 KB",
-  "minRequiredVersion": "1.2.1",
-  "changelog": "Subtitrlar avtomatik tekshiruvi qo'shildi va launcher yangilanishlari majburiy qilindi.",
-  "releaseDate": "2026-11-01"
+  "patchSize": "777 KB",
+  "minRequiredVersion": "1.3.0",
+  "changelog": "Litsenziya tekshiruvi kuchaytirildi: admin qurilmani uzsa, darhol kuchga kiradi. Yangilangandan keyin launcherga qayta kirish kerak bo'ladi.",
+  "releaseDate": "2026-11-03"
 }
