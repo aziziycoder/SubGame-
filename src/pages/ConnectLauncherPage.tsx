@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../services/firebase';
+import { apiRequest } from '../services/apiClient';
 import {
   Laptop,
   CheckCircle2,
@@ -16,7 +15,7 @@ export const ConnectLauncherPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const urlCode = searchParams.get('code') || '';
   const [code, setCode] = useState(urlCode);
-  const { user, signInWithGoogle, isAdmin, userProfile } = useAuth();
+  const { user, signInWithGoogle } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [approved, setApproved] = useState(false);
@@ -46,35 +45,9 @@ export const ConnectLauncherPage: React.FC = () => {
     setError(null);
 
     try {
-      const cleanCode = code.trim();
-      const sessionRef = doc(db, 'device_sessions', cleanCode);
-      const sessionSnap = await getDoc(sessionRef);
-
-      if (!sessionSnap.exists()) {
-        setError('Ushbu ulanish kodi topilmadi yoki muddati tugagan. Launcherdan qayta urinib ko‘ring.');
-        setLoading(false);
-        return;
-      }
-
-      const sessionData = sessionSnap.data();
-      if (sessionData.status !== 'pending') {
-        setError('Ushbu kod allaqachon ishlatilgan.');
-        setLoading(false);
-        return;
-      }
-
-      // Approve session with user credentials
-      const currentUser = user!;
-      await updateDoc(sessionRef, {
-        status: 'approved',
-        userData: {
-          uid: currentUser.uid,
-          email: currentUser.email || '',
-          displayName: currentUser.displayName || 'SubGame Foydalanuvchisi',
-          photoURL: currentUser.photoURL || '',
-          role: userProfile?.role || (isAdmin ? 'admin' : 'user'),
-          isAdmin: Boolean(isAdmin),
-        },
+      await apiRequest('api/v1/licenses/device/approve/', {
+        method: 'POST',
+        body: JSON.stringify({ code: code.trim() }),
       });
 
       setApproved(true);

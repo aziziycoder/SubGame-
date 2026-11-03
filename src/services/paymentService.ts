@@ -1,7 +1,5 @@
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from './firebase';
 import type { Game } from '../types/game';
-import { fetchFromBackend } from './apiClient';
+import { apiRequest } from './apiClient';
 
 // Click Merchant Settings (loaded via environment variables with safe production defaults)
 export const CLICK_CONFIG = {
@@ -96,10 +94,7 @@ export function getGamePriceInfo(game: Game): GamePriceInfo {
 }
 
 export interface CreateOrderParams {
-  userId: string;
-  userEmail: string;
   game: Game;
-  customAmount?: number;
 }
 
 export interface CreateOrderResult {
@@ -110,105 +105,15 @@ export interface CreateOrderResult {
 }
 
 /**
- * Creates an order in Firestore `orders` and returns the official Click checkout redirect URL.
+ * Creates an order on the backend and returns the official Click checkout redirect URL.
+ * The backend takes the buyer from the JWT and the price from the game record.
  */
-export async function createClickOrder({
-  userId,
-  userEmail,
-  game,
-  customAmount,
-}: CreateOrderParams): Promise<CreateOrderResult> {
-  // 1. Try Backend order creation first
-  try {
-    const backendRes = await fetchFromBackend<{
-      orderId: string;
-      amount: number;
-      clickUrl: string;
-      isSandbox: boolean;
-    }>('api/v1/payments/order/', {
-      method: 'POST',
-      body: JSON.stringify({
-        userId,
-        userEmail,
-        gameId: game.id,
-        gameSlug: game.slug,
-        amount: customAmount,
-      }),
-    });
-    if (backendRes && backendRes.clickUrl) {
-      return backendRes;
-    }
-  } catch (err) {
-    console.warn('[Backend] Order creation via backend failed, using fallback:', err);
-  }
-
-  const amount = customAmount ?? (parseGamePrice(game.subtitlePrice) || parseGamePrice(game.price) || 15000);
-  // Click limits merchant_trans_id to 50 characters: userId(28) + __(2) + slug(max 18) = 48 chars
-  const cleanSlug = (game.slug || game.id).substring(0, 18);
-  const orderId = `${userId}__${cleanSlug}`;
-
-  // 1. Create order record in Firestore (with graceful try-catch so permission errors don't block payment)
-  try {
-    const orderRef = doc(db, 'orders', orderId);
-    await setDoc(orderRef, {
-      orderId,
-      userId,
-      userEmail: userEmail || '',
+export async function createClickOrder({ game }: CreateOrderParams): Promise<CreateOrderResult> {
+  return apiRequest<CreateOrderResult>('api/v1/payments/order/create/', {
+    method: 'POST',
+    body: JSON.stringify({
       gameId: game.id,
-      gameTitle: game.title,
       gameSlug: game.slug,
-      amount,
-      currency: 'UZS',
-      status: 'pending',
-      paymentProvider: 'click',
-      createdAt: serverTimestamp(),
-    }, { merge: true });
-  } catch (firestoreErr) {
-    console.warn('[Firestore] Order creation fallback warning (proceeding to Click gateway):', firestoreErr);
-  }
-
-  // 2. Return URL where Click redirects the user after payment
-  const returnUrl = `${window.location.origin}/games/${game.slug}?payment=success&orderId=${orderId}`;
-
-  // 3. Build Click Checkout URL
-  // https://my.click.uz/services/pay?service_id=...&merchant_id=...&amount=...&transaction_param=...&return_url=...
-  const clickUrl = `https://my.click.uz/services/pay?service_id=${CLICK_CONFIG.serviceId}&merchant_id=${CLICK_CONFIG.merchantId}&amount=${amount}&transaction_param=${orderId}&return_url=${encodeURIComponent(returnUrl)}`;
-
-  return {
-    orderId,
-    amount,
-    clickUrl,
-    isSandbox: CLICK_CONFIG.isSandbox || CLICK_CONFIG.serviceId === 'TEST_SERVICE_ID',
-  };
-}
-
-/**
- * Simulates a successful test payment in sandbox/dev mode without requiring a real Click merchant contract.
- */
-export async function simulateSandboxPayment(orderId: string): Promise<boolean> {
-  try {
-    const res = await fetch('/api/click', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        click_trans_id: `SIM_${Date.now()}`,
-        service_id: CLICK_CONFIG.serviceId,
-        click_paydoc_id: `DOC_${Date.now()}`,
-        merchant_trans_id: orderId,
-        merchant_prepare_id: orderId,
-        amount: 15000,
-        action: 1, // Complete
-        error: 0,
-        error_note: 'Sandbox Simulation Success',
-        sign_time: new Date().toISOString().replace('T', ' ').substring(0, 19),
-        sign_string: 'sandbox_bypass',
-      }),
-    });
-
-    const data = await res.json();
-    return data.error === 0;
-  } catch (err) {
-    console.error('Failed to simulate sandbox payment:', err);
-    return false;
-  }
+    }),
+  });
 }

@@ -36,7 +36,7 @@ export const CatalogPage: React.FC = () => {
   const genreScrollRef = useRef<HTMLDivElement>(null);
   const gamesGridRef = useRef<HTMLDivElement>(null);
 
-  // Load games dynamically from Firestore database
+  // Load games dynamically from the backend
   useEffect(() => {
     let isMounted = true;
     getGames()
@@ -75,7 +75,7 @@ export const CatalogPage: React.FC = () => {
     }
   }, [searchParams]);
 
-  // 1. Dynamically extract all unique genres directly from Firestore database
+  // 1. Dynamically extract all unique genres directly from the backend
   const dynamicGenres = useMemo(() => {
     const counts: Record<string, number> = {};
     (games || []).forEach((g) => {

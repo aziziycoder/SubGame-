@@ -1,8 +1,8 @@
 import type { Game } from '../types/game';
 
 /**
- * Boshlang'ich o'yinlar zaxira ma'lumotlari (Faqat Firestore admin sinxronizatsiyasi uchun).
- * Ushbu ma'lumotlar to'g'ridan-to'g'ri UI-da ishlatilmaydi, o'yinlar to'liq Firestoredan olinadi.
+ * Boshlang'ich o'yinlar zaxira ma'lumotlari (Faqat admin sinxronizatsiyasi uchun).
+ * Ushbu ma'lumotlar to'g'ridan-to'g'ri UI-da ishlatilmaydi, o'yinlar to'liq backenddan olinadi.
  */
 export const INITIAL_GAMES_SEED: Game[] = [
   {

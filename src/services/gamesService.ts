@@ -1,24 +1,9 @@
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  setDoc,
-  deleteDoc,
-  query,
-  where,
-  orderBy,
-  serverTimestamp
-} from 'firebase/firestore';
-import { db } from './firebase';
 import type { Game } from '../types/game';
 import { INITIAL_GAMES_SEED } from '../data/initialGamesSeed';
-import { fetchFromBackend } from './apiClient';
-
-const GAMES_COLLECTION = 'games';
+import { apiRequest, fetchFromBackend } from './apiClient';
 
 /**
- * Remove undefined values so Firestore does not reject the document write.
+ * Remove undefined values before sending a game to the backend.
  */
 function cleanGameData(data: Record<string, any>): Record<string, any> {
   const cleaned: Record<string, any> = {};
@@ -123,217 +108,99 @@ export function normalizeGameData(game: Game): Game {
 }
 
 /**
- * Fetch all games purely from Firestore collection 'games'.
- * No static code fallback; 100% dynamic from the database.
+ * Fetch all games from the backend, falling back to the bundled seed when it is unreachable.
  */
 export async function getGames(): Promise<Game[]> {
-  // 1. Try fetching from Django REST Backend first
-  try {
-    const backendGames = await fetchFromBackend<Game[]>('api/v1/games/');
-    if (backendGames && Array.isArray(backendGames) && backendGames.length > 0) {
-      return backendGames.map((g) => normalizeGameData(g));
-    }
-  } catch (backendErr) {
-    console.warn('[Backend] Could not reach Django backend, checking Firestore fallback:', backendErr);
+  const backendGames = await fetchFromBackend<Game[]>('api/v1/games/');
+  if (backendGames && Array.isArray(backendGames) && backendGames.length > 0) {
+    return backendGames.map((g) => normalizeGameData(g));
   }
 
-  // 2. Fallback to Firestore
-  try {
-    const gamesRef = collection(db, GAMES_COLLECTION);
-    const q = query(gamesRef, orderBy('releaseYear', 'desc'));
-    const snapshot = await getDocs(q);
-
-    const firestoreGames: Game[] = [];
-    if (!snapshot.empty) {
-      snapshot.forEach((docSnap) => {
-        const data = docSnap.data() as Game;
-        firestoreGames.push(
-          normalizeGameData({
-            ...data,
-            id: docSnap.id
-          })
-        );
-      });
-    }
-
-    if (firestoreGames.length > 0) {
-      return firestoreGames;
-    }
-  } catch (error) {
-    console.warn('Failed to fetch games from Firestore, falling back to initial seed:', error);
-  }
-
-  // 3. Ultimate Fallback to Initial Seed
   return INITIAL_GAMES_SEED.map((g) => normalizeGameData(g));
 }
 
 /**
- * Fetch a single game by slug or id directly from Firestore or Django Backend.
+ * Fetch a single game by slug or id.
  */
 export async function getGameBySlug(slug: string): Promise<Game | undefined> {
-  // 1. Try fetching from Django Backend first
-  try {
-    const backendGame = await fetchFromBackend<Game>(`api/v1/games/${slug}/`);
-    if (backendGame && backendGame.title) {
-      return normalizeGameData(backendGame);
-    }
-  } catch {
-    // ignore
+  const backendGame = await fetchFromBackend<Game>(`api/v1/games/${slug}/`);
+  if (backendGame && backendGame.title) {
+    return normalizeGameData(backendGame);
   }
-
-  // 2. Fallback to Firestore
-  try {
-    // Direct document lookup by ID
-    const directDocRef = doc(db, GAMES_COLLECTION, slug);
-    const directSnap = await getDoc(directDocRef);
-    if (directSnap.exists()) {
-      return normalizeGameData({
-        ...(directSnap.data() as Game),
-        id: directSnap.id
-      });
-    }
-
-    // 2. Query where 'slug' == slug
-    const gamesRef = collection(db, GAMES_COLLECTION);
-    const q = query(gamesRef, where('slug', '==', slug));
-    const snapshot = await getDocs(q);
-    if (!snapshot.empty) {
-      const docSnap = snapshot.docs[0];
-      return normalizeGameData({
-        ...(docSnap.data() as Game),
-        id: docSnap.id
-      });
-    }
-
-    return undefined;
-  } catch (error) {
-    console.error(`Failed to get game by slug "${slug}" from Firestore:`, error);
-    return undefined;
-  }
+  return undefined;
 }
 
 /**
- * Create a new game in Backend & Firestore.
+ * Create a new game.
  */
 export async function createGame(gameData: Game): Promise<{ success: boolean; id: string; error?: string }> {
   const docId = gameData.slug || gameData.id || `game_${Date.now()}`;
-  const payload = cleanGameData({
-    ...gameData,
-    id: docId,
-  });
 
-  // 1. Try creating in Django REST Backend
   try {
-    const res = await fetchFromBackend<{ id?: string }>('api/v1/games/admin/manage/', {
+    const res = await apiRequest<{ id: string }>('api/v1/games/admin/manage/', {
       method: 'POST',
-      body: JSON.stringify(payload),
+      body: JSON.stringify(cleanGameData({ ...gameData, id: docId })),
     });
-    if (res && res.id) {
-      // Also update Firestore in background
-      setDoc(doc(db, GAMES_COLLECTION, docId), { ...payload, createdAt: serverTimestamp(), updatedAt: serverTimestamp() }, { merge: true }).catch(() => {});
-      return { success: true, id: res.id };
-    }
-  } catch (backendErr) {
-    console.warn('[Backend] Create game backend warning:', backendErr);
-  }
-
-  // 2. Fallback to Firestore
-  try {
-    const gameRef = doc(db, GAMES_COLLECTION, docId);
-    await setDoc(gameRef, {
-      ...payload,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    }, { merge: true });
-    return { success: true, id: docId };
+    return { success: true, id: res.id };
   } catch (error: any) {
-    console.error('Error creating game in Firestore:', error);
+    console.error('Error creating game:', error);
     return { success: false, id: '', error: error?.message || 'Noma‘lum xatolik' };
   }
 }
 
 /**
- * Update an existing game in Backend & Firestore.
+ * Update an existing game.
  */
 export async function updateGame(id: string, gameData: Partial<Game>): Promise<{ success: boolean; error?: string }> {
-  const cleaned = cleanGameData(gameData);
-
-  // 1. Try updating in Django REST Backend
   try {
-    const res = await fetchFromBackend<{ id?: string }>(`api/v1/games/admin/manage/${id}/`, {
+    await apiRequest(`api/v1/games/admin/manage/${id}/`, {
       method: 'PUT',
-      body: JSON.stringify(cleaned),
+      body: JSON.stringify(cleanGameData(gameData)),
     });
-    if (res) {
-      // Also update Firestore in background
-      setDoc(doc(db, GAMES_COLLECTION, id), { ...cleaned, updatedAt: serverTimestamp() }, { merge: true }).catch(() => {});
-      return { success: true };
-    }
-  } catch (backendErr) {
-    console.warn('[Backend] Update game backend warning:', backendErr);
-  }
-
-  // 2. Fallback to Firestore
-  try {
-    const gameRef = doc(db, GAMES_COLLECTION, id);
-    await setDoc(gameRef, {
-      ...cleaned,
-      updatedAt: serverTimestamp(),
-    }, { merge: true });
     return { success: true };
   } catch (error: any) {
-    console.error('Error updating game in Firestore:', error);
+    console.error('Error updating game:', error);
     return { success: false, error: error?.message || 'Noma‘lum xatolik' };
   }
 }
 
 /**
- * Delete a game from Backend & Firestore.
+ * Delete a game.
  */
 export async function deleteGame(id: string): Promise<{ success: boolean; error?: string }> {
-  // 1. Try deleting in Django REST Backend
   try {
-    await fetchFromBackend(`api/v1/games/admin/manage/${id}/`, {
+    await apiRequest(`api/v1/games/admin/manage/${id}/`, {
       method: 'DELETE',
     });
-  } catch (backendErr) {
-    console.warn('[Backend] Delete game backend warning:', backendErr);
-  }
-
-  // 2. Also delete from Firestore
-  try {
-    const gameRef = doc(db, GAMES_COLLECTION, id);
-    await deleteDoc(gameRef);
     return { success: true };
   } catch (error: any) {
-    console.error('Error deleting game from Firestore:', error);
+    console.error('Error deleting game:', error);
     return { success: false, error: error?.message || 'Noma‘lum xatolik' };
   }
 }
 
 /**
- * Seed / Sync initial games into Firestore for the admin panel.
- * Reads from INITIAL_GAMES_SEED and writes missing games into Firestore.
+ * Seed / Sync initial games into the backend for the admin panel.
+ * Reads from INITIAL_GAMES_SEED and creates the games that are missing.
  */
 export async function syncInitialGames(forceOverwrite = false): Promise<{ success: boolean; count: number; error?: string }> {
   try {
+    const existing = await apiRequest<Game[]>('api/v1/games/');
+    const existingIds = new Set(existing.map((g) => g.id));
+
     let count = 0;
     for (const game of INITIAL_GAMES_SEED) {
-      const gameRef = doc(db, GAMES_COLLECTION, game.id);
-      const existingSnap = await getDoc(gameRef);
-      if (!existingSnap.exists() || forceOverwrite) {
-        const payload = cleanGameData({
-          ...game,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
-        await setDoc(gameRef, payload, { merge: true });
+      if (!existingIds.has(game.id)) {
+        await apiRequest('api/v1/games/admin/manage/', { method: 'POST', body: JSON.stringify(cleanGameData(game)) });
+        count++;
+      } else if (forceOverwrite) {
+        await apiRequest(`api/v1/games/admin/manage/${game.id}/`, { method: 'PUT', body: JSON.stringify(cleanGameData(game)) });
         count++;
       }
     }
     return { success: true, count };
   } catch (error: any) {
-    console.error('Error syncing initial games to Firestore:', error);
+    console.error('Error syncing initial games:', error);
     return { success: false, count: 0, error: error?.message || 'Noma‘lum xatolik' };
   }
 }

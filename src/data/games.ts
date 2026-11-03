@@ -1,7 +1,7 @@
 import type { Game } from '../types/game';
 
 /**
- * Barcha o‘yinlar to‘g‘ridan-to‘g‘ri Firebase Firestore bazasidan (collection: 'games') dinamik olinadi.
+ * Barcha o‘yinlar to‘g‘ridan-to‘g‘ri backend bazasidan (collection: 'games') dinamik olinadi.
  * Kod ichidagi statik massiv to‘liq olib tashlangan.
  */
 export const GAMES_DATA: Game[] = [];

@@ -20,7 +20,7 @@ import {
 import type { HeroSlide } from '../../types/slider';
 import type { Game } from '../../types/game';
 import {
-  getSliders,
+  getAdminSliders,
   createSlider,
   updateSlider,
   deleteSlider,
@@ -70,7 +70,7 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
   const loadSliders = async () => {
     setLoading(true);
     try {
-      const data = await getSliders();
+      const data = await getAdminSliders();
       // sort by order ascending
       const sorted = [...data].sort((a, b) => (a.order || 99) - (b.order || 99));
       setSliders(sorted);
@@ -271,7 +271,7 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
             onClick={handleSync}
             disabled={syncing}
             className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#0B0D12] hover:bg-[#1A202C] text-gray-300 hover:text-white border border-[#2A3245] text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
-            title="Boshlang‘ich slayderlarni Firestore bazasiga ko‘chirish"
+            title="Boshlang‘ich slayderlarni bazaga ko‘chirish"
           >
             <RefreshCw className={`w-4 h-4 text-[#A3E635] ${syncing ? 'animate-spin' : ''}`} />
             <span>{syncing ? 'Yuklanmoqda...' : 'Standart Slayderlarni Tiklash'}</span>

@@ -1,19 +1,7 @@
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  setDoc,
-  deleteDoc,
-  query,
-  orderBy,
-  serverTimestamp
-} from 'firebase/firestore';
-import { db } from './firebase';
 import type { HeroSlide } from '../types/slider';
 import { INITIAL_SLIDES } from '../data/sliders';
+import { apiRequest, fetchFromBackend } from './apiClient';
 
-const SLIDERS_COLLECTION = 'sliders';
 const CACHE_KEY = 'subgame_cached_sliders';
 
 /**
@@ -42,7 +30,7 @@ export function setCachedSliders(slides: HeroSlide[]): void {
 }
 
 /**
- * Remove undefined values so Firestore does not reject the document write.
+ * Remove undefined values before sending a slide to the backend.
  */
 function cleanSliderData(data: Record<string, any>): Record<string, any> {
   const cleaned: Record<string, any> = {};
@@ -59,140 +47,114 @@ function cleanSliderData(data: Record<string, any>): Record<string, any> {
 }
 
 /**
- * Fetch all hero sliders from Firestore.
- * Falls back to INITIAL_SLIDES if Firestore is empty or fails.
+ * Fetch the active hero sliders for the public site.
+ * Falls back to the cache, then INITIAL_SLIDES, if the backend is empty or fails.
  */
 export async function getSliders(): Promise<HeroSlide[]> {
-  try {
-    const slidersRef = collection(db, SLIDERS_COLLECTION);
-    const q = query(slidersRef, orderBy('order', 'asc'));
-    const snapshot = await getDocs(q);
-
-    if (!snapshot.empty) {
-      const slides: HeroSlide[] = [];
-      snapshot.forEach((docSnap) => {
-        const data = docSnap.data() as HeroSlide;
-        slides.push({
-          ...data,
-          id: docSnap.id
-        });
-      });
-      setCachedSliders(slides);
-      return slides;
-    }
-
-    const cached = getCachedSliders();
-    if (cached) return cached;
-    return INITIAL_SLIDES;
-  } catch (error) {
-    console.warn('Failed to fetch sliders from Firestore, falling back to initial data:', error);
-    const cached = getCachedSliders();
-    if (cached) return cached;
-    return INITIAL_SLIDES;
+  const slides = await fetchFromBackend<HeroSlide[]>('api/v1/games/sliders/');
+  if (slides && slides.length > 0) {
+    setCachedSliders(slides);
+    return slides;
   }
+
+  return getCachedSliders() || INITIAL_SLIDES;
 }
 
 /**
- * Create or overwrite a slider in Firestore.
+ * Fetch every slider, including hidden ones, for the admin panel.
+ */
+export async function getAdminSliders(): Promise<HeroSlide[]> {
+  const slides = await apiRequest<HeroSlide[]>('api/v1/games/admin/sliders/');
+  return slides.length > 0 ? slides : INITIAL_SLIDES;
+}
+
+/**
+ * Create a slider.
  */
 export async function createSlider(slideData: HeroSlide): Promise<{ success: boolean; id: string; error?: string }> {
   try {
     const docId = slideData.id || slideData.slug || `slide_${Date.now()}`;
-    const slideRef = doc(db, SLIDERS_COLLECTION, docId);
 
-    const payload = cleanSliderData({
-      ...slideData,
-      id: docId,
-      order: slideData.order || 99,
-      isActive: slideData.isActive !== false,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+    const created = await apiRequest<HeroSlide>('api/v1/games/admin/sliders/', {
+      method: 'POST',
+      body: JSON.stringify(cleanSliderData({
+        ...slideData,
+        id: docId,
+        order: slideData.order || 99,
+        isActive: slideData.isActive !== false,
+      })),
     });
 
-    await setDoc(slideRef, payload, { merge: true });
     const cached = getCachedSliders() || [];
-    const idx = cached.findIndex((s) => s.id === docId);
-    if (idx >= 0) {
-      cached[idx] = { ...cached[idx], ...payload };
-    } else {
-      cached.push(payload as HeroSlide);
-    }
-    setCachedSliders(cached);
+    setCachedSliders([...cached.filter((s) => s.id !== docId), created]);
     return { success: true, id: docId };
   } catch (error: any) {
-    console.error('Error creating slider in Firestore:', error);
+    console.error('Error creating slider:', error);
     return { success: false, id: '', error: error?.message || 'Noma‘lum xatolik' };
   }
 }
 
 /**
- * Update an existing slider in Firestore.
+ * Update an existing slider.
  */
 export async function updateSlider(id: string, slideData: Partial<HeroSlide>): Promise<{ success: boolean; error?: string }> {
   try {
-    const slideRef = doc(db, SLIDERS_COLLECTION, id);
-    const cleaned = cleanSliderData({
-      ...slideData,
-      updatedAt: serverTimestamp()
+    const updated = await apiRequest<HeroSlide>(`api/v1/games/admin/sliders/${id}/`, {
+      method: 'PUT',
+      body: JSON.stringify(cleanSliderData(slideData)),
     });
-    await setDoc(slideRef, cleaned, { merge: true });
+
     const cached = getCachedSliders();
     if (cached) {
-      const idx = cached.findIndex((s) => s.id === id);
-      if (idx >= 0) {
-        cached[idx] = { ...cached[idx], ...cleaned };
-        setCachedSliders(cached);
-      }
+      setCachedSliders(cached.map((s) => (s.id === id ? updated : s)));
     }
     return { success: true };
   } catch (error: any) {
-    console.error('Error updating slider in Firestore:', error);
+    console.error('Error updating slider:', error);
     return { success: false, error: error?.message || 'Noma‘lum xatolik' };
   }
 }
 
 /**
- * Delete a slider from Firestore.
+ * Delete a slider.
  */
 export async function deleteSlider(id: string): Promise<{ success: boolean; error?: string }> {
   try {
-    const slideRef = doc(db, SLIDERS_COLLECTION, id);
-    await deleteDoc(slideRef);
+    await apiRequest(`api/v1/games/admin/sliders/${id}/`, { method: 'DELETE' });
+
     const cached = getCachedSliders();
     if (cached) {
-      const updated = cached.filter((s) => s.id !== id);
-      setCachedSliders(updated);
+      setCachedSliders(cached.filter((s) => s.id !== id));
     }
     return { success: true };
   } catch (error: any) {
-    console.error('Error deleting slider from Firestore:', error);
+    console.error('Error deleting slider:', error);
     return { success: false, error: error?.message || 'Noma‘lum xatolik' };
   }
 }
 
 /**
- * Seed / Sync initial sliders from INITIAL_SLIDES into Firestore.
+ * Seed / Sync initial sliders from INITIAL_SLIDES into the backend.
  * Does not overwrite existing sliders unless forceOverwrite is true, preserving admin edits.
  */
 export async function syncInitialSliders(forceOverwrite = false): Promise<{ success: boolean; count: number; error?: string }> {
   try {
+    const existing = await apiRequest<HeroSlide[]>('api/v1/games/admin/sliders/');
+    const existingIds = new Set(existing.map((s) => s.id));
+
     let count = 0;
     for (const slide of INITIAL_SLIDES) {
-      const slideRef = doc(db, SLIDERS_COLLECTION, slide.id);
-      const existingSnap = await getDoc(slideRef);
-      if (!existingSnap.exists() || forceOverwrite) {
-        const payload = cleanSliderData({
-          ...slide,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
-        await setDoc(slideRef, payload, { merge: true });
+      if (!existingIds.has(slide.id)) {
+        await apiRequest('api/v1/games/admin/sliders/', { method: 'POST', body: JSON.stringify(cleanSliderData(slide)) });
+        count++;
+      } else if (forceOverwrite) {
+        await apiRequest(`api/v1/games/admin/sliders/${slide.id}/`, { method: 'PUT', body: JSON.stringify(cleanSliderData(slide)) });
         count++;
       }
     }
     return { success: true, count };
   } catch (error: any) {
-    console.error('Error syncing initial sliders to Firestore:', error);
+    console.error('Error syncing initial sliders:', error);
     return { success: false, count: 0, error: error?.message || 'Noma‘lum xatolik' };
   }
 }

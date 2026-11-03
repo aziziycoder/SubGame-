@@ -20,21 +20,18 @@ import {
   RotateCcw,
   ChevronLeft,
   ChevronRight,
-  Trash2,
   KeyRound,
   Download
 } from 'lucide-react';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
-import { db } from '../../services/firebase';
+import { fetchFromBackend } from '../../services/apiClient';
 import type { Game } from '../../types/game';
-import type { UserWithLicenses, UserRole, GameLicense } from '../../types/auth';
+import type { UserWithLicenses, UserRole } from '../../types/auth';
 import {
   getAllUsersWithLicenses,
   updateUserRole,
   resetLicenseHwid,
   toggleLicenseStatus,
   deleteLicense,
-  cleanupOrphanedLicenses,
   type UserStats
 } from '../../services/usersService';
 import { ADMIN_EMAILS } from '../../context/AuthContext';
@@ -54,7 +51,6 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
     orphanedLicensesCount: 0,
     rawLicensesCount: 0,
   });
-  const [cleaningOrphans, setCleaningOrphans] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -106,65 +102,6 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
     loadData();
   }, []);
 
-  // Real-time listener for the currently selected user's licenses in Firestore
-  // Ensures any newly granted, toggled, or reset licenses appear immediately
-  useEffect(() => {
-    if (!isDetailModalOpen || !selectedUser?.uid) return;
-
-    try {
-      const q = query(collection(db, 'licenses'), where('userId', '==', selectedUser.uid));
-      const unsubscribe = onSnapshot(
-        q,
-        (snap) => {
-          const freshLicenses: GameLicense[] = [];
-          snap.forEach((docSnap) => {
-            freshLicenses.push({ id: docSnap.id, ...(docSnap.data() as any) });
-          });
-
-          // Sort latest first
-          freshLicenses.sort((a, b) => {
-            const timeA = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : a.createdAt ? new Date(a.createdAt).getTime() : 0;
-            const timeB = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : b.createdAt ? new Date(b.createdAt).getTime() : 0;
-            return timeB - timeA;
-          });
-
-          setSelectedUser((prev) => {
-            if (!prev || prev.uid !== selectedUser.uid) return prev;
-            return {
-              ...prev,
-              licenses: freshLicenses,
-              claimedGamesCount: freshLicenses.length,
-              activeLicensesCount: freshLicenses.filter((l) => l.status === 'active').length,
-              boundDevicesCount: freshLicenses.filter((l) => Boolean(l.hwid)).length,
-            };
-          });
-
-          setUsers((prevList) =>
-            prevList.map((u) => {
-              if (u.uid === selectedUser.uid) {
-                return {
-                  ...u,
-                  licenses: freshLicenses,
-                  claimedGamesCount: freshLicenses.length,
-                  activeLicensesCount: freshLicenses.filter((l) => l.status === 'active').length,
-                  boundDevicesCount: freshLicenses.filter((l) => Boolean(l.hwid)).length,
-                };
-              }
-              return u;
-            })
-          );
-        },
-        (err) => {
-          console.warn('Live license listener warning:', err);
-        }
-      );
-
-      return () => unsubscribe();
-    } catch (listenerErr) {
-      console.warn('Failed to attach live license listener:', listenerErr);
-    }
-  }, [isDetailModalOpen, selectedUser?.uid]);
-
   const handleExportFullBackup = async () => {
     try {
       showToast('Barcha ma’lumotlar to‘liq eksport qilinmoqda...', 'success');
@@ -206,19 +143,8 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
         });
       });
 
-      // 3. Orders (try fetching from Firestore orders collection)
-      let exportedOrders: any[] = [];
-      try {
-        const { collection, getDocs } = await import('firebase/firestore');
-        const { db } = await import('../../services/firebase');
-        const ordersSnap = await getDocs(collection(db, 'orders'));
-        exportedOrders = ordersSnap.docs.map((d) => ({
-          orderId: d.id,
-          ...d.data()
-        }));
-      } catch (e) {
-        console.warn('Orders direct fetch fallback to license payments:', e);
-      }
+      // 3. Orders
+      const exportedOrders: any[] = (await fetchFromBackend<any[]>('api/v1/payments/admin/orders/')) || [];
 
       // If orders collection was empty or partial, supplement from paid licenses
       if (exportedOrders.length === 0) {
@@ -252,7 +178,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
       const blob = new Blob([JSON.stringify(fullData, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'firestore_full_export.json';
+      a.download = 'subgame_full_export.json';
       a.click();
 
       showToast(`Muvaffaqiyatli! ${exportedUsers.length} ta user va ${allLics.length} ta litsenziya yuklab olindi!`, 'success');
@@ -357,34 +283,6 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
       showToast('Xatolik: ' + err.message, 'error');
     } finally {
       setActionLoading(null);
-    }
-  };
-
-  const handleCleanupOrphaned = async () => {
-    if (
-      !window.confirm(
-        `Bazada ro‘yxatdan o‘tgan faol foydalanuvchilarga tegishli bo‘lmagan ${stats.orphanedLicensesCount} ta egasiz (yetim) litsenziya topildi.\n\nUlarni butunlay o‘chirib tozalashni tasdiqlaysizmi?`
-      )
-    ) {
-      return;
-    }
-
-    setCleaningOrphans(true);
-    try {
-      const res = await cleanupOrphanedLicenses();
-      if (res.success) {
-        showToast(
-          `${res.deletedCount} ta egasiz litsenziya muvaffaqiyatli tozalandi!`,
-          'success'
-        );
-        await loadData(true);
-      } else {
-        showToast(res.error || 'Tozalashda xatolik yuz berdi', 'error');
-      }
-    } catch (err: any) {
-      showToast('Xatolik: ' + err.message, 'error');
-    } finally {
-      setCleaningOrphans(false);
     }
   };
 
@@ -603,17 +501,6 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
         </div>
 
         <div className="flex items-center gap-2 self-end md:self-auto flex-wrap">
-          {stats.orphanedLicensesCount > 0 && (
-            <button
-              onClick={handleCleanupOrphaned}
-              disabled={cleaningOrphans || refreshing || loading}
-              className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs sm:text-sm font-bold transition-all disabled:opacity-50 cursor-pointer shadow-sm"
-              title="Mavjud bo‘lmagan eski foydalanuvchilarning litsenziyalarini bazadan o‘chirish"
-            >
-              <Trash2 className={`w-4 h-4 ${cleaningOrphans ? 'animate-spin' : ''}`} />
-              <span>Yetim litsenziyalarni tozalash ({stats.orphanedLicensesCount})</span>
-            </button>
-          )}
 
           <button
             onClick={() => {

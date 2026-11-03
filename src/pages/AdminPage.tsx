@@ -26,8 +26,7 @@ import {
   Cpu,
   KeyRound
 } from 'lucide-react';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { storage } from '../services/firebase';
+import { uploadAdminFile } from '../services/apiClient';
 import {
   getGames,
   createGame,
@@ -76,38 +75,21 @@ export const AdminPage: React.FC = () => {
     setUploadError(null);
 
     try {
-      const fileRef = ref(storage, `subtitles/${gameSlug}/${file.name}`);
-      const uploadTask = uploadBytesResumable(fileRef, file);
+      const uploaded = await uploadAdminFile(file, gameSlug, setUploadProgress);
+      const formattedSize =
+        file.size >= 1048576
+          ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+          : `${(file.size / 1024).toFixed(1)} KB`;
 
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-          setUploadProgress(progress);
-        },
-        (error) => {
-          console.error('Upload error:', error);
-          setUploadError('Faylni yuklashda xatolik yuz berdi: ' + error.message);
-          setUploadingFile(false);
-        },
-        async () => {
-          const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
-          const formattedSize =
-            file.size >= 1048576
-              ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
-              : `${(file.size / 1024).toFixed(1)} KB`;
-
-          setFormData((prev) => ({
-            ...prev,
-            targetFileName: prev.targetFileName || file.name,
-            subtitleSize: formattedSize,
-            subtitleDownloadUrl: downloadUrl,
-          }));
-          setUploadedFileName(file.name);
-          setUploadingFile(false);
-          setUploadProgress(100);
-        }
-      );
+      setFormData((prev) => ({
+        ...prev,
+        targetFileName: prev.targetFileName || file.name,
+        subtitleSize: formattedSize,
+        subtitleDownloadUrl: uploaded.url,
+      }));
+      setUploadedFileName(file.name);
+      setUploadingFile(false);
+      setUploadProgress(100);
     } catch (err: any) {
       setUploadError(err.message || 'Yuklashda xatolik');
       setUploadingFile(false);
@@ -411,7 +393,7 @@ export const AdminPage: React.FC = () => {
       setJsonInput('');
       setParsedGamesPreview([]);
       await loadGames();
-      alert(`Muvaffaqiyatli! ${parsedGamesPreview.length} ta o‘yin Firestore bazasiga qo‘shildi.`);
+      alert(`Muvaffaqiyatli! ${parsedGamesPreview.length} ta o‘yin bazaga qo‘shildi.`);
     } catch (err: any) {
       setJsonError(err.message || 'Saqlashda xatolik yuz berdi');
     } finally {
@@ -491,7 +473,7 @@ export const AdminPage: React.FC = () => {
     try {
       const res = await syncInitialGames();
       if (res.success) {
-        setSyncMessage(`Muvaffaqiyatli! ${res.count} ta yangi o‘yin Firestore bazasiga qo‘shildi.`);
+        setSyncMessage(`Muvaffaqiyatli! ${res.count} ta yangi o‘yin bazaga qo‘shildi.`);
         await loadGames();
       } else {
         setSyncMessage(`Xatolik: ${res.error}`);
@@ -888,7 +870,7 @@ export const AdminPage: React.FC = () => {
               onClick={handleSyncInitial}
               disabled={syncing}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1A202C] text-gray-300 hover:text-white border border-[#2A3245] text-xs sm:text-sm font-semibold transition-all cursor-pointer disabled:opacity-50"
-              title="Mavjud bo‘lmagan boshlang‘ich o‘yinlarni Firestore bazasiga yuklash (mavjudlari saqlanadi)"
+              title="Mavjud bo‘lmagan boshlang‘ich o‘yinlarni bazaga yuklash (mavjudlari saqlanadi)"
             >
               <RefreshCw className={`w-4 h-4 text-[#A3E635] ${syncing ? 'animate-spin' : ''}`} />
               <span>{syncing ? 'Yuklanmoqda...' : 'Boshlang‘ich O‘yinlarni Yuklash'}</span>
@@ -1544,7 +1526,7 @@ export const AdminPage: React.FC = () => {
                         <UploadCloud className="w-4 h-4 text-[#A3E635]" />
                         <span>Subtitr / Tarjima faylini yuklash (.pak, .pc, .enc, .zip)</span>
                       </label>
-                      <span className="text-[10px] text-gray-400 font-mono">Firebase Cloud Storage</span>
+                      <span className="text-[10px] text-gray-400 font-mono">SubGame server</span>
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">

@@ -1,12 +1,5 @@
-import {
-  collection,
-  getDocs,
-  query,
-  where
-} from 'firebase/firestore';
-import { db } from './firebase';
 import type { Game } from '../types/game';
-import { fetchFromBackend } from './apiClient';
+import { apiRequest, fetchFromBackend } from './apiClient';
 
 export interface GameLicenseItem {
   id: string; // `${userId}_${gameId}`
@@ -70,89 +63,32 @@ export const fetchAllLicensesWithStats = async (
     const allLicenses: GameLicenseItem[] = [];
     const uniqueUserIds = new Set<string>();
 
-    // 1. Try fetching from Django REST Backend first (Fast, zero Firestore read quotas!)
-    let loadedFromBackend = false;
-    try {
-      const backendLicenses = await fetchFromBackend<any[]>('api/v1/licenses/admin/');
-      if (backendLicenses && Array.isArray(backendLicenses) && backendLicenses.length > 0) {
-        backendLicenses.forEach((d) => {
-          const userId = d.userId || '';
-          allLicenses.push({
-            id: d.id,
-            userId,
-            userEmail: d.userEmail || 'Noma’lum email',
-            userName: d.userName || d.userEmail?.split('@')[0] || 'Foydalanuvchi',
-            userPhoto: d.userPhoto || undefined,
-            gameId: d.gameId || 'noma-lum',
-            gameTitle: d.gameTitle || 'Noma’lum o‘yin',
-            gameSlug: d.gameSlug || (d.gameId ? String(d.gameId) : 'noma-lum'),
-            status: d.status === 'revoked' ? 'revoked' : 'active',
-            hwid: d.hwid || null,
-            boundAt: d.boundAt || null,
-            boundDeviceName: d.boundDeviceName || null,
-            paymentProvider: d.payment_provider || undefined,
-            paidAmount: d.paid_amount || undefined,
-            createdAt: d.createdAt || d.created_at || null,
-          });
-          if (userId) {
-            uniqueUserIds.add(userId);
-          }
-        });
-        loadedFromBackend = true;
-      }
-    } catch (backendErr) {
-      console.warn('[Backend] Could not load licenses from Django backend, falling back to Firestore:', backendErr);
-    }
-
-    // 2. Fallback to Firestore if backend was not available
-    if (!loadedFromBackend) {
-      const usersMap = new Map<string, { displayName?: string; photoURL?: string; email?: string }>();
-      try {
-        const usersSnap = await getDocs(collection(db, 'users'));
-        usersSnap.forEach((d) => {
-          const u = d.data();
-          usersMap.set(d.id, {
-            displayName: u.displayName,
-            photoURL: u.photoURL,
-            email: u.email
-          });
-        });
-      } catch (e) {
-        console.warn('Could not load users map for licenses:', e);
-      }
-
-      const licensesSnap = await getDocs(collection(db, 'licenses'));
-      licensesSnap.forEach((d) => {
-        const data = d.data();
-        const userId = data.userId || '';
-        const userProfile = usersMap.get(userId);
-
-        const license: GameLicenseItem = {
-          id: d.id,
-          userId,
-          userEmail: userProfile?.email || data.userEmail || 'Noma’lum email',
-          userName: userProfile?.displayName || data.userName || data.userEmail?.split('@')[0] || 'Foydalanuvchi',
-          userPhoto: userProfile?.photoURL || data.userPhoto || undefined,
-          gameId: data.gameId || 'noma-lum',
-          gameTitle: data.gameTitle || 'Noma’lum o‘yin',
-          gameSlug: data.gameSlug || (data.gameId ? String(data.gameId) : 'noma-lum'),
-          status: data.status === 'revoked' ? 'revoked' : 'active',
-          hwid: data.hwid || null,
-          boundAt: data.boundAt || null,
-          boundDeviceName: data.boundDeviceName || null,
-          paymentProvider: data.paymentProvider || undefined,
-          paymentRef: data.paymentRef || undefined,
-          paidAmount: data.paidAmount || undefined,
-          revokedReason: data.revokedReason || undefined,
-          createdAt: data.createdAt || null
-        };
-
-        allLicenses.push(license);
-        if (userId) {
-          uniqueUserIds.add(userId);
-        }
+    const backendLicenses = await apiRequest<any[]>('api/v1/licenses/admin/');
+    backendLicenses.forEach((d) => {
+      const userId = d.userId || '';
+      allLicenses.push({
+        id: d.id,
+        userId,
+        userEmail: d.userEmail || 'Noma’lum email',
+        userName: d.userName || d.userEmail?.split('@')[0] || 'Foydalanuvchi',
+        userPhoto: d.userPhoto || undefined,
+        gameId: d.gameId || 'noma-lum',
+        gameTitle: d.gameTitle || 'Noma’lum o‘yin',
+        gameSlug: d.gameSlug || (d.gameId ? String(d.gameId) : 'noma-lum'),
+        status: d.status === 'revoked' ? 'revoked' : 'active',
+        hwid: d.hwid || null,
+        boundAt: d.boundAt || null,
+        boundDeviceName: d.boundDeviceName || null,
+        paymentProvider: d.paymentProvider || undefined,
+        paymentRef: d.paymentRef || undefined,
+        paidAmount: d.paidAmount || undefined,
+        revokedReason: d.revokedReason || undefined,
+        createdAt: d.createdAt || null,
       });
-    }
+      if (userId) {
+        uniqueUserIds.add(userId);
+      }
+    });
 
     // 3. Map games by ID and slug for metadata (images, genres)
     const gamesById = new Map<string, Game>();
@@ -262,37 +198,7 @@ export interface GameLicenseCountStats {
  * Returns a dictionary mapping gameId/gameSlug -> { total, bound }
  */
 export const fetchGameLicenseCounts = async (): Promise<Record<string, GameLicenseCountStats>> => {
-  try {
-    const q = query(collection(db, 'licenses'), where('status', '==', 'active'));
-    const snap = await getDocs(q);
-    const map: Record<string, GameLicenseCountStats> = {};
-
-    snap.forEach((d) => {
-      const data = d.data();
-      const gid = data.gameId;
-      const slug = data.gameSlug;
-      const isBound = Boolean(data.hwid);
-
-      const keys = new Set<string>();
-      if (gid) keys.add(gid);
-      if (slug) keys.add(slug);
-
-      keys.forEach((key) => {
-        if (!map[key]) {
-          map[key] = { total: 0, bound: 0 };
-        }
-        map[key].total += 1;
-        if (isBound) {
-          map[key].bound += 1;
-        }
-      });
-    });
-
-    return map;
-  } catch (err) {
-    console.warn('Failed to fetch game license counts:', err);
-    return {};
-  }
+  return (await fetchFromBackend<Record<string, GameLicenseCountStats>>('api/v1/licenses/stats/')) || {};
 };
 
 /**
@@ -302,45 +208,6 @@ export const fetchSingleGameLicenseStats = async (
   gameId: string,
   slug?: string
 ): Promise<GameLicenseCountStats> => {
-  try {
-    const seenLicenseIds = new Set<string>();
-    let total = 0;
-    let bound = 0;
-
-    // 1. Check by gameId
-    const q1 = query(
-      collection(db, 'licenses'),
-      where('gameId', '==', gameId),
-      where('status', '==', 'active')
-    );
-    const snap1 = await getDocs(q1);
-    snap1.forEach((d) => {
-      seenLicenseIds.add(d.id);
-      total += 1;
-      if (d.data().hwid) bound += 1;
-    });
-
-    // 2. Also check if stored by slug if different
-    if (slug && slug !== gameId) {
-      const q2 = query(
-        collection(db, 'licenses'),
-        where('gameId', '==', slug),
-        where('status', '==', 'active')
-      );
-      const snap2 = await getDocs(q2);
-      snap2.forEach((d) => {
-        if (!seenLicenseIds.has(d.id)) {
-          seenLicenseIds.add(d.id);
-          total += 1;
-          if (d.data().hwid) bound += 1;
-        }
-      });
-    }
-
-    return { total, bound };
-  } catch (err) {
-    console.warn(`Failed to fetch license stats for game ${gameId}:`, err);
-    return { total: 0, bound: 0 };
-  }
+  const counts = await fetchGameLicenseCounts();
+  return counts[gameId] || (slug ? counts[slug] : undefined) || { total: 0, bound: 0 };
 };
-
