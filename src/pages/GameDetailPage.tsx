@@ -6,7 +6,7 @@ import { SubtitleStatusBadge } from '../components/common/Badge';
 import { Lightbox } from '../components/common/Lightbox';
 import { ReportIssueModal } from '../components/home/ReportIssueModal';
 import { ClickPaymentModal } from '../components/payment/ClickPaymentModal';
-import { SteamLogo, EpicGamesLogo, TelegramLogo } from '../components/common/BrandLogos';
+import { ClickLogo, SteamLogo, EpicGamesLogo } from '../components/common/BrandLogos';
 import { getGamePriceInfo } from '../services/paymentService';
 import { fetchSingleGameLicenseStats, type GameLicenseCountStats } from '../services/licensesService';
 import { useFavorites } from '../context/FavoritesContext';
@@ -364,19 +364,13 @@ export const GameDetailPage: React.FC = () => {
                       </button>
                     ) : !hasLicense ? (
                       priceInfo.isPaid ? (
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                          <button
-                            onClick={() => setIsClickModalOpen(true)}
-                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] shadow-lg shadow-sky-500/25 cursor-pointer whitespace-nowrap h-11 sm:h-10.5"
-                          >
-                            <TelegramLogo className="w-4 h-4 text-white shrink-0" />
-                            <span>Sotib olish ({priceInfo.text})</span>
-                          </button>
-                          <span className="text-[11px] text-amber-300/90 bg-amber-500/10 border border-amber-500/25 px-2.5 py-1 rounded-lg flex items-center gap-1.5 justify-center sm:justify-start">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping shrink-0" />
-                            <span>Click'da texnik ishlar</span>
-                          </span>
-                        </div>
+                        <button
+                          onClick={() => setIsClickModalOpen(true)}
+                          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-xl bg-[#0065FF] hover:bg-[#0052cc] text-white font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] shadow-lg shadow-blue-500/25 cursor-pointer whitespace-nowrap h-11 sm:h-10.5"
+                        >
+                          <ClickLogo variant="icon" className="w-4 h-4 text-white shrink-0" />
+                          <span>Click orqali sotib olish ({priceInfo.text})</span>
+                        </button>
                       ) : (
                         <button
                           onClick={handleClaimLicense}
@@ -935,19 +929,13 @@ export const GameDetailPage: React.FC = () => {
                     </button>
                   ) : !hasLicense ? (
                     priceInfo.isPaid ? (
-                      <div className="space-y-2">
-                        <button
-                          onClick={() => setIsClickModalOpen(true)}
-                          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] shadow-lg shadow-sky-500/25 cursor-pointer"
-                        >
-                          <TelegramLogo className="w-4 h-4 text-white shrink-0" />
-                          <span>Sotib olish ({priceInfo.text})</span>
-                        </button>
-                        <div className="text-[11px] text-amber-300/90 bg-amber-500/10 border border-amber-500/25 px-2.5 py-1.5 rounded-lg flex items-center justify-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping shrink-0" />
-                          <span>Click to‘lovida texnik ishlar (Telegram orqali)</span>
-                        </div>
-                      </div>
+                      <button
+                        onClick={() => setIsClickModalOpen(true)}
+                        className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#0065FF] hover:bg-[#0052cc] text-white font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] shadow-lg shadow-blue-500/25 cursor-pointer"
+                      >
+                        <ClickLogo variant="icon" className="w-4 h-4 text-white shrink-0" />
+                        <span>Click orqali sotib olish ({priceInfo.text})</span>
+                      </button>
                     ) : (
                       <button
                         onClick={handleClaimLicense}

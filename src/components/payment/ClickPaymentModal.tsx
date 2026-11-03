@@ -1,9 +1,8 @@
-import React from 'react';
-import { X, ShieldCheck, ExternalLink, Lock, AlertTriangle } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, ShieldCheck, Loader2, ExternalLink, Lock } from 'lucide-react';
 import type { Game } from '../../types/game';
-import { getGamePriceInfo } from '../../services/paymentService';
-import { SITE_CONFIG } from '../../config/site';
-import { ClickLogo, TelegramLogo } from '../common/BrandLogos';
+import { createClickOrder, getGamePriceInfo } from '../../services/paymentService';
+import { ClickLogo, ClickBadge } from '../common/BrandLogos';
 
 interface ClickPaymentModalProps {
   game: Game;
@@ -17,8 +16,26 @@ export const ClickPaymentModal: React.FC<ClickPaymentModalProps> = ({
   user,
   onClose,
 }) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const priceInfo = getGamePriceInfo(game);
   const displayPrice = priceInfo.text;
+
+  const handleProceedClick = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const order = await createClickOrder({ game });
+
+      // Redirect to official Click payment gateway
+      window.location.href = order.clickUrl;
+    } catch (err: any) {
+      console.error(err);
+      setError(err?.message || 'Buyurtma yaratishda xatolik yuz berdi.');
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
@@ -69,7 +86,7 @@ export const ClickPaymentModal: React.FC<ClickPaymentModalProps> = ({
         </div>
 
         {/* Content Body */}
-        <div className="p-4 sm:p-5 space-y-3.5 overflow-y-auto">
+        <div className="p-4 sm:p-5 space-y-3 overflow-y-auto">
           {/* DRM Notice */}
           <div className="p-3 rounded-2xl bg-[#0B0D12]/80 border border-[#2A3245] space-y-1 text-xs">
             <div className="flex items-center gap-2 font-bold text-white">
@@ -81,42 +98,55 @@ export const ClickPaymentModal: React.FC<ClickPaymentModalProps> = ({
             </p>
           </div>
 
-          {/* Maintenance Notice for Click & Telegram Redirect */}
-          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 space-y-3">
-            <div className="flex items-center gap-2 font-extrabold text-amber-400 text-xs sm:text-sm">
-              <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400" />
-              <span>Click to‘lov tizimida texnik ishlar</span>
+          {/* Click Payment Provider Info */}
+          <div className="p-3 rounded-2xl bg-[#0065FF]/10 border border-[#0065FF]/25 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <ClickBadge size="md" />
+              <div className="min-w-0">
+                <span className="text-xs sm:text-sm font-black text-white block truncate">
+                  Click Up / Click Merchant
+                </span>
+                <span className="text-[11px] text-sky-300 block truncate">
+                  Uzcard, Humo va xalqaro kartalar
+                </span>
+              </div>
             </div>
-            <p className="text-[11px] sm:text-xs text-amber-200/90 leading-relaxed">
-              Hozirda avtomatlashtirilgan Click to‘lov tizimida texnik ishlar olib borilmoqda. Ushbu o‘yin uchun litsenziya xarid qilish va uni hisobingizga darhol biriktirish uchun rasmiy Telegram guruhimizga o‘ting!
-            </p>
-            
-            {/* Primary Telegram Purchase CTA */}
-            <a
-              href={SITE_CONFIG.telegramUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full h-12 flex items-center justify-center gap-2.5 px-4 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-sky-500/25 transition-all cursor-pointer"
-            >
-              <TelegramLogo className="w-4 h-4 shrink-0" />
-              <span>Telegram orqali xarid qilish ({SITE_CONFIG.telegramChannelName})</span>
-              <ExternalLink className="w-3.5 h-3.5 opacity-80" />
-            </a>
+            <span className="px-2.5 py-1 rounded-full bg-[#A3E635]/15 text-[#A3E635] border border-[#A3E635]/30 text-[10px] font-extrabold whitespace-nowrap shrink-0">
+              0% Komissiya
+            </span>
           </div>
 
-          {/* Disabled Click State */}
-          <div className="space-y-2 pt-1">
+          {error && (
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
+              {error}
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="space-y-2 pt-1 pb-1">
             <button
-              disabled
-              className="w-full h-11 flex items-center justify-center gap-2 px-4 rounded-xl bg-[#1A202C]/60 border border-[#2A3245] text-gray-400 font-bold text-xs cursor-not-allowed opacity-80"
+              onClick={handleProceedClick}
+              disabled={loading}
+              className="w-full h-12 flex items-center justify-center gap-2.5 px-4 rounded-2xl bg-[#0065FF] hover:bg-[#0052cc] active:scale-[0.99] text-white font-extrabold text-sm sm:text-base shadow-xl shadow-blue-600/30 transition-all cursor-pointer disabled:opacity-50"
             >
-              <ClickLogo variant="icon" className="w-4 h-4 opacity-40 shrink-0" />
-              <span>Click to‘lov tizimi vaqtincha to‘xtatilgan</span>
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin shrink-0" />
+                  <span>Click to‘lov sahifasiga o‘tilmoqda...</span>
+                </>
+              ) : (
+                <>
+                  <ClickLogo variant="icon" className="w-5 h-5 text-white shrink-0" />
+                  <span>Click orqali to‘lov qilish ({displayPrice})</span>
+                  <ExternalLink className="w-4 h-4 opacity-80 shrink-0" />
+                </>
+              )}
             </button>
 
+            {/* Security Guarantee Note */}
             <div className="flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] text-gray-500 pt-0.5">
               <Lock className="w-3 h-3 text-[#A3E635] shrink-0" />
-              <span>Telegram adminlari orqali xavfsiz va tezkor litsenziyalash</span>
+              <span>256-bit shifrlangan xavfsiz to‘lov • Rasmiy Click.uz orqali</span>
             </div>
           </div>
         </div>
