@@ -47,6 +47,25 @@ function cleanSliderData(data: Record<string, any>): Record<string, any> {
 }
 
 /**
+ * Returns a slide's headline parts ready to render side by side.
+ * The parts are stored separately and the spaces between them don't survive saving,
+ * so spacing is decided here instead of relying on what the admin typed.
+ */
+export function getHeadlineParts(slide: Partial<HeroSlide>) {
+  const prefix = (slide.headlinePrefix ?? '').trim();
+  const highlight = (slide.headlineHighlight ?? '').trim();
+  const suffix = (slide.headlineSuffix ?? '').trim();
+  // Punctuation stays attached to the highlighted words: "...tilida" + "."
+  const suffixAttaches = /^[.,!?:;)\-–—…]/.test(suffix);
+
+  return {
+    prefix: prefix ? `${prefix} ` : '',
+    highlight,
+    suffix: suffix && !suffixAttaches ? ` ${suffix}` : suffix,
+  };
+}
+
+/**
  * Fetch the active hero sliders for the public site.
  * Falls back to the cache, then INITIAL_SLIDES, if the backend is empty or fails.
  */

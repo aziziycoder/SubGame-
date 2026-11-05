@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { HeroSlide } from '../../types/slider';
 import { INITIAL_SLIDES } from '../../data/sliders';
-import { getSliders, getCachedSliders } from '../../services/slidersService';
+import { getSliders, getCachedSliders, getHeadlineParts } from '../../services/slidersService';
 
 const SLIDE_INTERVAL_MS = 6000;
 
@@ -65,6 +65,7 @@ export const HeroSection: React.FC = () => {
   }, [currentSlide, totalSlides]);
 
   const active = slides[currentSlide] || slides[0] || INITIAL_SLIDES[0];
+  const headline = getHeadlineParts(active);
 
   return (
     <section className="relative min-h-[85vh] sm:min-h-[90vh] flex items-center justify-center pt-24 sm:pt-28 pb-12 sm:pb-16 overflow-hidden select-none">
@@ -117,9 +118,9 @@ export const HeroSection: React.FC = () => {
 
             {/* Big Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.2] sm:leading-[1.15] transition-all duration-500">
-              {active.headlinePrefix}
-              <span className="text-accent-gradient">{active.headlineHighlight}</span>
-              {active.headlineSuffix}
+              {headline.prefix}
+              <span className="text-accent-gradient">{headline.highlight}</span>
+              {headline.suffix}
             </h1>
 
             {/* Description */}

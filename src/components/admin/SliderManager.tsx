@@ -25,7 +25,8 @@ import {
   updateSlider,
   deleteSlider,
   syncInitialSliders,
-  getCachedSliders
+  getCachedSliders,
+  getHeadlineParts,
 } from '../../services/slidersService';
 
 interface SliderManagerProps {
@@ -389,9 +390,9 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
                     </div>
 
                     <p className="text-xs text-gray-300 mt-1 line-clamp-1 font-semibold">
-                      {slide.headlinePrefix}
-                      <span className="text-[#A3E635]">{slide.headlineHighlight}</span>
-                      {slide.headlineSuffix}
+                      {getHeadlineParts(slide).prefix}
+                      <span className="text-[#A3E635]">{getHeadlineParts(slide).highlight}</span>
+                      {getHeadlineParts(slide).suffix}
                     </p>
 
                     <p className="text-[11px] text-gray-400 mt-1 line-clamp-2 leading-relaxed">
@@ -611,9 +612,9 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
                   </div>
                 </div>
                 <div className="pt-1 text-[11px] text-gray-400 italic">
-                  Ko‘rinishi: {formData.headlinePrefix}
-                  <span className="text-[#A3E635] font-bold">{formData.headlineHighlight}</span>
-                  {formData.headlineSuffix}
+                  Ko‘rinishi: {getHeadlineParts(formData).prefix}
+                  <span className="text-[#A3E635] font-bold">{getHeadlineParts(formData).highlight}</span>
+                  {getHeadlineParts(formData).suffix}
                 </div>
               </div>
 
