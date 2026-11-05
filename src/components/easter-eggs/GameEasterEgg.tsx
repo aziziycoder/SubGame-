@@ -74,7 +74,8 @@ export const GameEasterEgg: React.FC<{ slug: string; children: React.ReactNode }
         {egg.teaser}
       </button>
 
-      <div className="relative z-10">{children}</div>
+      {/* The trigger runs underneath, so letting clicks through makes the poster clickable too. */}
+      <div className="relative z-10 pointer-events-none">{children}</div>
 
       {Effect && (
         <Effect
