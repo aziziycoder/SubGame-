@@ -6,6 +6,7 @@ import { SubtitleStatusBadge } from '../components/common/Badge';
 import { Lightbox } from '../components/common/Lightbox';
 import { ReportIssueModal } from '../components/home/ReportIssueModal';
 import { ClickPaymentModal } from '../components/payment/ClickPaymentModal';
+import { GameEasterEgg } from '../components/easter-eggs/GameEasterEgg';
 import { ClickLogo, SteamLogo, EpicGamesLogo } from '../components/common/BrandLogos';
 import { getGamePriceInfo } from '../services/paymentService';
 import { fetchSingleGameLicenseStats, type GameLicenseCountStats } from '../services/licensesService';
@@ -435,6 +436,8 @@ export const GameDetailPage: React.FC = () => {
                     {shared ? <Check className="w-4 h-4 text-[#A3E635] shrink-0" /> : <Share2 className="w-4 h-4 shrink-0" />}
                     <span className="text-xs sm:hidden">Ulashish</span>
                   </button>
+
+                  <GameEasterEgg slug={game.slug} />
                 </div>
               </div>
             </div>
