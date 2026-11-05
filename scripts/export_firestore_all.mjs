@@ -73,7 +73,6 @@ async function exportAll() {
 
   const adminEmails = [
     'azizbekgulomovweb@gmail.com',
-    'azizbekgulomovcoder@gmail.com',
     'imuz21029@gmail.com'
   ];
 
