@@ -7,6 +7,7 @@ import { Lightbox } from '../components/common/Lightbox';
 import { ReportIssueModal } from '../components/home/ReportIssueModal';
 import { ClickPaymentModal } from '../components/payment/ClickPaymentModal';
 import { GameEasterEgg } from '../components/easter-eggs/GameEasterEgg';
+import { LicenseEasterEgg } from '../components/easter-eggs/LicenseEasterEgg';
 import { ClickLogo, SteamLogo, EpicGamesLogo } from '../components/common/BrandLogos';
 import { getGamePriceInfo } from '../services/paymentService';
 import { fetchSingleGameLicenseStats, type GameLicenseCountStats } from '../services/licensesService';
@@ -1126,6 +1127,8 @@ export const GameDetailPage: React.FC = () => {
         onClose={() => setIsReportModalOpen(false)}
         preselectedGameId={game.id}
       />
+
+      <LicenseEasterEgg slug={game.slug} active={claimSuccess} />
 
       {/* Floating Corner Toast Notification */}
       {claimSuccess && (
