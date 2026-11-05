@@ -135,6 +135,7 @@ export const CordycepsOutbreak: React.FC<EasterEggEffectProps> = ({ originRef, h
 
     const main = document.querySelector('main') ?? document.body;
     const obstacles = Array.from(main.querySelectorAll('a, button, iframe, input, select, textarea'))
+      .filter((el) => el !== origin)
       .map((el) => expand(el, 5))
       .filter((r) => r.right - r.left > 10 && r.bottom - r.top > 10);
     const isBlocked = (x: number, y: number, margin = 0) =>
@@ -320,13 +321,22 @@ export const CordycepsOutbreak: React.FC<EasterEggEffectProps> = ({ originRef, h
       }
     };
 
-    // The first tips leave the trigger from its top and bottom edges. Its row is packed
-    // with other buttons, so tips sent sideways would die on them straight away.
-    for (let i = 0; i < 8; i += 1) {
-      const side = i % 2 === 0 ? -1 : 1;
-      const y = side < 0 ? originRect.top - 7 : originRect.bottom + 7;
-      spawnTip(originX + random(-14, 14), y, (side * Math.PI) / 2 + random(-0.7, 0.7), random(2.2, 3.2), random(0.9, 1.5));
+    // The outbreak bursts out from behind the poster: tips leave every side of it, and
+    // plates erupt on its corners right away.
+    const halfWidth = (originRect.right - originRect.left) / 2;
+    const halfHeight = (originRect.bottom - originRect.top) / 2;
+    for (let i = 0; i < 16; i += 1) {
+      const angle = (i / 16) * Math.PI * 2 + random(-0.15, 0.15);
+      const reach = Math.min(halfWidth / Math.abs(Math.cos(angle)), halfHeight / Math.abs(Math.sin(angle)));
+      const x = originX + Math.cos(angle) * reach;
+      const y = originY + Math.sin(angle) * reach;
+      spawnTip(x, y, angle + random(-0.4, 0.4), random(2.2, 3.2), random(0.9, 1.5));
     }
+    events.push(
+      { delay: 0.15, kind: 'plate', x: originRect.right, y: originRect.top },
+      { delay: 0.35, kind: 'plate', x: originRect.left, y: originRect.bottom },
+    );
+    events.sort((a, b) => a.delay - b.delay);
 
     let burstX = originX - window.scrollX;
     let burstY = originY - window.scrollY;

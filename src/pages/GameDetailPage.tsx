@@ -214,13 +214,15 @@ export const GameDetailPage: React.FC = () => {
             {/* Top Row on Mobile: Poster + Title & Core Badges side-by-side */}
             <div className="flex items-start gap-3.5 sm:gap-0 w-full sm:w-auto">
               {/* Poster Thumbnail */}
-              <div className="w-28 sm:w-36 lg:w-48 shrink-0 aspect-[2/3] rounded-xl sm:rounded-2xl overflow-hidden border-2 border-[#2A3245] shadow-2xl bg-[#141821]">
-                <img
-                  src={game.cover}
-                  alt={game.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              <GameEasterEgg slug={game.slug}>
+                <div className="w-28 sm:w-36 lg:w-48 shrink-0 aspect-[2/3] rounded-xl sm:rounded-2xl overflow-hidden border-2 border-[#2A3245] shadow-2xl bg-[#141821]">
+                  <img
+                    src={game.cover}
+                    alt={game.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </GameEasterEgg>
 
               {/* Title & Badges on Mobile (only visible on mobile next to poster) */}
               <div className="flex-1 min-w-0 sm:hidden space-y-2 pt-0.5">
@@ -436,8 +438,6 @@ export const GameDetailPage: React.FC = () => {
                     {shared ? <Check className="w-4 h-4 text-[#A3E635] shrink-0" /> : <Share2 className="w-4 h-4 shrink-0" />}
                     <span className="text-xs sm:hidden">Ulashish</span>
                   </button>
-
-                  <GameEasterEgg slug={game.slug} />
                 </div>
               </div>
             </div>
