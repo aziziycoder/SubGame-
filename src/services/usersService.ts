@@ -76,7 +76,8 @@ export interface DashboardStats {
   };
   devices: { uniqueHwids: number; boundLicenses: number; boundLast7: number; boundLast30: number };
   orders: {
-    total: number; paid: number; pending: number; cancelled: number; currency: string;
+    total: number; paid: number; otherPaid: number; otherRevenue: number;
+    pending: number; cancelled: number; currency: string;
     revenue: { total: number; today: number; last7: number; last30: number };
     lastPaidAt: string | null;
   };

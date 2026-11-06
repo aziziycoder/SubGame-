@@ -529,9 +529,15 @@ export const DashboardOverview: React.FC = () => {
           icon={<Wallet className="w-5 h-5" />}
           note={
             <>
-              so‘m · {fmt(orders.paid)} ta to‘langan buyurtma
+              so‘m · {fmt(orders.paid)} ta Click tasdiqlagan to‘lov
               <br />
               <span className="text-gray-400 font-bold">{fmtMoney(orders.revenue.last30)}</span> so‘m 30 kunda
+              {orders.otherPaid > 0 && (
+                <>
+                  <br />
+                  Bundan tashqari qo‘lda: {fmt(orders.otherPaid)} ta, {fmtMoney(orders.otherRevenue)} so‘m
+                </>
+              )}
             </>
           }
         />
@@ -561,7 +567,7 @@ export const DashboardOverview: React.FC = () => {
           label="Buyurtmalar"
           value={fmt(orders.total)}
           icon={<ShoppingCart className="w-4 h-4" />}
-          note={`${fmt(orders.paid)} to‘langan · ${fmt(orders.pending)} kutilmoqda · ${fmt(orders.cancelled)} bekor`}
+          note={`${fmt(orders.paid + orders.otherPaid)} to‘langan · ${fmt(orders.pending)} kutilmoqda · ${fmt(orders.cancelled)} bekor`}
         />
       </div>
 
