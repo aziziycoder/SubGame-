@@ -104,7 +104,7 @@ type Metric = 'users' | 'licenses' | 'revenue';
 const METRICS: { key: Metric; label: string; unit: string }[] = [
   { key: 'users', label: 'Yangi foydalanuvchilar', unit: 'ta' },
   { key: 'licenses', label: 'Olingan litsenziyalar', unit: 'ta' },
-  { key: 'revenue', label: 'Click daromadi', unit: 'so‘m' },
+  { key: 'revenue', label: 'Daromad (Click + qo‘lda)', unit: 'so‘m' },
 ];
 
 const DailyChart: React.FC<{ series: DashboardStats['series'] }> = ({ series }) => {
@@ -251,7 +251,8 @@ const DailyChart: React.FC<{ series: DashboardStats['series'] }> = ({ series }) 
             <th>Sana</th>
             <th>Yangi foydalanuvchilar</th>
             <th>Litsenziyalar</th>
-            <th>Daromad (so‘m)</th>
+            <th>Click (so‘m)</th>
+            <th>Qo‘lda (so‘m)</th>
           </tr>
         </thead>
         <tbody>
@@ -260,7 +261,8 @@ const DailyChart: React.FC<{ series: DashboardStats['series'] }> = ({ series }) 
               <td>{d.date}</td>
               <td>{d.users}</td>
               <td>{d.licenses}</td>
-              <td>{d.revenue}</td>
+              <td>{d.clickRevenue}</td>
+              <td>{d.manualRevenue}</td>
             </tr>
           ))}
         </tbody>
@@ -314,6 +316,7 @@ const ACTIVITY_META: Record<DashboardActivity['type'], { icon: React.ReactNode; 
   license: { icon: <KeyRound className="w-3.5 h-3.5" />, verb: 'litsenziya oldi' },
   bind: { icon: <Link2 className="w-3.5 h-3.5" />, verb: 'kompyuterni bog‘ladi' },
   payment: { icon: <CreditCard className="w-3.5 h-3.5" />, verb: 'Click orqali to‘ladi' },
+  manual: { icon: <Wallet className="w-3.5 h-3.5" />, verb: 'qo‘lda to‘lov kiritildi' },
 };
 
 const ActivityFeed: React.FC<{ items: DashboardActivity[] }> = ({ items }) => {
@@ -326,7 +329,7 @@ const ActivityFeed: React.FC<{ items: DashboardActivity[] }> = ({ items }) => {
           <li key={`${a.type}-${a.at}-${i}`} className="flex items-start gap-3 py-2.5 min-w-0">
             <span
               className={`mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border ${
-                a.type === 'payment'
+                a.type === 'payment' || a.type === 'manual'
                   ? 'bg-[#A3E635]/10 border-[#A3E635]/30 text-[#A3E635]'
                   : 'bg-[#0B0D12] border-[#2A3245] text-gray-400'
               }`}
@@ -341,7 +344,7 @@ const ActivityFeed: React.FC<{ items: DashboardActivity[] }> = ({ items }) => {
                     : <span className="text-gray-200 font-medium">{a.detail}</span>
                   </>
                 )}
-                {a.type === 'payment' && a.amount ? (
+                {(a.type === 'payment' || a.type === 'manual') && a.amount ? (
                   <span className="text-white font-bold"> · {fmt(a.amount)} so‘m</span>
                 ) : null}
                 {a.type === 'license' && a.provider && (
@@ -524,18 +527,25 @@ export const DashboardOverview: React.FC = () => {
         />
         <StatTile
           accent
-          label="Click daromadi"
-          value={`${fmtMoney(orders.revenue.total)}`}
+          label="Jami daromad"
+          value={`${fmtMoney(orders.totalRevenue.total)}`}
           icon={<Wallet className="w-5 h-5" />}
           note={
             <>
-              so‘m · {fmt(orders.paid)} ta Click tasdiqlagan to‘lov
+              so‘m ·{' '}
+              <span className="text-gray-400 font-bold">{fmtMoney(orders.totalRevenue.last30)}</span> so‘m 30 kunda
               <br />
-              <span className="text-gray-400 font-bold">{fmtMoney(orders.revenue.last30)}</span> so‘m 30 kunda
-              {orders.otherPaid > 0 && (
+              Click: <span className="text-gray-300 font-bold">{fmtMoney(orders.revenue.total)}</span> so‘m (
+              {fmt(orders.paid)} ta)
+              <br />
+              Qo‘lda: <span className="text-gray-300 font-bold">{fmtMoney(orders.manualRevenue.total)}</span> so‘m (
+              {fmt(orders.manualCount)} ta)
+              {orders.manualWithoutAmount > 0 && (
                 <>
                   <br />
-                  Bundan tashqari qo‘lda: {fmt(orders.otherPaid)} ta, {fmtMoney(orders.otherRevenue)} so‘m
+                  <span className="text-amber-400">
+                    {fmt(orders.manualWithoutAmount)} ta qo‘lda litsenziya summasiz
+                  </span>
                 </>
               )}
             </>

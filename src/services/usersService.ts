@@ -79,23 +79,29 @@ export interface DashboardStats {
     total: number; paid: number; otherPaid: number; otherRevenue: number;
     pending: number; cancelled: number; currency: string;
     revenue: { total: number; today: number; last7: number; last30: number };
+    manualRevenue: { total: number; today: number; last7: number; last30: number };
+    totalRevenue: { total: number; today: number; last7: number; last30: number };
+    manualCount: number; manualFromOrders: number; manualFromLicenses: number; manualWithoutAmount: number;
     lastPaidAt: string | null;
   };
   catalog: { total: number; ready: number };
   games: DashboardGame[];
   topGames: DashboardGame[];
-  series: { date: string; users: number; licenses: number; revenue: number }[];
+  series: {
+    date: string; users: number; licenses: number;
+    revenue: number; clickRevenue: number; manualRevenue: number;
+  }[];
   activity: DashboardActivity[];
 }
 
 export interface DashboardGame {
   gameId: string; title: string; slug: string; image: string;
   licenses: number; active: number; bound: number; last30: number;
-  paidOrders: number; revenue: number;
+  paidOrders: number; revenue: number; clickRevenue: number; manualRevenue: number;
 }
 
 export interface DashboardActivity {
-  type: 'signup' | 'license' | 'bind' | 'payment';
+  type: 'signup' | 'license' | 'bind' | 'payment' | 'manual';
   at: string | null;
   user: string;
   email: string;
