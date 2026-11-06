@@ -1,7 +1,9 @@
 {
   "version": "1.4.0",
   "downloadUrl": "https://www.subgame.uz/downloads/SubGame-Launcher.exe",
+  "patchUrl": "https://www.subgame.uz/downloads/update-bundle.zip",
+  "patchSize": "2 KB",
   "minRequiredVersion": "1.4.0",
-  "changelog": "Majburiy yangilanish: The Last of Us Part I o'zbekcha tarjimasini qo'llab-quvvatlash, yangilanish tizimi tuzatildi. Yangilangandan keyin launcher ish stolingizga \"SubGame Launcher.exe\" nomi bilan saqlanadi - bundan keyin shu fayldan oching.",
+  "changelog": "Yangi SubGame Launcher 1.4.0 chiqdi. Yangilangandan keyin ochiladigan sahifadagi tugma orqali yangi launcherni bir marta saytdan yuklab oling va shu fayldan foydalaning.",
   "releaseDate": "2026-11-06"
 }
