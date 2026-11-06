@@ -24,7 +24,8 @@ import {
   ShoppingCart,
   Monitor,
   Cpu,
-  KeyRound
+  KeyRound,
+  LayoutDashboard
 } from 'lucide-react';
 import { uploadAdminFile } from '../services/apiClient';
 import {
@@ -40,11 +41,12 @@ import { useAuth } from '../context/AuthContext';
 import { SliderManager } from '../components/admin/SliderManager';
 import { UserManager } from '../components/admin/UserManager';
 import { LicenseStatsManager } from '../components/admin/LicenseStatsManager';
+import { DashboardOverview } from '../components/admin/DashboardOverview';
 import { SteamLogo, EpicGamesLogo } from '../components/common/BrandLogos';
 
 export const AdminPage: React.FC = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'games' | 'sliders' | 'users' | 'licenses'>('games');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'games' | 'sliders' | 'users' | 'licenses'>('dashboard');
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -702,7 +704,8 @@ export const AdminPage: React.FC = () => {
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        {/* Quick Stats Grid */}
+        {/* Quick Stats Grid (catalog numbers; the dashboard has its own) */}
+        {activeTab !== 'dashboard' && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="p-5 rounded-2xl bg-[#141821] border border-[#2A3245] space-y-2">
             <span className="text-xs text-gray-400 uppercase tracking-wider block">Jami O‘yinlar</span>
@@ -739,6 +742,7 @@ export const AdminPage: React.FC = () => {
             </div>
           </div>
         </div>
+        )}
 
         {/* Sync message alert if any */}
         {syncMessage && (
@@ -757,10 +761,22 @@ export const AdminPage: React.FC = () => {
         )}
 
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-2 border-b border-[#2A3245] pb-2">
+        <div className="flex items-center gap-2 border-b border-[#2A3245] pb-2 overflow-x-auto [scrollbar-width:none] -mx-4 px-4 sm:mx-0 sm:px-0">
+          <button
+            onClick={() => setActiveTab('dashboard')}
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === 'dashboard'
+                ? 'bg-[#A3E635] text-[#0B0D12] shadow-accent-glow'
+                : 'text-gray-400 hover:text-white hover:bg-[#141821] border border-transparent'
+            }`}
+          >
+            <LayoutDashboard className="w-4 h-4" />
+            <span>Dashboard</span>
+          </button>
+
           <button
             onClick={() => setActiveTab('games')}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'games'
                 ? 'bg-[#A3E635] text-[#0B0D12] shadow-accent-glow'
                 : 'text-gray-400 hover:text-white hover:bg-[#141821] border border-transparent'
@@ -779,7 +795,7 @@ export const AdminPage: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('sliders')}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'sliders'
                 ? 'bg-[#A3E635] text-[#0B0D12] shadow-accent-glow'
                 : 'text-gray-400 hover:text-white hover:bg-[#141821] border border-transparent'
@@ -798,7 +814,7 @@ export const AdminPage: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('users')}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'users'
                 ? 'bg-[#A3E635] text-[#0B0D12] shadow-accent-glow'
                 : 'text-gray-400 hover:text-white hover:bg-[#141821] border border-transparent'
@@ -817,7 +833,7 @@ export const AdminPage: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('licenses')}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'licenses'
                 ? 'bg-[#A3E635] text-[#0B0D12] shadow-accent-glow'
                 : 'text-gray-400 hover:text-white hover:bg-[#141821] border border-transparent'
@@ -835,7 +851,9 @@ export const AdminPage: React.FC = () => {
           </button>
         </div>
 
-        {activeTab === 'games' ? (
+        {activeTab === 'dashboard' ? (
+          <DashboardOverview />
+        ) : activeTab === 'games' ? (
           <>
         {/* Action Bar (Search, Filter, Buttons) */}
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">

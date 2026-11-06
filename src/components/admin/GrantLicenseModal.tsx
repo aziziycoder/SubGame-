@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import type { Game } from '../../types/game';
 import type { UserWithLicenses, UserProfile, GameLicense } from '../../types/auth';
-import { grantLicenseToUser, getAllUsersWithLicenses } from '../../services/usersService';
+import { grantLicenseToUser, getUsersPage } from '../../services/usersService';
 import { useAuth } from '../../context/AuthContext';
 
 interface GrantLicenseModalProps {
@@ -22,7 +22,6 @@ interface GrantLicenseModalProps {
   onClose: () => void;
   onSuccess: (message: string, license?: GameLicense, targetUserId?: string) => void;
   games: Game[];
-  users?: UserWithLicenses[];
   preselectedUser?: UserWithLicenses | UserProfile | null;
 }
 
@@ -31,12 +30,11 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
   onClose,
   onSuccess,
   games = [],
-  users: initialUsers,
   preselectedUser = null
 }) => {
   const { user: currentAdmin } = useAuth();
 
-  const [allUsers, setAllUsers] = useState<UserWithLicenses[]>(initialUsers || []);
+  const [allUsers, setAllUsers] = useState<UserWithLicenses[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [userSearchQuery, setUserSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<UserWithLicenses | UserProfile | null>(preselectedUser);
@@ -58,12 +56,15 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
     }
   }, [preselectedUser]);
 
-  // Fetch users if not passed or empty
+  // Users are searched on the server, so every user can be found, not only a loaded page
   useEffect(() => {
-    if (isOpen && (!initialUsers || initialUsers.length === 0)) {
+    if (!isOpen) return;
+    let cancelled = false;
+    const timer = setTimeout(() => {
       setLoadingUsers(true);
-      getAllUsersWithLicenses()
+      getUsersPage({ page: 1, pageSize: 8, search: userSearchQuery })
         .then((data) => {
+          if (cancelled) return;
           setAllUsers(data.users);
           if (preselectedUser) {
             const found = data.users.find((u) => u.uid === preselectedUser.uid);
@@ -71,15 +72,17 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
           }
         })
         .catch((err) => {
-          console.error('Failed to load users for grant modal:', err);
+          if (!cancelled) console.error('Failed to load users for grant modal:', err);
         })
         .finally(() => {
-          setLoadingUsers(false);
+          if (!cancelled) setLoadingUsers(false);
         });
-    } else if (initialUsers && initialUsers.length > 0) {
-      setAllUsers(initialUsers);
-    }
-  }, [isOpen, initialUsers, preselectedUser]);
+    }, userSearchQuery ? 300 : 0);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [isOpen, userSearchQuery, preselectedUser]);
 
   // Update default paidAmount when selectedGame or paymentProvider changes
   useEffect(() => {
@@ -97,17 +100,7 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
     }
   }, [paymentProvider, selectedGame]);
 
-  // Filter users by search query
-  const filteredUsers = useMemo(() => {
-    if (!userSearchQuery.trim()) return allUsers.slice(0, 8);
-    const q = userSearchQuery.toLowerCase().trim();
-    return allUsers.filter(
-      (u) =>
-        (u.displayName && u.displayName.toLowerCase().includes(q)) ||
-        (u.email && u.email.toLowerCase().includes(q)) ||
-        u.uid.toLowerCase().includes(q)
-    ).slice(0, 8);
-  }, [allUsers, userSearchQuery]);
+  const filteredUsers = allUsers.slice(0, 8);
 
   // Filter games by search query
   const filteredGames = useMemo(() => {

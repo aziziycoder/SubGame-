@@ -11,15 +11,101 @@ export interface UserStats {
   rawLicensesCount: number;
 }
 
-/**
- * Fetch all users along with their claimed licenses.
- */
-export const getAllUsersWithLicenses = async (): Promise<{
+export type UserFilter = 'all' | 'admin' | 'user' | 'with_devices';
+
+export const USERS_PAGE_SIZE = 50;
+
+export interface UsersPage {
   users: UserWithLicenses[];
   stats: UserStats;
-}> => {
-  return apiRequest<{ users: UserWithLicenses[]; stats: UserStats }>('api/v1/auth/admin/users-with-licenses/');
+  filterCounts: Record<UserFilter, number>;
+  pagination: { page: number; pageSize: number; total: number; totalPages: number };
+}
+
+export interface UsersPageParams {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  filter?: UserFilter;
+  signal?: AbortSignal;
+}
+
+/**
+ * One page of users with their licenses. Search and filter are applied by the
+ * server across all users.
+ */
+export const getUsersPage = async ({
+  page = 1,
+  pageSize = USERS_PAGE_SIZE,
+  search = '',
+  filter = 'all',
+  signal,
+}: UsersPageParams = {}): Promise<UsersPage> => {
+  const query = new URLSearchParams({ page: String(page), page_size: String(pageSize), filter });
+  if (search.trim()) query.set('search', search.trim());
+  return apiRequest<UsersPage>(`api/v1/auth/admin/users-with-licenses/?${query}`, { signal });
 };
+
+/**
+ * Every user with licenses, walked page by page (for the full JSON backup).
+ */
+export const getAllUsersWithLicenses = async (): Promise<UserWithLicenses[]> => {
+  const all: UserWithLicenses[] = [];
+  let page = 1;
+  let totalPages = 1;
+  do {
+    const data = await getUsersPage({ page, pageSize: 500 });
+    all.push(...data.users);
+    totalPages = data.pagination.totalPages;
+    page += 1;
+  } while (page <= totalPages);
+  return all;
+};
+
+export interface DashboardStats {
+  generatedAt: string;
+  timezone: string;
+  users: {
+    total: number; today: number; last7: number; last30: number;
+    admins: number; active7: number; active30: number; withLicense: number;
+  };
+  licenses: {
+    total: number; today: number; last7: number; last30: number;
+    active: number; revoked: number; bound: number; activeUnbound: number;
+    byProvider: { provider: string; count: number }[];
+  };
+  devices: { uniqueHwids: number; boundLicenses: number; boundLast7: number; boundLast30: number };
+  orders: {
+    total: number; paid: number; pending: number; cancelled: number; currency: string;
+    revenue: { total: number; today: number; last7: number; last30: number };
+    lastPaidAt: string | null;
+  };
+  catalog: { total: number; ready: number };
+  games: DashboardGame[];
+  topGames: DashboardGame[];
+  series: { date: string; users: number; licenses: number; revenue: number }[];
+  activity: DashboardActivity[];
+}
+
+export interface DashboardGame {
+  gameId: string; title: string; slug: string; image: string;
+  licenses: number; active: number; bound: number; last30: number;
+  paidOrders: number; revenue: number;
+}
+
+export interface DashboardActivity {
+  type: 'signup' | 'license' | 'bind' | 'payment';
+  at: string | null;
+  user: string;
+  email: string;
+  detail: string;
+  provider?: string;
+  device?: string;
+  amount?: number;
+}
+
+export const getDashboardStats = async (): Promise<DashboardStats> =>
+  apiRequest<DashboardStats>('api/v1/auth/admin/dashboard-stats/');
 
 /**
  * Update user role (assign admin or demote to user).

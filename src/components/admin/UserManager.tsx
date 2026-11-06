@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Users,
   ShieldCheck,
@@ -28,11 +28,15 @@ import type { Game } from '../../types/game';
 import type { UserWithLicenses, UserRole } from '../../types/auth';
 import {
   getAllUsersWithLicenses,
+  getUsersPage,
+  USERS_PAGE_SIZE,
   updateUserRole,
   resetLicenseHwid,
   toggleLicenseStatus,
   deleteLicense,
-  type UserStats
+  type UserStats,
+  type UserFilter,
+  type UsersPage
 } from '../../services/usersService';
 import { ADMIN_EMAILS } from '../../context/AuthContext';
 import { GrantLicenseModal } from './GrantLicenseModal';
@@ -54,7 +58,16 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'user' | 'with_devices'>('all');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState<UserFilter>('all');
+  const [filterCounts, setFilterCounts] = useState<UsersPage['filterCounts'] | null>(null);
+  const [pagination, setPagination] = useState<UsersPage['pagination']>({
+    page: 1,
+    pageSize: USERS_PAGE_SIZE,
+    total: 0,
+    totalPages: 1,
+  });
+  const [exporting, setExporting] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserWithLicenses | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -63,8 +76,11 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
   const [isGrantModalOpen, setIsGrantModalOpen] = useState(false);
   const [grantTargetUser, setGrantTargetUser] = useState<UserWithLicenses | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const USERS_PER_PAGE = 100;
+  const USERS_PER_PAGE = pagination.pageSize;
   const tableTopRef = useRef<HTMLDivElement>(null);
+  const requestSeq = useRef(0);
+  const selectedUserRef = useRef<UserWithLicenses | null>(null);
+  selectedUserRef.current = selectedUser;
 
   const showToast = (text: string, type: 'success' | 'error' = 'success') => {
     setToastMessage({ text, type });
@@ -77,37 +93,55 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
     if (!silent) setLoading(true);
     else setRefreshing(true);
 
+    // Only the newest request may update the table (typing fires several)
+    const seq = ++requestSeq.current;
     try {
-      const data = await getAllUsersWithLicenses();
+      const data = await getUsersPage({ page: currentPage, search: debouncedSearch, filter: roleFilter });
+      if (seq !== requestSeq.current) return;
       setUsers(data.users);
       setStats(data.stats);
+      setFilterCounts(data.filterCounts);
+      setPagination(data.pagination);
+      if (data.pagination.page !== currentPage) setCurrentPage(data.pagination.page);
 
       // If user modal is open, keep selectedUser refreshed
-      if (selectedUser) {
-        const updatedSelected = data.users.find((u) => u.uid === selectedUser.uid);
+      const openUser = selectedUserRef.current;
+      if (openUser) {
+        const updatedSelected = data.users.find((u) => u.uid === openUser.uid);
         if (updatedSelected) {
           setSelectedUser(updatedSelected);
         }
       }
     } catch (err: any) {
+      if (seq !== requestSeq.current) return;
       console.error('Failed to load users:', err);
       showToast('Foydalanuvchilarni yuklashda xatolik yuz berdi: ' + err.message, 'error');
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      if (seq === requestSeq.current) {
+        setLoading(false);
+        setRefreshing(false);
+      }
     }
   };
 
+  // Search waits for a pause in typing before asking the server
   useEffect(() => {
-    loadData();
-  }, []);
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 350);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    loadData(users.length > 0);
+  }, [currentPage, debouncedSearch, roleFilter]);
 
   const handleExportFullBackup = async () => {
+    setExporting(true);
     try {
       showToast('Barcha ma’lumotlar to‘liq eksport qilinmoqda...', 'success');
 
-      // 1. All users
-      const exportedUsers = users.map((u) => ({
+      // 1. All users (the table only holds one page, so fetch every page)
+      const everyUser = await getAllUsersWithLicenses();
+      const exportedUsers = everyUser.map((u) => ({
         id: u.uid,
         email: u.email,
         displayName: (u.displayName || u.email?.split('@')[0] || 'User').slice(0, 255),
@@ -120,7 +154,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
 
       // 2. All licenses
       const allLics: any[] = [];
-      users.forEach((u) => {
+      everyUser.forEach((u) => {
         (u.licenses || []).forEach((lic) => {
           allLics.push({
             id: lic.id,
@@ -184,6 +218,8 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
       showToast(`Muvaffaqiyatli! ${exportedUsers.length} ta user va ${allLics.length} ta litsenziya yuklab olindi!`, 'success');
     } catch (err: any) {
       showToast('Eksportda xatolik: ' + err.message, 'error');
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -319,38 +355,14 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
     }
   };
 
-  const filteredUsers = useMemo(() => {
-    return users.filter((u) => {
-      const q = searchQuery.toLowerCase().trim();
-      const matchSearch =
-        !q ||
-        (u.displayName && u.displayName.toLowerCase().includes(q)) ||
-        (u.email && u.email.toLowerCase().includes(q)) ||
-        u.uid.toLowerCase().includes(q);
-
-      if (!matchSearch) return false;
-
-      if (roleFilter === 'admin') return u.isAdmin;
-      if (roleFilter === 'user') return !u.isAdmin;
-      if (roleFilter === 'with_devices') return (u.boundDevicesCount || 0) > 0;
-
-      return true;
-    });
-  }, [users, searchQuery, roleFilter]);
-
-  // Reset to first page when search query or role filter changes
+  // Search and filter run on the server; a change starts again at page 1
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, roleFilter]);
+  }, [debouncedSearch, roleFilter]);
 
-  // 100 users per page pagination
-  const totalPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE) || 1;
+  const totalPages = pagination.totalPages || 1;
   const validCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
-
-  const paginatedUsers = useMemo(() => {
-    const startIndex = (validCurrentPage - 1) * USERS_PER_PAGE;
-    return filteredUsers.slice(startIndex, startIndex + USERS_PER_PAGE);
-  }, [filteredUsers, validCurrentPage]);
+  const totalMatching = pagination.total;
 
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages || newPage === validCurrentPage) return;
@@ -443,9 +455,9 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
       </div>
 
       {/* Action and Search Bar */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-        <div className="flex flex-1 items-center gap-3">
-          <div className="relative flex-1 max-w-md">
+      <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-4">
+        <div className="flex flex-1 flex-col lg:flex-row items-stretch lg:items-center gap-3 min-w-0">
+          <div className="relative flex-1 lg:max-w-md min-w-0">
             <Search className="w-4 h-4 text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
@@ -456,7 +468,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
             />
           </div>
 
-          <div className="flex items-center gap-1.5 p-1 bg-[#141821] border border-[#2A3245] rounded-xl text-xs overflow-x-auto">
+          <div className="flex items-center gap-1.5 p-1 bg-[#141821] border border-[#2A3245] rounded-xl text-xs overflow-x-auto [scrollbar-width:none] whitespace-nowrap">
             <button
               onClick={() => setRoleFilter('all')}
               className={`px-3 py-1.5 rounded-lg font-bold transition-all ${
@@ -465,7 +477,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              Barchasi ({users.length})
+              Barchasi ({filterCounts?.all ?? stats.totalUsers})
             </button>
             <button
               onClick={() => setRoleFilter('admin')}
@@ -475,7 +487,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              Adminlar ({stats.totalAdmins})
+              Adminlar ({filterCounts?.admin ?? stats.totalAdmins})
             </button>
             <button
               onClick={() => setRoleFilter('user')}
@@ -485,7 +497,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              Foydalanuvchilar ({users.length - stats.totalAdmins})
+              Foydalanuvchilar ({filterCounts?.user ?? stats.totalUsers - stats.totalAdmins})
             </button>
             <button
               onClick={() => setRoleFilter('with_devices')}
@@ -495,12 +507,12 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              Qurilmasi borlar
+              Qurilmasi borlar{filterCounts ? ` (${filterCounts.with_devices})` : ''}
             </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 self-end md:self-auto flex-wrap">
+        <div className="flex items-center gap-2 self-end xl:self-auto flex-wrap">
 
           <button
             onClick={() => {
@@ -515,12 +527,12 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
 
           <button
             onClick={handleExportFullBackup}
-            disabled={loading || users.length === 0}
+            disabled={loading || exporting || stats.totalUsers === 0}
             className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all cursor-pointer shadow-lg shadow-blue-600/25 disabled:opacity-50"
             title="Barcha foydalanuvchilar va litsenziyalarni to‘liq JSON formatda yuklab olish"
           >
-            <Download className="w-4 h-4" />
-            <span>To‘liq Eksport ({users.length})</span>
+            {exporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            <span>To‘liq Eksport ({stats.totalUsers})</span>
           </button>
 
           <button
@@ -540,7 +552,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
           <RefreshCw className="w-8 h-8 text-[#A3E635] animate-spin mb-3" />
           <p className="text-gray-400 text-sm">Foydalanuvchilar ro‘yxati yuklanmoqda...</p>
         </div>
-      ) : filteredUsers.length === 0 ? (
+      ) : users.length === 0 ? (
         <div className="text-center py-16 bg-[#141821] border border-[#2A3245] rounded-2xl">
           <Users className="w-12 h-12 text-gray-600 mx-auto mb-3" />
           <h3 className="text-base font-bold text-white mb-1">Hech qanday foydalanuvchi topilmadi</h3>
@@ -551,7 +563,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
           </p>
         </div>
       ) : (
-        <div className="bg-[#141821] border border-[#2A3245] rounded-2xl overflow-hidden shadow-xl">
+        <div className={`bg-[#141821] border border-[#2A3245] rounded-2xl overflow-hidden shadow-xl transition-opacity ${refreshing ? 'opacity-60' : ''}`}>
           <div ref={tableTopRef} className="scroll-mt-24" />
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-gray-300">
@@ -566,7 +578,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2A3245]">
-                {paginatedUsers.map((item) => {
+                {users.map((item) => {
                   const isMaster = ADMIN_EMAILS.some((e) => e.toLowerCase() === (item.email || '').toLowerCase());
                   const isRoleLoading = actionLoading === `role_${item.uid}`;
 
@@ -731,16 +743,16 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
             </table>
           </div>
 
-          {/* Pagination Controls for Users (100 per page) */}
-          {totalPages > 1 && (
+          {/* Pagination Controls for Users (50 per page, paged by the server) */}
+          {totalMatching > 0 && (
             <div className="px-6 py-4 bg-[#0B0D12] border-t border-[#2A3245] flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-xs text-gray-400 font-medium">
                 <span>Ko‘rsatilmoqda: </span>
                 <strong className="text-white">
-                  {(validCurrentPage - 1) * USERS_PER_PAGE + 1}–{Math.min(validCurrentPage * USERS_PER_PAGE, filteredUsers.length)}
+                  {(validCurrentPage - 1) * USERS_PER_PAGE + 1}–{Math.min(validCurrentPage * USERS_PER_PAGE, totalMatching)}
                 </strong>
                 <span> / Jami </span>
-                <strong className="text-[#A3E635]">{filteredUsers.length} ta</strong>
+                <strong className="text-[#A3E635]">{totalMatching} ta</strong>
                 <span> foydalanuvchi (Sahifa {validCurrentPage} / {totalPages})</span>
               </div>
 
@@ -1142,7 +1154,6 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
           loadData(true);
         }}
         games={games}
-        users={users}
         preselectedUser={grantTargetUser}
       />
     </div>
