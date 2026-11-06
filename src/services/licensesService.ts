@@ -1,4 +1,3 @@
-import type { Game } from '../types/game';
 import { apiRequest, fetchFromBackend } from './apiClient';
 
 export interface GameLicenseItem {
@@ -31,161 +30,71 @@ export interface GameLicenseGroup {
   activeLicenses: number;
   boundDevicesCount: number;
   percentage: number; // Share of total claimed licenses
-  lastClaimedAt?: any;
-  licenses: GameLicenseItem[];
+  lastClaimedAt?: string | null;
 }
 
 export interface LicenseGlobalStats {
   totalLicenses: number;
+  activeLicenses: number;
+  revokedLicenses: number;
   totalUniqueUsers: number;
   totalGamesClaimed: number;
   totalBoundDevices: number;
-  topGame: {
-    gameTitle: string;
-    gameId: string;
-    count: number;
-    percentage: number;
-  } | null;
 }
 
-/**
- * Fetch all claimed licenses, enrich with latest user profiles and games info,
- * and calculate per-game and platform-wide statistics.
- */
-export const fetchAllLicensesWithStats = async (
-  gamesList: Game[] = []
-): Promise<{
-  licenses: GameLicenseItem[];
-  groups: GameLicenseGroup[];
+export interface LicenseSummary {
   stats: LicenseGlobalStats;
-}> => {
-  try {
-    const allLicenses: GameLicenseItem[] = [];
-    const uniqueUserIds = new Set<string>();
+  groups: GameLicenseGroup[];
+  providers: string[];
+  unpaidRevokedIds: string[];
+}
 
-    const backendLicenses = await apiRequest<any[]>('api/v1/licenses/admin/');
-    backendLicenses.forEach((d) => {
-      const userId = d.userId || '';
-      allLicenses.push({
-        id: d.id,
-        userId,
-        userEmail: d.userEmail || 'Noma’lum email',
-        userName: d.userName || d.userEmail?.split('@')[0] || 'Foydalanuvchi',
-        userPhoto: d.userPhoto || undefined,
-        gameId: d.gameId || 'noma-lum',
-        gameTitle: d.gameTitle || 'Noma’lum o‘yin',
-        gameSlug: d.gameSlug || (d.gameId ? String(d.gameId) : 'noma-lum'),
-        status: d.status === 'revoked' ? 'revoked' : 'active',
-        hwid: d.hwid || null,
-        boundAt: d.boundAt || null,
-        boundDeviceName: d.boundDeviceName || null,
-        paymentProvider: d.paymentProvider || undefined,
-        paymentRef: d.paymentRef || undefined,
-        paidAmount: d.paidAmount || undefined,
-        revokedReason: d.revokedReason || undefined,
-        createdAt: d.createdAt || null,
-      });
-      if (userId) {
-        uniqueUserIds.add(userId);
-      }
-    });
+/** Totals and per-game counts, without the licenses themselves. */
+export const getAdminLicenseSummary = async (): Promise<LicenseSummary> =>
+  apiRequest<LicenseSummary>('api/v1/licenses/admin/summary/');
 
-    // 3. Map games by ID and slug for metadata (images, genres)
-    const gamesById = new Map<string, Game>();
-    const gamesBySlug = new Map<string, Game>();
-    gamesList.forEach((g) => {
-      gamesById.set(g.id, g);
-      if (g.slug) gamesBySlug.set(g.slug, g);
-    });
+export const LICENSES_PAGE_SIZE = 50;
 
-    // 4. Group by gameId
-    const groupsMap = new Map<string, GameLicenseItem[]>();
-    allLicenses.forEach((lic) => {
-      const key = lic.gameId || lic.gameSlug;
-      if (!groupsMap.has(key)) {
-        groupsMap.set(key, []);
-      }
-      groupsMap.get(key)!.push(lic);
-    });
+export interface LicenseFilters {
+  search?: string;
+  game?: string;
+  status?: 'all' | 'active' | 'revoked';
+  device?: 'all' | 'bound' | 'unbound';
+  provider?: string;
+  sort?: 'newest' | 'oldest' | 'recently_bound';
+}
 
-    const totalLicensesCount = allLicenses.length;
-    let totalBoundDevices = 0;
+export interface LicensesPage {
+  licenses: GameLicenseItem[];
+  pagination: { page: number; pageSize: number; total: number; totalPages: number };
+}
 
-    const groups: GameLicenseGroup[] = [];
+/** One page of licenses; search and filters are applied by the server. */
+export const getAdminLicensesPage = async (
+  filters: LicenseFilters,
+  page = 1,
+  pageSize = LICENSES_PAGE_SIZE
+): Promise<LicensesPage> => {
+  const query = new URLSearchParams({ page: String(page), page_size: String(pageSize) });
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value && value !== 'all') query.set(key, String(value).trim());
+  });
+  if (!query.get('search')) query.delete('search');
+  return apiRequest<LicensesPage>(`api/v1/licenses/admin/list/?${query}`);
+};
 
-    groupsMap.forEach((lics, gameKey) => {
-      // Find matching game for display
-      const matchedGame = gamesById.get(gameKey) || gamesBySlug.get(gameKey) || gamesList.find(
-        (g) => g.title.toLowerCase() === (lics[0]?.gameTitle || '').toLowerCase()
-      );
-
-      const gameTitle = matchedGame?.title || lics[0]?.gameTitle || gameKey;
-      const gameSlug = matchedGame?.slug || lics[0]?.gameSlug || gameKey;
-      const coverImage = matchedGame?.cardImage || matchedGame?.cover || matchedGame?.heroImage;
-      const genres = matchedGame?.genres || [];
-
-      // Sort licenses in this group: latest first
-      lics.sort((a, b) => {
-        const timeA = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : a.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const timeB = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : b.createdAt ? new Date(b.createdAt).getTime() : 0;
-        return timeB - timeA;
-      });
-
-      const totalGroupLicenses = lics.length;
-      const activeLicenses = lics.filter((l) => l.status === 'active').length;
-      const boundCount = lics.filter((l) => Boolean(l.hwid)).length;
-      totalBoundDevices += boundCount;
-
-      const percentage = totalLicensesCount > 0
-        ? Math.round((totalGroupLicenses / totalLicensesCount) * 100)
-        : 0;
-
-      groups.push({
-        gameId: matchedGame?.id || gameKey,
-        gameTitle,
-        gameSlug,
-        coverImage,
-        genres,
-        totalLicenses: totalGroupLicenses,
-        activeLicenses,
-        boundDevicesCount: boundCount,
-        percentage,
-        lastClaimedAt: lics[0]?.createdAt,
-        licenses: lics
-      });
-    });
-
-    // Sort groups by totalLicenses descending (most popular game first)
-    groups.sort((a, b) => b.totalLicenses - a.totalLicenses);
-
-    // Calculate top claimed game
-    const topGroup = groups[0] || null;
-    const topGame = topGroup
-      ? {
-          gameTitle: topGroup.gameTitle,
-          gameId: topGroup.gameId,
-          count: topGroup.totalLicenses,
-          percentage: topGroup.percentage
-        }
-      : null;
-
-    const stats: LicenseGlobalStats = {
-      totalLicenses: totalLicensesCount,
-      totalUniqueUsers: uniqueUserIds.size,
-      totalGamesClaimed: groups.length,
-      totalBoundDevices,
-      topGame
-    };
-
-    return {
-      licenses: allLicenses,
-      groups,
-      stats
-    };
-  } catch (error) {
-    console.error('Error fetching license stats:', error);
-    throw error;
-  }
+/** Every license matching the filters, walked page by page (for CSV export). */
+export const getAllAdminLicenses = async (filters: LicenseFilters): Promise<GameLicenseItem[]> => {
+  const all: GameLicenseItem[] = [];
+  let page = 1;
+  let totalPages = 1;
+  do {
+    const data = await getAdminLicensesPage(filters, page, 500);
+    all.push(...data.licenses);
+    totalPages = data.pagination.totalPages;
+    page += 1;
+  } while (page <= totalPages);
+  return all;
 };
 
 export interface GameLicenseCountStats {
