@@ -107,7 +107,7 @@ export const ClickPaymentModal: React.FC<ClickPaymentModalProps> = ({
                   Click Up / Click Merchant
                 </span>
                 <span className="text-[11px] text-sky-300 block truncate">
-                  Uzcard, Humo va xalqaro kartalar
+                  Click ilovasi yoki Uzcard / Humo karta
                 </span>
               </div>
             </div>
@@ -142,6 +142,11 @@ export const ClickPaymentModal: React.FC<ClickPaymentModalProps> = ({
                 </>
               )}
             </button>
+
+            {/* Card payment hint: the Click page also accepts cards without the app */}
+            <p className="text-[11px] sm:text-xs text-gray-400 text-center leading-relaxed px-1">
+              Click ilovasi shart emas: to‘lov sahifasida <span className="text-white font-semibold">«Оплата картой»</span> ni tanlab, Uzcard yoki Humo karta ma’lumotlarini kiriting.
+            </p>
 
             {/* Security Guarantee Note */}
             <div className="flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] text-gray-500 pt-0.5">
