@@ -2,6 +2,6 @@
   "version": "1.4.1",
   "downloadUrl": "https://www.subgame.uz/downloads/SubGame-Launcher.exe",
   "minRequiredVersion": "1.4.1",
-  "changelog": "SubGame Launcher 1.4.1: administrator ruxsatini talab qiladigan o'yinlar (masalan, MOUSE: P.I. For Hire) endi xatosiz ishga tushadi — Windows ruxsat so'raganda \"Ha\" ni bosing. O'yin ochilmasa, launcher o'yin papkasini asl holiga qaytaradi va tushunarli xabar ko'rsatadi.",
+  "changelog": "SubGame Launcher 1.4.1: keyingi yangilanishlar butun launcher o'rniga faqat o'zgargan qismni (bir necha yuz KB) yuklab oladi. O'yin ishga tushmasa, launcher o'yin papkasini asl holiga qaytaradi va tushunarli xabar ko'rsatadi.",
   "releaseDate": "2026-11-09"
 }
