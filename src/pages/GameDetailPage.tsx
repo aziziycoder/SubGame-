@@ -4,7 +4,6 @@ import { getGameBySlug } from '../services/gamesService';
 import type { Game } from '../types/game';
 import { SubtitleStatusBadge } from '../components/common/Badge';
 import { Lightbox } from '../components/common/Lightbox';
-import { ReportIssueModal } from '../components/home/ReportIssueModal';
 import { ClickPaymentModal } from '../components/payment/ClickPaymentModal';
 import { GameEasterEgg } from '../components/easter-eggs/GameEasterEgg';
 import { LicenseEasterEgg } from '../components/easter-eggs/LicenseEasterEgg';
@@ -68,7 +67,6 @@ export const GameDetailPage: React.FC = () => {
   const [claimSuccess, setClaimSuccess] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [copiedPath, setCopiedPath] = useState<string | null>(null);
   const [shared, setShared] = useState(false);
   const [isClickModalOpen, setIsClickModalOpen] = useState(false);
@@ -739,19 +737,7 @@ export const GameDetailPage: React.FC = () => {
                 ))}
               </div>
 
-              <div className="mt-6 pt-5 border-t border-[#2A3245]/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <span className="text-xs text-gray-400">
-                  O‘rnatishda xatolik yuz berdimi?
-                </span>
-                <button
-                  onClick={() => setIsReportModalOpen(true)}
-                  className="text-xs text-amber-400 hover:underline font-semibold flex items-center gap-1 cursor-pointer"
-                >
-                  <AlertTriangle className="w-3.5 h-3.5" />
-                  <span>Xatolik haqida xabar bering</span>
-                </button>
-              </div>
-            </section>
+              </section>
 
             {/* D. Verified System Requirements */}
             {Boolean(
@@ -1089,22 +1075,7 @@ export const GameDetailPage: React.FC = () => {
               </div>
             )}
 
-            {/* Support and Report Card */}
-            <div className="bg-[#141821] rounded-2xl p-5 sm:p-6 border border-[#2A3245] space-y-3">
-              <h4 className="text-sm font-bold text-white">
-                Yordam kerakmi?
-              </h4>
-              <p className="text-xs text-gray-400 leading-relaxed">
-                Subtitrni o‘rnatishda qiyinchilik bo‘lsa yoki matnda xato topsangiz, bizga xabar bering.
-              </p>
-              <button
-                onClick={() => setIsReportModalOpen(true)}
-                className="w-full py-2.5 px-4 rounded-xl bg-[#1A1F2A] hover:bg-[#222938] text-amber-400 border border-amber-500/30 text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <AlertTriangle className="w-4 h-4" />
-                <span>Xatolik haqida xabar berish</span>
-              </button>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -1121,12 +1092,7 @@ export const GameDetailPage: React.FC = () => {
         title={game.title}
       />
 
-      {/* Report Modal */}
-      <ReportIssueModal
-        isOpen={isReportModalOpen}
-        onClose={() => setIsReportModalOpen(false)}
-        preselectedGameId={game.id}
-      />
+      
 
       <LicenseEasterEgg slug={game.slug} active={claimSuccess} />
 

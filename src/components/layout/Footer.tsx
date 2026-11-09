@@ -1,16 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { SITE_CONFIG } from '../../config/site';
-import { ArrowUp, Shield, Sparkles, MessageSquare, HeartHandshake } from 'lucide-react';
+import { ArrowUp, Shield, Sparkles, HeartHandshake } from 'lucide-react';
 import { TelegramLogo } from '../common/BrandLogos';
 
 interface FooterProps {
   onOpenReportModal?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({
-  onOpenReportModal,
-}) => {
+export const Footer: React.FC<FooterProps> = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -18,7 +16,7 @@ export const Footer: React.FC<FooterProps> = ({
   return (
     <footer className="bg-[#0B0D12] border-t border-[#2A3245] text-gray-400 mt-20 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-[#2A3245]/60">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-[#2A3245]/60">
           {/* Brand Info (2 cols) */}
           <div className="lg:col-span-2 space-y-4">
             <Link to="/" className="flex items-center gap-2.5 group">
@@ -90,37 +88,6 @@ export const Footer: React.FC<FooterProps> = ({
             </ul>
           </div>
 
-          {/* Subtitles & Games */}
-          <div>
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
-              Mavjud Subtitrlar
-            </h4>
-            <ul className="space-y-2.5 text-sm">
-              <li>
-                <Link
-                  to="/games/a-plague-tale-requiem"
-                  className="hover:text-[#A3E635] transition-colors flex items-center justify-between"
-                >
-                  <span>A Plague Tale: Requiem</span>
-                  <span className="text-[10px] text-[#A3E635] bg-[#A3E635]/15 px-1.5 py-0.5 rounded">
-                    v1.0
-                  </span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/games/a-plague-tale-innocence"
-                  className="hover:text-[#A3E635] transition-colors flex items-center justify-between"
-                >
-                  <span>A Plague Tale: Innocence</span>
-                  <span className="text-[10px] text-[#A3E635] bg-[#A3E635]/15 px-1.5 py-0.5 rounded">
-                    v1.2
-                  </span>
-                </Link>
-              </li>
-            </ul>
-          </div>
-
           {/* Community & Support */}
           <div>
             <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
@@ -136,17 +103,6 @@ export const Footer: React.FC<FooterProps> = ({
                   <span>O‘yin taklif qilish</span>
                 </Link>
               </li>
-              {onOpenReportModal && (
-                <li>
-                  <button
-                    onClick={onOpenReportModal}
-                    className="hover:text-[#A3E635] transition-colors text-left flex items-center gap-1.5"
-                  >
-                    <MessageSquare className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Xatolik haqida xabar</span>
-                  </button>
-                </li>
-              )}
               <li>
                 <a
                   href={SITE_CONFIG.telegramUrl}
