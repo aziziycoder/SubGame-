@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Download,
@@ -20,7 +20,31 @@ import { TelegramLogo } from '../components/common/BrandLogos';
 import { FaqSection } from '../components/home/FaqSection';
 import { SITE_CONFIG } from '../config/site';
 
+interface LauncherRelease {
+  version: string;
+  highlight?: string;
+}
+
+// Launcher versiyasi qo'lda yozilmaydi: launcher yangilanishlari uchun chiqariladigan version.json dan olinadi
+function useLauncherRelease(): LauncherRelease | null {
+  const [release, setRelease] = useState<LauncherRelease | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/downloads/version.json?t=${Date.now()}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.version) setRelease({ version: data.version, highlight: data.highlight });
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  return release;
+}
+
 export const LauncherPage: React.FC = () => {
+  const release = useLauncherRelease();
   const steps = [
     {
       step: '01',
@@ -66,7 +90,7 @@ export const LauncherPage: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#A3E635]/15 border border-[#A3E635]/40 text-[#A3E635] text-xs font-semibold mb-6 shadow-sm">
             <Sparkles className="w-4 h-4" />
-            <span>Rasmiy Windows Dasturi • Versiya 1.3.0</span>
+            <span>Rasmiy Windows Dasturi{release ? ` • Versiya ${release.version}` : ''}</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-6">
@@ -77,10 +101,14 @@ export const LauncherPage: React.FC = () => {
             Subtitr fayllarini qo‘lda ko‘chirib yurishga chek qo‘ying! Rasmiy Launcher orqali o‘zbekcha tarjimalarni 1 bosishda o‘rnating, litsenziyalarni boshqaring va o‘yinlarni to‘g‘ridan-to‘g‘ri ishga tushiring.
           </p>
 
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#141821] border border-[#A3E635]/30 text-xs text-gray-300 mb-8 shadow-sm">
-            <CheckCircle2 className="w-4 h-4 text-[#A3E635] shrink-0" />
-            <span>Yangi v1.3.0: Litsenziya tekshiruvi kuchaytirildi, qurilmani almashtirish osonlashdi</span>
-          </div>
+          {release?.highlight ? (
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#141821] border border-[#A3E635]/30 text-xs text-gray-300 mb-8 shadow-sm">
+              <CheckCircle2 className="w-4 h-4 text-[#A3E635] shrink-0" />
+              <span>Yangi v{release.version}: {release.highlight}</span>
+            </div>
+          ) : (
+            <div className="mb-8" />
+          )}
 
           {/* Download Action */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">

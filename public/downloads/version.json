@@ -1,7 +1,11 @@
 {
-  "version": "1.4.1",
+  "version": "1.4.2",
   "downloadUrl": "https://www.subgame.uz/downloads/SubGame-Launcher.exe",
   "minRequiredVersion": "1.4.1",
-  "changelog": "SubGame Launcher 1.4.1: keyingi yangilanishlar butun launcher o'rniga faqat o'zgargan qismni (bir necha yuz KB) yuklab oladi. O'yin ishga tushmasa, launcher o'yin papkasini asl holiga qaytaradi va tushunarli xabar ko'rsatadi.",
-  "releaseDate": "2026-11-09"
+  "changelog": "SubGame Launcher 1.4.2: launcher endi o'zini to'liq yangilashda xatoga uchramaydi (avval \"Qayta ishga tushirish\" bosilganda hech narsa bo'lmasdi). Bu kichik yangilanish — bir necha yuz KB.",
+  "releaseDate": "2026-11-09",
+  "patchUrl": "https://www.subgame.uz/downloads/update-bundle.zip",
+  "patchSize": "805 KB",
+  "patchBaseVersion": "1.4.1",
+  "highlight": "Yangilanishlar endi faqat o'zgargan qismni yuklab oladi va to'g'ri o'rnatiladi"
 }
