@@ -1,13 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { SITE_CONFIG } from '../../config/site';
 import { Users, Sparkles } from 'lucide-react';
 import { TelegramLogo } from '../common/BrandLogos';
 
-interface CommunitySectionProps {
-  onOpenSuggestModal: () => void;
-}
-
-export const CommunitySection: React.FC<CommunitySectionProps> = ({ onOpenSuggestModal }) => {
+export const CommunitySection: React.FC = () => {
   return (
     <section className="py-20 bg-[#0B0D12] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,13 +38,13 @@ export const CommunitySection: React.FC<CommunitySectionProps> = ({ onOpenSugges
                 <span>Telegram kanaliga o‘tish</span>
               </a>
 
-              <button
-                onClick={onOpenSuggestModal}
+              <Link
+                to="/suggestions"
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#141821] hover:bg-[#1A1F2A] text-white font-semibold text-sm sm:text-base border border-[#2A3245] hover:border-[#A3E635]/50 transition-all"
               >
                 <Sparkles className="w-4 h-4 text-[#A3E635]" />
-                <span>Subtitr taklif qilish</span>
-              </button>
+                <span>O‘yin taklif qilish</span>
+              </Link>
             </div>
 
             {/* Live community stats badge */}

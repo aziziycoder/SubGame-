@@ -5,12 +5,10 @@ import { ArrowUp, Shield, Sparkles, MessageSquare, HeartHandshake } from 'lucide
 import { TelegramLogo } from '../common/BrandLogos';
 
 interface FooterProps {
-  onOpenSuggestModal?: () => void;
   onOpenReportModal?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
-  onOpenSuggestModal,
   onOpenReportModal,
 }) => {
   const scrollToTop = () => {
@@ -129,17 +127,15 @@ export const Footer: React.FC<FooterProps> = ({
               Hamjamiyat va Yordam
             </h4>
             <ul className="space-y-2.5 text-sm">
-              {onOpenSuggestModal && (
-                <li>
-                  <button
-                    onClick={onOpenSuggestModal}
-                    className="hover:text-[#A3E635] transition-colors text-left flex items-center gap-1.5"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-[#A3E635]" />
-                    <span>Subtitr taklif qilish</span>
-                  </button>
-                </li>
-              )}
+              <li>
+                <Link
+                  to="/suggestions"
+                  className="hover:text-[#A3E635] transition-colors text-left flex items-center gap-1.5"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-[#A3E635]" />
+                  <span>O‘yin taklif qilish</span>
+                </Link>
+              </li>
               {onOpenReportModal && (
                 <li>
                   <button

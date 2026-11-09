@@ -15,17 +15,16 @@ import {
   User,
   LogOut,
   Laptop,
-  HeartHandshake
+  HeartHandshake,
+  Vote
 } from 'lucide-react';
 import { TelegramLogo } from '../common/BrandLogos';
 // Lazy-load modal to avoid bundling with Navbar
-const SuggestGameModal = React.lazy(() => import('../home/SuggestGameModal').then((m) => ({ default: m.SuggestGameModal })));
 import { UserMenu } from './UserMenu';
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
   const { favoritesCount } = useFavorites();
   const { user, isAdmin, licenses, signInWithGoogle, signOut } = useAuth();
   const location = useLocation();
@@ -59,6 +58,7 @@ export const Navbar: React.FC = () => {
     { name: 'Bosh sahifa', path: '/', icon: Home },
     { name: 'O‘yinlar', path: '/games', icon: Layers },
     { name: 'Launcher', path: '/launcher', icon: Monitor },
+    { name: 'Takliflar', path: '/suggestions', icon: Vote },
     { name: 'Biz haqimizda', path: '/about', icon: Info },
   ];
 
@@ -113,14 +113,16 @@ export const Navbar: React.FC = () => {
                   <Link
                     key={link.path}
                     to={link.path}
-                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                    title={link.name}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 xl:py-1 rounded-full text-xs font-medium transition-all ${
                       active
                         ? 'bg-[#A3E635] text-[#0B0D12] font-semibold shadow-accent-glow'
                         : 'text-gray-300 hover:text-white hover:bg-white/5'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
-                    <span>{link.name}</span>
+                    {/* Between lg and xl five labels don't fit beside the right-hand buttons. */}
+                    <span className="sr-only xl:not-sr-only">{link.name}</span>
                   </Link>
                 );
               })}
@@ -381,16 +383,6 @@ export const Navbar: React.FC = () => {
           </div>
         )}
       </header>
-
-      {/* Suggest Modal */}
-      {isSuggestModalOpen && (
-        <React.Suspense fallback={null}>
-          <SuggestGameModal
-            isOpen={isSuggestModalOpen}
-            onClose={() => setIsSuggestModalOpen(false)}
-          />
-        </React.Suspense>
-      )}
     </>
   );
 };

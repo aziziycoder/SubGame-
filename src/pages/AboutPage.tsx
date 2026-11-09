@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { SITE_CONFIG } from '../config/site';
-const SuggestGameModal = React.lazy(() => import('../components/home/SuggestGameModal').then((m) => ({ default: m.SuggestGameModal })));
 import {
   Sparkles,
   ShieldCheck,
@@ -10,8 +10,6 @@ import {
 import { TelegramLogo } from '../components/common/BrandLogos';
 
 export const AboutPage: React.FC = () => {
-  const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
-
   const pipelineSteps = [
     {
       step: '01',
@@ -134,25 +132,16 @@ export const AboutPage: React.FC = () => {
               <TelegramLogo className="w-4 h-4 shrink-0" />
               <span>Telegram guruhimizga o‘tish</span>
             </a>
-            <button
-              onClick={() => setIsSuggestModalOpen(true)}
+            <Link
+              to="/suggestions"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#1A1F2A] hover:bg-[#222938] text-white border border-[#2A3245] hover:border-[#A3E635] text-sm font-semibold transition-all"
             >
               <Sparkles className="w-4 h-4 text-[#A3E635]" />
               <span>O‘yin taklif qilish</span>
-            </button>
+            </Link>
           </div>
         </div>
       </div>
-
-      {isSuggestModalOpen && (
-        <React.Suspense fallback={null}>
-          <SuggestGameModal
-            isOpen={isSuggestModalOpen}
-            onClose={() => setIsSuggestModalOpen(false)}
-          />
-        </React.Suspense>
-      )}
     </div>
   );
 };

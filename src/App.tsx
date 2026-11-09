@@ -45,6 +45,7 @@ function lazyWithRetry<T extends React.ComponentType<any>>(
 
 // Route-level Code Splitting for non-landing pages with deployment auto-retry
 const GameDetailPage = lazyWithRetry(() => import('./pages/GameDetailPage').then((m) => ({ default: m.GameDetailPage })));
+const SuggestionsPage = lazyWithRetry(() => import('./pages/SuggestionsPage').then((m) => ({ default: m.SuggestionsPage })));
 const AboutPage = lazyWithRetry(() => import('./pages/AboutPage').then((m) => ({ default: m.AboutPage })));
 const FavoritesPage = lazyWithRetry(() => import('./pages/FavoritesPage').then((m) => ({ default: m.FavoritesPage })));
 const LauncherPage = lazyWithRetry(() => import('./pages/LauncherPage').then((m) => ({ default: m.LauncherPage })));
@@ -53,7 +54,6 @@ const AdminPage = lazyWithRetry(() => import('./pages/AdminPage').then((m) => ({
 const NotFoundPage = lazyWithRetry(() => import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })));
 
 // Lazy-load heavy user modals only when triggered
-const SuggestGameModal = lazyWithRetry(() => import('./components/home/SuggestGameModal').then((m) => ({ default: m.SuggestGameModal })));
 const ReportIssueModal = lazyWithRetry(() => import('./components/home/ReportIssueModal').then((m) => ({ default: m.ReportIssueModal })));
 
 const PageLoader: React.FC = () => (
@@ -63,7 +63,6 @@ const PageLoader: React.FC = () => (
 );
 
 const AppContent: React.FC = () => {
-  const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const location = useLocation();
 
@@ -85,6 +84,7 @@ const AppContent: React.FC = () => {
               <Route path="/launcher" element={<LauncherPage />} />
               <Route path="/guide" element={<Navigate to="/launcher" replace />} />
               <Route path="/connect" element={<ConnectLauncherPage />} />
+              <Route path="/suggestions" element={<SuggestionsPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/favorites" element={<FavoritesPage />} />
               <Route
@@ -104,7 +104,6 @@ const AppContent: React.FC = () => {
       {/* Public Footer: Hidden on Admin Panel */}
       {!isAdminRoute && (
         <Footer
-          onOpenSuggestModal={() => setIsSuggestModalOpen(true)}
           onOpenReportModal={() => setIsReportModalOpen(true)}
         />
       )}
@@ -112,13 +111,6 @@ const AppContent: React.FC = () => {
       {/* Public Global Modals (Lazy Loaded) */}
       {!isAdminRoute && (
         <Suspense fallback={null}>
-          {isSuggestModalOpen && (
-            <SuggestGameModal
-              isOpen={isSuggestModalOpen}
-              onClose={() => setIsSuggestModalOpen(false)}
-            />
-          )}
-
           {isReportModalOpen && (
             <ReportIssueModal
               isOpen={isReportModalOpen}

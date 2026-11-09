@@ -25,7 +25,8 @@ import {
   Monitor,
   Cpu,
   KeyRound,
-  LayoutDashboard
+  LayoutDashboard,
+  Vote
 } from 'lucide-react';
 import { uploadAdminFile } from '../services/apiClient';
 import {
@@ -42,11 +43,12 @@ import { SliderManager } from '../components/admin/SliderManager';
 import { UserManager } from '../components/admin/UserManager';
 import { LicenseStatsManager } from '../components/admin/LicenseStatsManager';
 import { DashboardOverview } from '../components/admin/DashboardOverview';
+import { TranslationRequestManager } from '../components/admin/TranslationRequestManager';
 import { SteamLogo, EpicGamesLogo } from '../components/common/BrandLogos';
 
 export const AdminPage: React.FC = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'games' | 'sliders' | 'users' | 'licenses'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'games' | 'sliders' | 'users' | 'licenses' | 'requests'>('dashboard');
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -832,6 +834,18 @@ export const AdminPage: React.FC = () => {
           </button>
 
           <button
+            onClick={() => setActiveTab('requests')}
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === 'requests'
+                ? 'bg-[#A3E635] text-[#0B0D12] shadow-accent-glow'
+                : 'text-gray-400 hover:text-white hover:bg-[#141821] border border-transparent'
+            }`}
+          >
+            <Vote className="w-4 h-4" />
+            <span>O‘yin takliflari</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('licenses')}
             className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'licenses'
@@ -1045,6 +1059,8 @@ export const AdminPage: React.FC = () => {
           <SliderManager games={games} />
         ) : activeTab === 'users' ? (
           <UserManager games={games} />
+        ) : activeTab === 'requests' ? (
+          <TranslationRequestManager games={games} />
         ) : (
           <LicenseStatsManager games={games} />
         )}
