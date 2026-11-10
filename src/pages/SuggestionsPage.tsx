@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { SEO } from '../components/common/SEO';
 import { Search, ThumbsUp, Check, ExternalLink, Loader2, Trophy, AlertTriangle, Vote, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { ApiError } from '../services/apiClient';
@@ -236,6 +237,12 @@ export const SuggestionsPage: React.FC = () => {
 
   return (
     <div className="pt-28 pb-20 min-h-screen bg-[#0B0D12] text-white">
+      <SEO
+        title="O‘yin taklif qilish va ovoz berish — O‘zbekcha tarjima | SubGame"
+        description="Qaysi o‘yinni o‘zbek tiliga tarjima qilishimizni xohlaysiz? O‘z sevimli o‘yiningizni taklif qiling va unga ovoz bering!"
+        keywords="o‘yin taklif qilish, o‘zbekcha tarjimaga ovoz berish, o‘yinlar so‘rovi, subgame takliflar"
+        canonicalUrl="https://subgame.uz/suggestions"
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">

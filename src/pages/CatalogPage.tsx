@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { SEO } from '../components/common/SEO';
 import { getGames } from '../services/gamesService';
 import type { Game } from '../types/game';
 import { GameCard } from '../components/game/GameCard';
@@ -239,6 +240,12 @@ export const CatalogPage: React.FC = () => {
 
   return (
     <div className="pt-28 pb-20 min-h-screen bg-[#0B0D12]">
+      <SEO
+        title="O‘zbekcha subtitrli o‘yinlar katalogi — Barcha o‘yinlar | SubGame"
+        description="O‘zbek tiliga tarjima qilingan va ishlab chiqilayotgan barcha mashhur videoo‘yinlar katalogi. Stray, A Plague Tale, Mafia, Red Dead Redemption 2 va boshqalar."
+        keywords="o‘zbekcha o‘yinlar katalogi, videoo‘yinlar o‘zbek tilida, stray o‘zbek tilida, subtitrlar skachat, subgame katalog, kompyuter o‘yinlari o‘zbekcha"
+        canonicalUrl="https://subgame.uz/games"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">

@@ -1,3 +1,4 @@
+import { SEO } from '../components/common/SEO';
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getGameBySlug } from '../services/gamesService';
@@ -182,10 +183,94 @@ export const GameDetailPage: React.FC = () => {
   };
 
 
+  const seoTitle = `${game.title} o‘zbek tilida — O‘zbekcha subtitr va tarjima`;
+  const seoDescription = `${game.title} o‘yini to‘liq o‘zbek tilida. ${
+    game.shortDescription || game.fullDescription?.slice(0, 150) || ''
+  } SubGame orqali o‘zbekcha subtitrlarni o‘rnatish, yuklab olish va o‘ynash.`.trim();
+  const seoKeywords = [
+    `${game.title} o‘zbek tilida`,
+    `${game.title} o‘zbekcha subtitr`,
+    `${game.title} uzbek tilida`,
+    `${game.title} o‘zbekcha tarjima`,
+    `${game.title} o‘yini o‘zbek tilida`,
+    `${game.title} skachat o‘zbekcha`,
+    `${game.title} yuklab olish`,
+    `${game.title} subtitr`,
+    `${game.title} o‘zbekcha`,
+    'SubGame',
+    'o‘zbekcha subtitrlar',
+    'o‘zbekcha video o‘yinlar',
+    'kompyuter o‘yinlari o‘zbek tilida',
+    ...(game.genres || [])
+  ];
+
+  const structuredData = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'VideoGame',
+      name: game.title,
+      alternateName: `${game.title} o‘zbek tilida`,
+      description: game.shortDescription || game.fullDescription,
+      genre: game.genres,
+      gamePlatform: ['PC', 'Windows'],
+      inLanguage: 'uz',
+      operatingSystem: 'Windows 10, Windows 11',
+      author: {
+        '@type': 'Organization',
+        name: game.developer || 'SubGame',
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: game.publisher || 'SubGame',
+      },
+      image: game.cardImage || game.heroImage || game.cover,
+      url: `https://subgame.uz/games/${game.slug}`,
+      offers: {
+        '@type': 'Offer',
+        price: priceInfo.isPaid ? '10000' : '0',
+        priceCurrency: 'UZS',
+        availability: 'https://schema.org/InStock',
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Bosh sahifa',
+          item: 'https://subgame.uz/',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'O‘yinlar katalogi',
+          item: 'https://subgame.uz/games',
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: `${game.title} o‘zbek tilida`,
+          item: `https://subgame.uz/games/${game.slug}`,
+        },
+      ],
+    },
+  ];
+
   const heroBackdrop = game.heroImage || game.cardImage || (game.screenshots && game.screenshots.length > 0 ? game.screenshots[0] : '') || game.cover;
 
   return (
     <div className="min-h-screen bg-[#0B0D12] text-white">
+      <SEO
+        title={seoTitle}
+        description={seoDescription}
+        keywords={seoKeywords}
+        canonicalUrl={`https://subgame.uz/games/${game.slug}`}
+        ogImage={game.cardImage || game.heroImage || game.cover}
+        ogType="article"
+        structuredData={structuredData}
+      />
       {/* A. Hero Section with Backdrop Artwork */}
       <section className="relative min-h-[460px] sm:min-h-[560px] flex items-end pt-24 sm:pt-32 pb-8 sm:pb-12 overflow-hidden border-b border-[#2A3245]">
         {/* Backdrop Image extending behind navbar */}
@@ -258,6 +343,9 @@ export const GameDetailPage: React.FC = () => {
 
                 <h1 className="text-xl font-black text-white tracking-tight leading-tight line-clamp-2">
                   {game.title}
+                  <span className="block text-xs font-semibold text-[#A3E635] mt-0.5 tracking-normal">
+                    O‘zbek tilida (O‘zbekcha subtitr)
+                  </span>
                 </h1>
 
                 <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-gray-400">
@@ -315,6 +403,9 @@ export const GameDetailPage: React.FC = () => {
               {/* Desktop Title (hidden on mobile) */}
               <h1 className="hidden sm:block text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
                 {game.title}
+                <span className="block text-sm sm:text-base font-semibold text-[#A3E635] mt-1.5 tracking-normal">
+                  O‘zbek tilida — O‘zbekcha subtitrli rasmiy lokalizatsiya
+                </span>
               </h1>
 
               {/* Short Description */}

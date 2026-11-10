@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SEO } from '../components/common/SEO';
 import { HeroSection } from '../components/home/HeroSection';
 import { FeaturedGames } from '../components/home/FeaturedGames';
 import { WhyUsSection } from '../components/home/WhyUsSection';
@@ -12,6 +13,26 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
+      <SEO
+        title="SubGame — O‘zbekcha subtitrli videoo‘yinlar platformasi"
+        description="Sevimli kompyuter o‘yinlarini o‘zbek tilida o‘ynang. Sifatli o‘zbekcha subtitrlar, rasmiy tarjimalar va maxsus SubGame Launcher dasturi."
+        keywords="SubGame, o‘zbekcha subtitrlar, o‘yinlar o‘zbek tilida, stray o‘zbek tilida, kompyuter o‘yinlari o‘zbekcha, uzbekcha tarjima, o‘yinlar skachat"
+        canonicalUrl="https://subgame.uz/"
+        ogImage="https://subgame.uz/images/logo_doppi.png"
+        structuredData={{
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'SubGame',
+          alternateName: 'SubGame O‘zbekcha O‘yinlar',
+          url: 'https://subgame.uz/',
+          description: 'O‘zbek geymerlari uchun videoo‘yinlarni ona tilida o‘ynash va hikoyasidan to‘liq bahramand bo‘lish imkonini yaratuvchi erkin jamoat platformasi.',
+          potentialAction: {
+            '@type': 'SearchAction',
+            target: 'https://subgame.uz/games?search={search_term_string}',
+            'query-input': 'required name=search_term_string',
+          },
+        }}
+      />
       {/* 1. Cinematic Hero */}
       <HeroSection />
 

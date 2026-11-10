@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
 
-Sitemap: https://sub-game.vercel.app/sitemap.xml
+Sitemap: https://subgame.uz/sitemap.xml
+Host: https://subgame.uz

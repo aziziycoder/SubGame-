@@ -6,6 +6,89 @@ import type { Game } from '../types/game';
  */
 export const INITIAL_GAMES_SEED: Game[] = [
   {
+    id: 'stray',
+    slug: 'stray',
+    title: 'Stray',
+    cover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1332010/library_600x900.jpg',
+    cardImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1332010/71daca1910d664d31240b9623a495e0c0828807f/header.jpg?t=1785424330',
+    heroImage: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1332010/library_hero.jpg',
+    gameplayVideoUrl: 'https://www.youtube.com/embed/u84hRUQlaio',
+    screenshots: [
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1332010/ss_88e209a90c2039fa76bca6fa08c641365be38d50.1920x1080.jpg?t=1785424330',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1332010/ss_e8f0cbd5efdba352e89c4cfcee3fe991a1e1be8a.1920x1080.jpg?t=1785424330',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1332010/ss_2221af260c64362fdc835a9dca65f6f1d1192b25.1920x1080.jpg?t=1785424330',
+      'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1332010/ss_3fdd04a5418293864bf82d33c75f833121e63804.1920x1080.jpg?t=1785424330'
+    ],
+    shortDescription: 'O‘z oilasidan adashib qolgan yolg‘iz daydi mushuk unutilgan kiber-shahar tubidan qutulish va uyiga qaytish yo‘lini topishi kerak. Neon chiroqlari ostidagi robotlar dunyosida o‘tuvchi hayajonli sarguzasht.',
+    fullDescription: 'Stray — bu neon yoritilgan tor ko‘chalar va unutilgan kibershaharning qorong‘u burchaklarida kechuvchi uchinchi shaxs sarguzasht o‘yini. O‘yinda siz oilasidan adashib qolgan va sirli xaroba shaharda qolib ketgan yoqimli daydi mushukni boshqarasiz. O‘zbek tilidagi to‘liq subtitrlar orqali ushbu robotlar va xavfli parazitlar makonidagi barcha qiziqarli dialoglar, B-12 nomli kichik uchuvchi dron bilan do‘stlik va shaharning qadimiy sirlarini o‘z tilingizda his eting.',
+    releaseYear: 2022,
+    developer: 'BlueTwelve Studio',
+    publisher: 'Annapurna Interactive',
+    genres: ['Sarguzasht', 'Indie', 'Kiberpank', 'Mushuk', 'Atmosfera'],
+    platforms: ['PC', 'PlayStation 5', 'PlayStation 4'],
+    officialStoreLinks: [
+      {
+        name: 'Steam',
+        url: 'https://store.steampowered.com/app/1332010/Stray/',
+        priceNote: 'Steam rasmiy sahifasi'
+      }
+    ],
+    price: '10 000 so‘m',
+    priceNote: 'SubGame platformasida o‘zbekcha subtitr rasmiy litsenziyasi.',
+    subtitleStatus: 'Tayyor',
+    subtitleLanguage: 'O‘zbekcha (Lotin)',
+    subtitleVersion: 'v1.0.0',
+    subtitleLastUpdated: '2026-11-01',
+    subtitleCompatibility: 'Steam, Epic Games Store (v1.4+)',
+    subtitleFormat: 'SubGame Launcher himoyalangan lokalizatsiyasi (.pak)',
+    subtitleSize: '2.4 MB',
+    subtitleDownloadUrl: '/launcher',
+    subtitlePrice: 'Pullik',
+    subtitleTranslationType: 'To‘liq adabiy o‘zbekcha tarjima',
+    installationGuide: [
+      {
+        step: 1,
+        title: 'SubGame Launcherni yuklab oling',
+        description: 'Launcherni oching va Google profilingiz bilan kiring.'
+      },
+      {
+        step: 2,
+        title: 'Stray o‘yin faylini (.exe) tanlang',
+        description: 'Stray kartasidagi "O‘ynash" tugmasini bosing va o‘yin papkasidagi Stray.exe yoki Stray-Win64-Shipping.exe faylini ko‘rsating.',
+        pathOrCommand: 'steamapps/common/Stray/Stray.exe'
+      },
+      {
+        step: 3,
+        title: 'Litsenziyani faollashtiring va o‘ynang',
+        description: 'Litsenziya avtomatik tekshiriladi va o‘yin to‘liq o‘zbek tilida ochiladi!'
+      }
+    ],
+    minimumRequirements: {
+      os: 'Windows 10 (64-bit)',
+      processor: 'Intel Core i5-2300 / AMD FX-6350',
+      memory: '8 GB RAM',
+      graphics: 'NVIDIA GeForce GTX 650 Ti (2 GB) / AMD Radeon R7 360 (2 GB)',
+      directX: 'Versiya 12',
+      storage: '10 GB bo‘sh joy',
+      additionalNotes: 'Minimal 1080p 30 FPS past sozlamalar uchun.'
+    },
+    recommendedRequirements: {
+      os: 'Windows 10 / 11 (64-bit)',
+      processor: 'Intel Core i5-8400 / AMD Ryzen 5 2600',
+      memory: '8 GB RAM',
+      graphics: 'NVIDIA GeForce GTX 780 (3 GB) / AMD Radeon R9 290X (4 GB)',
+      directX: 'Versiya 12',
+      storage: '10 GB bo‘sh joy (SSD tavsiya etiladi)',
+      additionalNotes: '1080p 60 FPS yuqori grafik sozlamalari uchun.'
+    },
+    isFeatured: true,
+    tags: ['Hit o‘yin', 'Kiberpank', 'Mushuk', 'O‘zbekcha subtitr'],
+    defaultExeName: 'Stray.exe',
+    targetFileName: 'Hk_project-WindowsNoEditor.pak',
+    targetRelativeDir: 'Hk_project/Content/Paks',
+    keyPrefix: 'SUB-STRA',
+  },
+  {
     id: 'a-plague-tale-requiem',
     slug: 'a-plague-tale-requiem',
     title: 'A Plague Tale: Requiem',

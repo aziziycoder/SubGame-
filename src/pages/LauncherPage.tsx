@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { SEO } from '../components/common/SEO';
 import {
   Download,
   ShieldCheck,
@@ -82,6 +83,12 @@ export const LauncherPage: React.FC = () => {
 
   return (
     <div className="pt-28 pb-20 min-h-screen bg-[#0B0D12] text-[#F5F7FA]">
+      <SEO
+        title="SubGame Launcherni yuklab olish — O‘zbekcha subtitrlarni o‘rnatish | SubGame"
+        description="SubGame Launcherni bepul yuklab oling. Kompyuteringizdagi o‘yinlarga o‘zbekcha subtitrlarni bir zumda avtomatik ulovchi xavfsiz va qulay dastur."
+        keywords="subgame launcher yuklab olish, subgame launcher skachat, o‘zbekcha subtitr dasturi, o‘yinlarga o‘zbekcha tarjima o‘rnatish, subgame launcher pc"
+        canonicalUrl="https://subgame.uz/launcher"
+      />
       {/* Background radial glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-96 bg-gradient-to-b from-[#A3E635]/10 via-[#38BDF8]/5 to-transparent blur-3xl pointer-events-none -z-10" />
 

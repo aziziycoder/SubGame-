@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { SEO } from '../components/common/SEO';
 import { SITE_CONFIG } from '../config/site';
 import {
   Sparkles,
@@ -35,6 +36,12 @@ export const AboutPage: React.FC = () => {
 
   return (
     <div className="pt-28 pb-20 min-h-screen bg-[#0B0D12] text-white">
+      <SEO
+        title="Loyiha haqida — SubGame nima va qanday ishlaydi? | SubGame"
+        description="SubGame loyihasi maqsadi, jamoasi va kompyuter o‘yinlarini o‘zbek tiliga mahalliylashtirish jarayoni haqida to‘liq ma‘lumotlar."
+        keywords="subgame haqida, o‘zbekcha tarjima jamoasi, o‘yinlarni mahalliylashtirish, o‘zbekcha o‘yinlar jamoasi"
+        canonicalUrl="https://subgame.uz/about"
+      />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
