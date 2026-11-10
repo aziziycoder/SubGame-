@@ -184,22 +184,22 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in overflow-y-auto">
-      <div className="relative w-full max-w-3xl my-6 bg-[#141821] border border-[#2A3245] rounded-3xl overflow-hidden flex flex-col shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm animate-fade-in overflow-y-auto">
+      <div className="relative w-full max-w-3xl sm:my-6 max-h-[94dvh] sm:max-h-none bg-[#141821] border border-[#2A3245] rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl">
         {/* Modal Header */}
-        <div className="px-6 py-5 bg-[#0B0D12] border-b border-[#2A3245] flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#A3E635]/15 border border-[#A3E635]/30 text-[#A3E635] flex items-center justify-center shadow-lg shadow-[#A3E635]/5">
+        <div className="px-4 sm:px-6 py-4 sm:py-5 bg-[#0B0D12] border-b border-[#2A3245] flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 shrink-0 rounded-2xl bg-[#A3E635]/15 border border-[#A3E635]/30 text-[#A3E635] flex items-center justify-center shadow-lg shadow-[#A3E635]/5">
               <KeyRound className="w-5 h-5" />
             </div>
-            <div>
-              <h2 className="text-base font-black text-white flex items-center gap-2">
+            <div className="min-w-0">
+              <h2 className="text-base font-black text-white flex items-center gap-x-2 gap-y-1 flex-wrap">
                 <span>Foydalanuvchiga Litsenziya Berish</span>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-[#A3E635]/20 text-[#A3E635] border border-[#A3E635]/30">
                   Admin Panel
                 </span>
               </h2>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-400 hidden sm:block">
                 Foydalanuvchiga to‘g‘ridan-to‘g‘ri o‘yin litsenziyasi va launcher orqali o‘ynash huquqini biriktirish
               </p>
             </div>
@@ -208,14 +208,14 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
           <button
             onClick={onClose}
             disabled={submitting}
-            className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-[#1E2533] transition-colors disabled:opacity-50"
+            className="p-2.5 shrink-0 rounded-xl text-gray-400 hover:text-white hover:bg-[#1E2533] transition-colors disabled:opacity-50"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body / Form */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-6 flex-1 max-h-[80vh]">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 min-h-0 sm:max-h-[80vh]">
           {/* Error Message Alert */}
           {errorMessage && (
             <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs sm:text-sm flex items-start gap-3 animate-fade-in">
@@ -229,7 +229,7 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
 
           {/* Section 1: User Selection */}
           <div className="space-y-3">
-            <label className="text-xs font-bold uppercase tracking-wider text-gray-300 flex items-center justify-between">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-300 flex items-center justify-between flex-wrap gap-x-3 gap-y-1">
               <span className="flex items-center gap-2">
                 <User className="w-4 h-4 text-[#A3E635]" />
                 <span>1. Foydalanuvchini Tanlang *</span>
@@ -238,7 +238,7 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setSelectedUser(null)}
-                  className="text-[11px] text-[#A3E635] hover:underline normal-case font-semibold"
+                  className="py-2.5 sm:py-1.5 text-[11px] text-[#A3E635] hover:underline normal-case font-semibold"
                 >
                   Boshqa foydalanuvchini tanlash
                 </button>
@@ -246,7 +246,7 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
             </label>
 
             {selectedUser ? (
-              <div className="p-4 rounded-2xl bg-[#0B0D12] border-2 border-[#A3E635]/40 flex items-center justify-between gap-4">
+              <div className="p-3 sm:p-4 rounded-2xl bg-[#0B0D12] border-2 border-[#A3E635]/40 flex items-center justify-between gap-3 sm:gap-4">
                 <div className="flex items-center gap-3 min-w-0">
                   {selectedUser.photoURL ? (
                     <img
@@ -280,9 +280,9 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
                 </div>
 
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="px-3 py-1.5 rounded-xl bg-[#A3E635]/15 text-[#A3E635] text-xs font-bold border border-[#A3E635]/30 flex items-center gap-1.5">
+                  <span className="px-2 sm:px-3 py-1.5 rounded-xl bg-[#A3E635]/15 text-[#A3E635] text-xs font-bold border border-[#A3E635]/30 flex items-center gap-1.5">
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Tanlangan</span>
+                    <span className="hidden sm:inline">Tanlangan</span>
                   </span>
                 </div>
               </div>
@@ -338,7 +338,7 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
                         </div>
 
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          <span className="text-[10px] text-gray-500 font-mono">
+                          <span className="hidden sm:inline text-[10px] text-gray-500 font-mono">
                             {u.claimedGamesCount || 0} ta o‘yin
                           </span>
                           <span className="px-2 py-1 rounded-md bg-[#141821] text-[11px] text-gray-300 group-hover:bg-[#A3E635] group-hover:text-[#0B0D12] font-bold transition-colors">
@@ -355,7 +355,7 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
 
           {/* Section 2: Game Selection */}
           <div className="space-y-3">
-            <label className="text-xs font-bold uppercase tracking-wider text-gray-300 flex items-center justify-between">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-300 flex items-center justify-between flex-wrap gap-x-3 gap-y-1">
               <span className="flex items-center gap-2">
                 <Gamepad2 className="w-4 h-4 text-[#A3E635]" />
                 <span>2. O‘yinni Tanlang *</span>
@@ -364,7 +364,7 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setSelectedGame(null)}
-                  className="text-[11px] text-[#A3E635] hover:underline normal-case font-semibold"
+                  className="py-2.5 sm:py-1.5 text-[11px] text-[#A3E635] hover:underline normal-case font-semibold"
                 >
                   Boshqa o‘yinni tanlash
                 </button>
@@ -372,9 +372,9 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
             </label>
 
             {selectedGame ? (
-              <div className={`p-4 rounded-2xl bg-[#0B0D12] border-2 transition-all ${
+              <div className={`p-3 sm:p-4 rounded-2xl bg-[#0B0D12] border-2 transition-all ${
                 isAlreadyOwned ? 'border-amber-500/50' : 'border-[#A3E635]/40'
-              } flex items-center justify-between gap-4`}>
+              } flex items-center justify-between gap-3 sm:gap-4`}>
                 <div className="flex items-center gap-3.5 min-w-0">
                   <img
                     src={selectedGame.cover || selectedGame.cardImage}
@@ -385,12 +385,12 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
                     <h4 className="text-base font-black text-white truncate">
                       {selectedGame.title}
                     </h4>
-                    <div className="flex items-center gap-2 flex-wrap text-xs text-gray-400">
-                      <span>{selectedGame.developer || 'Noma’lum studiya'}</span>
+                    <div className="flex items-center gap-x-2 gap-y-0.5 flex-wrap text-xs text-gray-400 min-w-0">
+                      <span className="break-words min-w-0">{selectedGame.developer || 'Noma’lum studiya'}</span>
                       <span>•</span>
                       <span className="text-[#A3E635] font-bold">{selectedGame.subtitlePrice || selectedGame.price || 'Tekin'}</span>
                       <span>•</span>
-                      <span className="font-mono text-[11px] text-gray-500">ID: {selectedGame.slug || selectedGame.id}</span>
+                      <span className="font-mono text-[11px] text-gray-500 break-all">ID: {selectedGame.slug || selectedGame.id}</span>
                     </div>
 
                     {isAlreadyOwned && (
@@ -403,9 +403,9 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
                 </div>
 
                 {!isAlreadyOwned && (
-                  <span className="px-3 py-1.5 rounded-xl bg-[#A3E635]/15 text-[#A3E635] text-xs font-bold border border-[#A3E635]/30 flex items-center gap-1.5 flex-shrink-0">
+                  <span className="px-2 sm:px-3 py-1.5 rounded-xl bg-[#A3E635]/15 text-[#A3E635] text-xs font-bold border border-[#A3E635]/30 flex items-center gap-1.5 flex-shrink-0">
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Tanlangan</span>
+                    <span className="hidden sm:inline">Tanlangan</span>
                   </span>
                 )}
               </div>
@@ -521,12 +521,12 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
           </div>
 
           {/* Modal Footer / Submit */}
-          <div className="pt-2 flex items-center justify-end gap-3 border-t border-[#2A3245]">
+          <div className="pt-4 sm:pt-2 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2 sm:gap-3 border-t border-[#2A3245]">
             <button
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-5 py-2.5 rounded-xl bg-[#1E2533] hover:bg-[#2A3245] text-gray-300 text-xs sm:text-sm font-bold transition-all disabled:opacity-50 cursor-pointer"
+              className="px-5 py-3 sm:py-2.5 rounded-xl bg-[#1E2533] hover:bg-[#2A3245] text-gray-300 text-xs sm:text-sm font-bold transition-all disabled:opacity-50 cursor-pointer"
             >
               Bekor qilish
             </button>
@@ -534,7 +534,8 @@ export const GrantLicenseModal: React.FC<GrantLicenseModalProps> = ({
             <button
               type="submit"
               disabled={submitting || !selectedUser || !selectedGame || isAlreadyOwned}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#A3E635] hover:bg-[#8ece28] text-[#0B0D12] text-xs sm:text-sm font-black transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-[#A3E635]/20 cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 rounded-xl bg-[#A3E635] hover:bg-[#8ece28]
+ text-[#0B0D12] text-xs sm:text-sm font-black transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-[#A3E635]/20 cursor-pointer"
             >
               {submitting ? (
                 <>

@@ -88,10 +88,10 @@ const Pager: React.FC<{ pagination: LicensesPage['pagination']; onPage: (page: n
   const { page, pageSize, total, totalPages } = pagination;
   if (total === 0) return null;
   const navClass =
-    'inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#141821] border border-[#2A3245] text-xs font-bold text-gray-300 hover:text-white hover:border-[#A3E635] disabled:opacity-40 disabled:hover:border-[#2A3245] disabled:cursor-not-allowed transition-all cursor-pointer';
+    'inline-flex items-center justify-center gap-1 min-w-10 h-10 sm:min-w-0 sm:h-auto px-3 py-1.5 rounded-xl bg-[#141821] border border-[#2A3245] text-xs font-bold text-gray-300 hover:text-white hover:border-[#A3E635] disabled:opacity-40 disabled:hover:border-[#2A3245] disabled:cursor-not-allowed transition-all cursor-pointer';
   return (
     <div className="px-4 sm:px-6 py-4 bg-[#0B0D12] border-t border-[#2A3245] flex flex-col sm:flex-row items-center justify-between gap-3">
-      <div className="text-xs text-gray-400 font-medium">
+      <div className="text-xs text-gray-400 font-medium text-center sm:text-left">
         Ko‘rsatilmoqda:{' '}
         <strong className="text-white">
           {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)}
@@ -113,7 +113,7 @@ const Pager: React.FC<{ pagination: LicensesPage['pagination']; onPage: (page: n
               <button
                 key={item}
                 onClick={() => onPage(item)}
-                className={`min-w-8 h-8 px-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`min-w-10 h-10 sm:min-w-8 sm:h-8 px-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   item === page
                     ? 'bg-[#A3E635] text-[#0B0D12] font-black'
                     : 'bg-[#141821] text-gray-400 hover:text-white border border-[#2A3245] hover:border-[#A3E635]'
@@ -265,7 +265,110 @@ const LicenseTable: React.FC<LicenseTableProps> = ({ filters, reloadKey, hideGam
       {error && (
         <div className="px-4 py-2 text-xs text-red-300 bg-red-500/10 border-b border-red-500/30">{error}</div>
       )}
-      <div className="overflow-x-auto">
+      {/* Phones: one card per license */}
+      <ul className="md:hidden divide-y divide-[#2A3245]">
+        {data.licenses.length === 0 ? (
+          <li className="px-4 py-12 text-center text-gray-500 text-xs">Hech qanday litsenziya topilmadi.</li>
+        ) : (
+          data.licenses.map((lic) => {
+            const busy = actionLoading?.endsWith(`_${lic.id}`);
+            return (
+              <li key={lic.id} className="p-4 space-y-3 text-sm text-gray-300">
+                <div className="flex items-center gap-3 min-w-0">
+                  {lic.userPhoto ? (
+                    <img src={lic.userPhoto} alt="" className="w-9 h-9 rounded-full border border-[#2A3245] object-cover shrink-0" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-[#1E2533] border border-[#2A3245] text-[#A3E635] flex items-center justify-center font-bold text-xs shrink-0">
+                      {(lic.userName || lic.userEmail || 'U')[0].toUpperCase()}
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <span className="font-bold text-white block truncate">
+                      {lic.userName || lic.userEmail?.split('@')[0] || 'Ismsiz foydalanuvchi'}
+                    </span>
+                    <span className="text-xs text-gray-400 font-mono block truncate">{lic.userEmail}</span>
+                  </div>
+                  {lic.status === 'active' ? (
+                    <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#A3E635]/15 text-[#A3E635] border border-[#A3E635]/30">
+                      <CheckCircle2 className="w-3 h-3" />
+                      Faol
+                    </span>
+                  ) : (
+                    <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-red-500/15 text-red-400 border border-red-500/30">
+                      <AlertCircle className="w-3 h-3" />
+                      To‘xtatilgan
+                    </span>
+                  )}
+                </div>
+
+                {!hideGame && (
+                  <div className="flex items-center gap-2 min-w-0 font-bold text-white">
+                    <Gamepad2 className="w-4 h-4 text-[#A3E635] shrink-0" />
+                    <span className="truncate">{lic.gameTitle}</span>
+                  </div>
+                )}
+
+                <div className="text-[11px] text-gray-500 space-y-1">
+                  <div>
+                    {formatDate(lic.createdAt)} · {PROVIDER_LABELS[lic.paymentProvider || 'none'] || lic.paymentProvider}
+                    {lic.paidAmount ? ` · ${lic.paidAmount} so‘m` : ''}
+                  </div>
+                  {lic.hwid ? (
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <Laptop className="w-3 h-3 text-purple-300 shrink-0" />
+                      <span className="text-purple-300 font-semibold truncate">{lic.boundDeviceName || 'Bog‘langan qurilma'}</span>
+                      <span className="font-mono text-gray-400 shrink-0">{lic.hwid.slice(0, 10)}…</span>
+                      <button
+                        onClick={() => copy(lic.hwid!, lic.id)}
+                        className="shrink-0 p-3 -m-2 text-gray-500 hover:text-white cursor-pointer"
+                        title="HWID dan nusxa olish"
+                      >
+                        {copiedId === lic.id ? <Check className="w-3.5 h-3.5 text-[#A3E635]" /> : <Copy className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                  ) : (
+                    <div>Kompyuter bog‘lanmagan</div>
+                  )}
+                  {lic.revokedReason && <div className="text-red-400 font-mono break-all">{lic.revokedReason}</div>}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {lic.hwid && (
+                    <button
+                      onClick={() => handleResetHwid(lic)}
+                      disabled={busy}
+                      className="flex-1 px-3 py-2.5 rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/30 text-xs font-bold disabled:opacity-50 cursor-pointer whitespace-nowrap"
+                    >
+                      HWID yechish
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleToggle(lic)}
+                    disabled={busy}
+                    className={`flex-1 px-3 py-2.5 rounded-xl text-xs font-bold border disabled:opacity-50 cursor-pointer ${
+                      lic.status === 'active'
+                        ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                        : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                    }`}
+                  >
+                    {lic.status === 'active' ? 'To‘xtatish' : 'Yoqish'}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(lic)}
+                    disabled={busy}
+                    className="shrink-0 w-10 h-10 inline-flex items-center justify-center rounded-xl bg-red-500/10 text-red-400 border border-red-500/30 disabled:opacity-50 cursor-pointer"
+                    title="Litsenziyani o‘chirish"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </li>
+            );
+          })
+        )}
+      </ul>
+
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left text-sm text-gray-300">
           <thead className="bg-[#0B0D12] text-xs uppercase tracking-wider text-gray-400 border-b border-[#2A3245]">
             <tr>
@@ -589,7 +692,8 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
       {/* Global statistics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="p-4 sm:p-5 rounded-2xl bg-[#141821] border border-[#2A3245] space-y-2 min-w-0">
-          <span className="text-xs text-gray-400 uppercase tracking-wider block font-medium">Jami litsenziyalar</span>
+          <span className="text-xs text-gray-400 uppercase tracking-wider block font-medium break-words">
+Jami litsenziyalar</span>
           <div className="flex items-baseline justify-between">
             <span className="text-3xl font-black text-white">{stats?.totalLicenses ?? '—'}</span>
             <KeyRound className="w-5 h-5 text-gray-500" />
@@ -599,7 +703,8 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
           </span>
         </div>
         <div className="p-4 sm:p-5 rounded-2xl bg-[#141821] border border-[#A3E635]/30 space-y-2 min-w-0">
-          <span className="text-xs text-[#A3E635] uppercase tracking-wider block font-medium">Litsenziya olganlar</span>
+          <span className="text-xs text-[#A3E635] uppercase tracking-wider block font-medium break-words">
+Litsenziya olganlar</span>
           <div className="flex items-baseline justify-between">
             <span className="text-3xl font-black text-[#A3E635]">{stats?.totalUniqueUsers ?? '—'}</span>
             <Users className="w-5 h-5 text-[#A3E635]" />
@@ -607,7 +712,8 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
           <span className="text-[11px] text-gray-400 block">Kamida bitta o‘yin olgan userlar</span>
         </div>
         <div className="p-4 sm:p-5 rounded-2xl bg-[#141821] border border-cyan-500/20 space-y-2 min-w-0">
-          <span className="text-xs text-cyan-400 uppercase tracking-wider block font-medium">O‘yinlar</span>
+          <span className="text-xs text-cyan-400 uppercase tracking-wider block font-medium break-words">
+O‘yinlar</span>
           <div className="flex items-baseline justify-between">
             <span className="text-3xl font-black text-cyan-400">{stats?.totalGamesClaimed ?? '—'}</span>
             <Gamepad2 className="w-5 h-5 text-cyan-500" />
@@ -617,7 +723,8 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
           </span>
         </div>
         <div className="p-4 sm:p-5 rounded-2xl bg-[#141821] border border-purple-500/20 space-y-2 min-w-0">
-          <span className="text-xs text-purple-400 uppercase tracking-wider block font-medium">Bog‘langan kompyuterlar</span>
+          <span className="text-xs text-purple-400 uppercase tracking-wider block font-medium break-words">
+Bog‘langan kompyuterlar</span>
           <div className="flex items-baseline justify-between">
             <span className="text-3xl font-black text-purple-400">{stats?.totalBoundDevices ?? '—'}</span>
             <HardDrive className="w-5 h-5 text-purple-500" />
@@ -628,10 +735,10 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
 
       {/* View switch and actions */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        <div className="flex p-1 bg-[#141821] border border-[#2A3245] rounded-xl text-xs self-start">
+        <div className="grid grid-cols-2 sm:flex p-1 bg-[#141821] border border-[#2A3245] rounded-xl text-xs sm:self-start">
           <button
             onClick={() => setViewMode('by_game')}
-            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg font-bold transition-all cursor-pointer ${
+            className={`inline-flex items-center justify-center gap-1.5 px-3 py-2.5 sm:py-2 rounded-lg font-bold transition-all cursor-pointer ${
               viewMode === 'by_game' ? 'bg-[#A3E635] text-[#0B0D12]' : 'text-gray-400 hover:text-white'
             }`}
           >
@@ -639,7 +746,7 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
           </button>
           <button
             onClick={() => setViewMode('all_table')}
-            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg font-bold transition-all cursor-pointer ${
+            className={`inline-flex items-center justify-center gap-1.5 px-3 py-2.5 sm:py-2 rounded-lg font-bold transition-all cursor-pointer ${
               viewMode === 'all_table' ? 'bg-[#A3E635] text-[#0B0D12]' : 'text-gray-400 hover:text-white'
             }`}
           >
@@ -647,12 +754,12 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
           </button>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="grid grid-cols-3 sm:flex items-center gap-2 sm:flex-wrap">
           {unpaidIds.length > 0 && (
             <button
               onClick={handleCleanUnpaid}
               disabled={actionLoading === 'clean_unpaid' || refreshing}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-sm font-bold transition-all disabled:opacity-50 cursor-pointer"
+              className="col-span-3 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-sm font-bold transition-all disabled:opacity-50 cursor-pointer"
             >
               {actionLoading === 'clean_unpaid' ? (
                 <RefreshCw className="w-4 h-4 animate-spin" />
@@ -664,7 +771,7 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
           )}
           <button
             onClick={() => setIsGrantModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#A3E635] hover:bg-[#8ece28] text-[#0B0D12] text-sm font-black transition-all cursor-pointer"
+            className="col-span-3 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#A3E635] hover:bg-[#8ece28] text-[#0B0D12] text-sm font-black transition-all cursor-pointer"
           >
             <KeyRound className="w-4 h-4" />
             <span>Litsenziya berish</span>
@@ -672,7 +779,7 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
           <button
             onClick={exportToCSV}
             disabled={actionLoading === 'export' || !stats?.totalLicenses}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1E2533] text-gray-200 hover:text-white border border-[#2A3245] text-sm font-bold transition-all disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1E2533] text-gray-200 hover:text-white border border-[#2A3245] text-sm font-bold transition-all disabled:opacity-50 cursor-pointer"
             title={viewMode === 'all_table' ? 'Joriy filtrlar bo‘yicha eksport' : 'Barcha litsenziyalarni eksport qilish'}
           >
             {actionLoading === 'export' ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
@@ -681,7 +788,7 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
           <button
             onClick={refreshAll}
             disabled={refreshing || loading}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1E2533] text-gray-200 hover:text-white border border-[#2A3245] text-sm font-bold transition-all disabled:opacity-50 cursor-pointer"
+            className="col-span-2 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1E2533] text-gray-200 hover:text-white border border-[#2A3245] text-sm font-bold transition-all disabled:opacity-50 cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-[#A3E635]' : ''}`} />
             <span>Yangilash</span>
@@ -874,7 +981,7 @@ export const LicenseStatsManager: React.FC<LicenseStatsManagerProps> = ({ games 
                   setFilterDevice('all');
                   setFilterProvider('all');
                 }}
-                className="text-xs font-bold text-gray-400 hover:text-[#A3E635] cursor-pointer"
+                className="px-2 py-2.5 text-xs font-bold text-gray-400 hover:text-[#A3E635] cursor-pointer"
               >
                 Filtrlarni tozalash
               </button>

@@ -267,7 +267,7 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+        <div className="grid grid-cols-1 sm:flex items-center gap-2.5 w-full sm:w-auto">
           <button
             onClick={handleSync}
             disabled={syncing}
@@ -290,12 +290,12 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
 
       {/* Sync alert */}
       {syncMessage && (
-        <div className="p-4 rounded-xl bg-[#1A1F2A] border border-[#A3E635]/40 text-sm flex items-center justify-between text-gray-200">
-          <div className="flex items-center gap-2">
+        <div className="p-4 rounded-xl bg-[#1A1F2A] border border-[#A3E635]/40 text-sm flex items-center justify-between gap-2 text-gray-200">
+          <div className="flex items-center gap-2 min-w-0">
             <CheckCircle2 className="w-5 h-5 text-[#A3E635] shrink-0" />
-            <span>{syncMessage}</span>
+            <span className="break-words min-w-0">{syncMessage}</span>
           </div>
-          <button onClick={() => setSyncMessage(null)} className="text-gray-400 hover:text-white">
+          <button onClick={() => setSyncMessage(null)} className="shrink-0 p-2 -m-2 text-gray-400 hover:text-white">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -348,7 +348,7 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
                     </span>
                     <button
                       onClick={() => handleToggleActive(slide)}
-                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg backdrop-blur-md text-[10px] font-bold border transition-colors cursor-pointer ${
+                      className={`inline-flex items-center gap-1 px-3 py-2.5 sm:px-2.5 sm:py-1 rounded-lg backdrop-blur-md text-[10px] font-bold border transition-colors cursor-pointer ${
                         isActive
                           ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/30'
                           : 'bg-red-500/20 text-red-400 border-red-500/30 hover:bg-red-500/30'
@@ -380,11 +380,11 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
                 {/* Content Details */}
                 <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                   <div>
-                    <div className="flex items-baseline justify-between gap-2">
-                      <h3 className="text-sm font-black text-white truncate" title={slide.title}>
+                    <div className="flex items-baseline justify-between gap-2 min-w-0">
+                      <h3 className="text-sm font-black text-white truncate min-w-0" title={slide.title}>
                         {slide.title}
                       </h3>
-                      <span className="text-[10px] text-gray-500 font-mono shrink-0">
+                      <span className="text-[10px] text-gray-500 font-mono truncate max-w-[45%]">
                         /{slide.slug}
                       </span>
                     </div>
@@ -407,7 +407,7 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
                       <button
                         onClick={() => handleMoveOrder(index, 'up')}
                         disabled={index === 0}
-                        className="p-1.5 rounded-lg bg-[#0B0D12] text-gray-400 hover:text-white border border-[#2A3245] hover:border-[#A3E635]/40 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                        className="p-3 sm:p-1.5 rounded-lg bg-[#0B0D12] text-gray-400 hover:text-white border border-[#2A3245] hover:border-[#A3E635]/40 disabled:opacity-30 disabled:pointer-events-none transition-colors"
                         title="Oldinga / Yuqoriga surish"
                       >
                         <ArrowUp className="w-3.5 h-3.5" />
@@ -415,7 +415,7 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
                       <button
                         onClick={() => handleMoveOrder(index, 'down')}
                         disabled={index === sliders.length - 1}
-                        className="p-1.5 rounded-lg bg-[#0B0D12] text-gray-400 hover:text-white border border-[#2A3245] hover:border-[#A3E635]/40 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                        className="p-3 sm:p-1.5 rounded-lg bg-[#0B0D12] text-gray-400 hover:text-white border border-[#2A3245] hover:border-[#A3E635]/40 disabled:opacity-30 disabled:pointer-events-none transition-colors"
                         title="Orqaga / Pastga surish"
                       >
                         <ArrowDown className="w-3.5 h-3.5" />
@@ -428,22 +428,22 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
                         href={`/games/${slide.slug}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="p-1.5 rounded-lg bg-[#0B0D12] text-gray-400 hover:text-[#A3E635] border border-[#2A3245] hover:border-[#A3E635]/40 transition-colors"
+                        className="p-3 sm:p-1.5 rounded-lg bg-[#0B0D12] text-gray-400 hover:text-[#A3E635] border border-[#2A3245] hover:border-[#A3E635]/40 transition-colors"
                         title="O‘yin sahifasini ochish"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
                       </a>
                       <button
                         onClick={() => handleOpenEdit(slide)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#A3E635]/15 text-[#A3E635] hover:bg-[#A3E635]/25 border border-[#A3E635]/30 text-xs font-bold transition-all cursor-pointer"
+                        className="inline-flex items-center justify-center gap-1.5 min-h-10 min-w-10 sm:min-h-0 sm:min-w-0 px-3 py-2.5 sm:py-1.5 rounded-lg bg-[#A3E635]/15 text-[#A3E635] hover:bg-[#A3E635]/25 border border-[#A3E635]/30 text-xs font-bold transition-all cursor-pointer"
                         title="Slayderni tahrirlash"
                       >
                         <Edit2 className="w-3 h-3" />
-                        <span>Tahrirlash</span>
+                        <span className="hidden min-[360px]:inline">Tahrirlash</span>
                       </button>
                       <button
                         onClick={() => handleDelete(slide.id, slide.title)}
-                        className="p-1.5 rounded-lg bg-[#0B0D12] text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-[#2A3245] hover:border-rose-500/40 transition-colors cursor-pointer"
+                        className="p-3 sm:p-1.5 rounded-lg bg-[#0B0D12] text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-[#2A3245] hover:border-rose-500/40 transition-colors cursor-pointer"
                         title="O‘chirish"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -459,16 +459,16 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
 
       {/* Add / Edit Slider Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-2xl my-8 bg-[#141821] border border-[#2A3245] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="relative w-full max-w-2xl sm:my-8 bg-[#141821] border border-[#2A3245] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[94dvh] sm:max-h-[90vh]">
             {/* Modal Header */}
-            <div className="p-5 sm:p-6 border-b border-[#2A3245] flex items-center justify-between bg-[#0B0D12]/60">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-[#A3E635]/15 border border-[#A3E635]/30 text-[#A3E635] flex items-center justify-center">
+            <div className="p-4 sm:p-6 border-b border-[#2A3245] flex items-center justify-between gap-3 bg-[#0B0D12]/60">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-9 h-9 shrink-0 rounded-xl bg-[#A3E635]/15 border border-[#A3E635]/30 text-[#A3E635] flex items-center justify-center">
                   <Layers className="w-5 h-5" />
                 </div>
-                <div>
-                  <h3 className="text-base sm:text-lg font-bold text-white">
+                <div className="min-w-0">
+                  <h3 className="text-base sm:text-lg font-bold text-white break-words">
                     {isEditing ? `"${formData.title}" slayderini tahrirlash` : 'Yangi Slayder Qo‘shish'}
                   </h3>
                   <p className="text-xs text-gray-400">
@@ -478,14 +478,14 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-[#1A202C] transition-colors"
+                className="p-2.5 shrink-0 rounded-lg text-gray-400 hover:text-white hover:bg-[#1A202C] transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Modal Form */}
-            <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-5 overflow-y-auto flex-1 text-xs">
+            <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5 overflow-y-auto flex-1 text-xs">
               {formError && (
                 <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
@@ -495,7 +495,7 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
 
               {/* Quick Fill From Game */}
               <div className="p-3.5 rounded-xl bg-[#0B0D12] border border-[#A3E635]/30 space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-x-3 gap-y-1">
                   <label className="text-xs font-bold text-[#A3E635] flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>Mavjud o‘yindan avtomatik to‘ldirish (Tavsiya etiladi)</span>
@@ -505,7 +505,7 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
                 <select
                   defaultValue=""
                   onChange={(e) => handleSelectGame(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-[#141821] border border-[#2A3245] text-xs text-white focus:outline-none focus:border-[#A3E635]"
+                  className="w-full min-w-0 px-3 py-2.5 sm:py-2 rounded-lg bg-[#141821] border border-[#2A3245] text-xs text-white focus:outline-none focus:border-[#A3E635]"
                 >
                   <option value="" disabled>
                     O‘yinni tanlang (masalan: Level Devil, Requiem, Innocence...)...
@@ -587,7 +587,7 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
                       placeholder="Har bir hikoyani "
                       value={formData.headlinePrefix || ''}
                       onChange={(e) => setFormData({ ...formData, headlinePrefix: e.target.value })}
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-[#141821] border border-[#2A3245] text-xs text-white"
+                      className="w-full px-2.5 py-2.5 sm:py-1.5 rounded-lg bg-[#141821] border border-[#2A3245] text-xs text-white"
                     />
                   </div>
                   <div>
@@ -597,7 +597,7 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
                       placeholder="o‘z tilingda"
                       value={formData.headlineHighlight || ''}
                       onChange={(e) => setFormData({ ...formData, headlineHighlight: e.target.value })}
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-[#141821] border border-[#A3E635]/50 text-xs text-[#A3E635] font-bold"
+                      className="w-full px-2.5 py-2.5 sm:py-1.5 rounded-lg bg-[#141821] border border-[#A3E635]/50 text-xs text-[#A3E635] font-bold"
                     />
                   </div>
                   <div>
@@ -607,7 +607,7 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
                       placeholder=" his qil."
                       value={formData.headlineSuffix || ''}
                       onChange={(e) => setFormData({ ...formData, headlineSuffix: e.target.value })}
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-[#141821] border border-[#2A3245] text-xs text-white"
+                      className="w-full px-2.5 py-2.5 sm:py-1.5 rounded-lg bg-[#141821] border border-[#2A3245] text-xs text-white"
                     />
                   </div>
                 </div>
@@ -676,7 +676,7 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
                     placeholder="O‘ZBEKCHA SUBTITR TAYYOR"
                     value={formData.cardTag || ''}
                     onChange={(e) => setFormData({ ...formData, cardTag: e.target.value })}
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white"
+                    className="w-full px-2.5 py-2.5 sm:py-1.5 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white"
                   />
                 </div>
                 <div>
@@ -688,7 +688,7 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
                     placeholder="Yangi premyera"
                     value={formData.highlightTag || ''}
                     onChange={(e) => setFormData({ ...formData, highlightTag: e.target.value })}
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white"
+                    className="w-full px-2.5 py-2.5 sm:py-1.5 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white"
                   />
                 </div>
                 <div>
@@ -700,7 +700,7 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
                     placeholder="v1.0.0 • PC"
                     value={formData.version || ''}
                     onChange={(e) => setFormData({ ...formData, version: e.target.value })}
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white"
+                    className="w-full px-2.5 py-2.5 sm:py-1.5 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white"
                   />
                 </div>
               </div>
@@ -712,28 +712,30 @@ export const SliderManager: React.FC<SliderManagerProps> = ({ games }) => {
                   id="isActiveSlider"
                   checked={formData.isActive !== false}
                   onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="w-4 h-4 rounded text-[#A3E635] accent-[#A3E635] cursor-pointer"
+                  className="w-5 h-5 sm:w-4 sm:h-4 shrink-0 rounded text-[#A3E635] accent-[#A3E635] cursor-pointer"
                 />
-                <label htmlFor="isActiveSlider" className="text-xs text-gray-200 cursor-pointer font-medium">
+                <label htmlFor="isActiveSlider" className="py-1.5 text-xs text-gray-200 cursor-pointer font-medium">
                   Slayder faol bo‘lsin va bosh sahifada ko‘rsatilsin
                 </label>
               </div>
 
               {/* Modal Footer Buttons */}
-              <div className="pt-4 border-t border-[#2A3245] flex items-center justify-end gap-3 sticky bottom-0 bg-[#141821] pb-2">
+              <div className="pt-4 border-t border-[#2A3245] flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2 sm:gap-3 sticky bottom-0 bg-[#141821] pb-2">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl bg-[#1A1F2A] hover:bg-[#232938] text-gray-300 text-xs font-semibold transition-colors cursor-pointer"
+                  className="px-4 py-3 sm:py-2.5 rounded-xl bg-[#1A1F2A] hover:bg-[#232938] text-gray-300 text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Bekor qilish
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-xs hover:bg-[#84CC16] shadow-accent-glow transition-all cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 rounded-xl bg-[#A3E635]
+ text-[#0B0D12] font-black text-xs hover:bg-[#84CC16] shadow-accent-glow transition-all cursor-pointer disabled:opacity-50"
                 >
-                  <Save className="w-4 h-4" />
+                  <Save className="w-4 h-4 shrink-0" />
+
                   <span>{submitting ? 'Saqlanmoqda...' : isEditing ? 'O‘zgarishlarni saqlash' : 'Slayderni qo‘shish'}</span>
                 </button>
               </div>

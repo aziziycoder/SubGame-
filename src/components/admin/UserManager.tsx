@@ -406,9 +406,9 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
       )}
 
       {/* User Statistics Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl bg-[#141821] border border-[#2A3245] space-y-2">
-          <span className="text-xs text-gray-400 uppercase tracking-wider block font-medium">Jami Foydalanuvchilar</span>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="p-4 sm:p-5 min-w-0 rounded-2xl bg-[#141821] border border-[#2A3245] space-y-2">
+          <span className="text-xs text-gray-400 uppercase tracking-wider block font-medium break-words">Jami Foydalanuvchilar</span>
           <div className="flex items-baseline justify-between">
             <span className="text-3xl font-black text-white">{stats.totalUsers}</span>
             <Users className="w-5 h-5 text-gray-500" />
@@ -416,8 +416,8 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
           <span className="text-[11px] text-gray-500 block">Google orqali ro‘yxatdan o‘tganlar</span>
         </div>
 
-        <div className="p-5 rounded-2xl bg-[#141821] border border-[#A3E635]/30 space-y-2">
-          <span className="text-xs text-[#A3E635] uppercase tracking-wider block font-medium">Adminlar</span>
+        <div className="p-4 sm:p-5 min-w-0 rounded-2xl bg-[#141821] border border-[#A3E635]/30 space-y-2">
+          <span className="text-xs text-[#A3E635] uppercase tracking-wider block font-medium break-words">Adminlar</span>
           <div className="flex items-baseline justify-between">
             <span className="text-3xl font-black text-[#A3E635]">{stats.totalAdmins}</span>
             <ShieldCheck className="w-5 h-5 text-[#A3E635]" />
@@ -425,14 +425,15 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
           <span className="text-[11px] text-gray-400 block">Admin huquqiga ega akkauntlar</span>
         </div>
 
-        <div className="p-5 rounded-2xl bg-[#141821] border border-cyan-500/20 space-y-2">
-          <span className="text-xs text-cyan-400 uppercase tracking-wider block font-medium">Olingan Litsenziyalar</span>
+        <div className="p-4 sm:p-5 min-w-0 rounded-2xl bg-[#141821] border border-cyan-500/20 space-y-2">
+          <span className="text-xs text-cyan-400 uppercase tracking-wider block font-medium break-words">Olingan Litsenziyalar</span>
           <div className="flex items-baseline justify-between">
             <span className="text-3xl font-black text-cyan-400">{stats.totalLicenses}</span>
             <Gamepad2 className="w-5 h-5 text-cyan-500" />
           </div>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-1">
             <span className="text-[11px] text-gray-500 block">Faol userlar olgan o‘yinlar</span>
+
             {stats.orphanedLicensesCount > 0 && (
               <span
                 className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 font-semibold"
@@ -444,8 +445,8 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-[#141821] border border-purple-500/20 space-y-2">
-          <span className="text-xs text-purple-400 uppercase tracking-wider block font-medium">Bog‘langan Kompyuterlar</span>
+        <div className="p-4 sm:p-5 min-w-0 rounded-2xl bg-[#141821] border border-purple-500/20 space-y-2">
+          <span className="text-xs text-purple-400 uppercase tracking-wider block font-medium break-words">Bog‘langan Kompyuterlar</span>
           <div className="flex items-baseline justify-between">
             <span className="text-3xl font-black text-purple-400">{stats.totalBoundDevices}</span>
             <HardDrive className="w-5 h-5 text-purple-500" />
@@ -471,7 +472,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
           <div className="flex items-center gap-1.5 p-1 bg-[#141821] border border-[#2A3245] rounded-xl text-xs overflow-x-auto [scrollbar-width:none] whitespace-nowrap">
             <button
               onClick={() => setRoleFilter('all')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all ${
+              className={`px-3 py-2.5 lg:py-1.5 rounded-lg font-bold transition-all shrink-0 ${
                 roleFilter === 'all'
                   ? 'bg-[#A3E635] text-[#0B0D12]'
                   : 'text-gray-400 hover:text-white'
@@ -481,7 +482,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
             </button>
             <button
               onClick={() => setRoleFilter('admin')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all ${
+              className={`px-3 py-2.5 lg:py-1.5 rounded-lg font-bold transition-all shrink-0 ${
                 roleFilter === 'admin'
                   ? 'bg-[#A3E635] text-[#0B0D12]'
                   : 'text-gray-400 hover:text-white'
@@ -491,7 +492,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
             </button>
             <button
               onClick={() => setRoleFilter('user')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all ${
+              className={`px-3 py-2.5 lg:py-1.5 rounded-lg font-bold transition-all shrink-0 ${
                 roleFilter === 'user'
                   ? 'bg-[#A3E635] text-[#0B0D12]'
                   : 'text-gray-400 hover:text-white'
@@ -501,7 +502,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
             </button>
             <button
               onClick={() => setRoleFilter('with_devices')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all ${
+              className={`px-3 py-2.5 lg:py-1.5 rounded-lg font-bold transition-all shrink-0 ${
                 roleFilter === 'with_devices'
                   ? 'bg-[#A3E635] text-[#0B0D12]'
                   : 'text-gray-400 hover:text-white'
@@ -512,7 +513,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 self-end xl:self-auto flex-wrap">
+        <div className="grid grid-cols-1 sm:flex items-center gap-2 sm:self-end xl:self-auto sm:flex-wrap">
 
           <button
             onClick={() => {
@@ -565,7 +566,115 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
       ) : (
         <div className={`bg-[#141821] border border-[#2A3245] rounded-2xl overflow-hidden shadow-xl transition-opacity ${refreshing ? 'opacity-60' : ''}`}>
           <div ref={tableTopRef} className="scroll-mt-24" />
-          <div className="overflow-x-auto">
+          {/* Phones: one card per user, actions under the name */}
+          <ul className="md:hidden divide-y divide-[#2A3245]">
+            {users.map((item) => {
+              const isMaster = ADMIN_EMAILS.some((e) => e.toLowerCase() === (item.email || '').toLowerCase());
+              const isRoleLoading = actionLoading === `role_${item.uid}`;
+              return (
+                <li key={item.uid} className="p-4 space-y-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedUser(item);
+                      setIsDetailModalOpen(true);
+                    }}
+                    className="w-full flex items-center gap-3 text-left cursor-pointer"
+                  >
+                    {item.photoURL ? (
+                      <img
+                        src={item.photoURL}
+                        alt={item.displayName || 'Avatar'}
+                        className="w-10 h-10 rounded-full border border-[#2A3245] object-cover flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-[#1E2533] border border-[#2A3245] text-[#A3E635] flex items-center justify-center font-bold text-sm flex-shrink-0">
+                        {(item.displayName || item.email || 'U')[0].toUpperCase()}
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="font-bold text-white truncate">{item.displayName || 'Ismsiz Foydalanuvchi'}</span>
+                        {isMaster && (
+                          <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-black bg-[#A3E635]/20 text-[#A3E635] border border-[#A3E635]/30">
+                            Bosh Admin
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-gray-400 truncate font-mono">{item.email || 'Email yo‘q'}</div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-500 shrink-0" />
+                  </button>
+
+                  <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+                    {item.isAdmin ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold bg-[#A3E635]/15 text-[#A3E635] border border-[#A3E635]/30">
+                        <ShieldCheck className="w-3 h-3" />
+                        Admin
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-semibold bg-[#1E2533] text-gray-400 border border-[#2A3245]">
+                        <Users className="w-3 h-3" />
+                        Foydalanuvchi
+                      </span>
+                    )}
+                    <span className="px-2 py-0.5 rounded-full bg-[#0B0D12] font-bold text-white border border-[#2A3245]">
+                      {item.claimedGamesCount || 0} ta o‘yin
+                      {item.activeLicensesCount !== undefined && item.activeLicensesCount < item.claimedGamesCount && (
+                        <span className="text-amber-400 font-normal"> ({item.claimedGamesCount - item.activeLicensesCount} to‘xtatilgan)</span>
+                      )}
+                    </span>
+                    {(item.boundDevicesCount || 0) > 0 && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 font-semibold">
+                        <HardDrive className="w-3 h-3" />
+                        {item.boundDevicesCount} ta kompyuter
+                      </span>
+                    )}
+                    <span className="text-gray-500">{formatDate(item.lastLoginAt)}</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {!isMaster ? (
+                      <button
+                        onClick={() => handleRoleChange(item, item.isAdmin ? 'user' : 'admin')}
+                        disabled={isRoleLoading}
+                        className={`inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-50 ${
+                          item.isAdmin
+                            ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+                            : 'bg-[#A3E635]/10 text-[#A3E635] border border-[#A3E635]/30'
+                        }`}
+                      >
+                        {isRoleLoading ? (
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        ) : item.isAdmin ? (
+                          <UserX className="w-3.5 h-3.5" />
+                        ) : (
+                          <UserCheck className="w-3.5 h-3.5" />
+                        )}
+                        <span>{item.isAdmin ? 'Adminlikni olish' : 'Admin qilish'}</span>
+                      </button>
+                    ) : (
+                      <span className="inline-flex items-center justify-center text-[11px] font-bold text-gray-500 px-3 py-2.5 bg-[#1E2533] rounded-xl">
+                        Himoyalangan
+                      </span>
+                    )}
+                    <button
+                      onClick={() => {
+                        setGrantTargetUser(item);
+                        setIsGrantModalOpen(true);
+                      }}
+                      className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-[#A3E635]/10 text-[#A3E635] border border-[#A3E635]/30 text-xs font-bold transition-all"
+                    >
+                      <KeyRound className="w-3.5 h-3.5" />
+                      <span>Litsenziya</span>
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-sm text-gray-300">
               <thead className="bg-[#0B0D12] text-xs uppercase tracking-wider text-gray-400 border-b border-[#2A3245]">
                 <tr>
@@ -745,8 +854,8 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
 
           {/* Pagination Controls for Users (50 per page, paged by the server) */}
           {totalMatching > 0 && (
-            <div className="px-6 py-4 bg-[#0B0D12] border-t border-[#2A3245] flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-xs text-gray-400 font-medium">
+            <div className="px-4 sm:px-6 py-4 bg-[#0B0D12] border-t border-[#2A3245] flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-xs text-gray-400 font-medium text-center sm:text-left">
                 <span>Ko‘rsatilmoqda: </span>
                 <strong className="text-white">
                   {(validCurrentPage - 1) * USERS_PER_PAGE + 1}–{Math.min(validCurrentPage * USERS_PER_PAGE, totalMatching)}
@@ -760,7 +869,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                 <button
                   onClick={() => handlePageChange(validCurrentPage - 1)}
                   disabled={validCurrentPage === 1}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#141821] border border-[#2A3245] text-xs font-bold text-gray-300 hover:text-white hover:border-[#A3E635] disabled:opacity-40 disabled:hover:border-[#2A3245] disabled:hover:text-gray-300 disabled:cursor-not-allowed transition-all cursor-pointer"
+                  className="inline-flex items-center justify-center gap-1 min-w-10 h-10 sm:min-w-0 sm:h-auto px-3 py-1.5 rounded-xl bg-[#141821] border border-[#2A3245] text-xs font-bold text-gray-300 hover:text-white hover:border-[#A3E635] disabled:opacity-40 disabled:hover:border-[#2A3245] disabled:hover:text-gray-300 disabled:cursor-not-allowed transition-all cursor-pointer"
                   title="Oldingi sahifa"
                 >
                   <ChevronLeft className="w-3.5 h-3.5" />
@@ -781,7 +890,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                     <button
                       key={`u-page-${pageNum}`}
                       onClick={() => handlePageChange(pageNum)}
-                      className={`min-w-8 h-8 px-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      className={`min-w-10 h-10 sm:min-w-8 sm:h-8 px-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                         isActive
                           ? 'bg-[#A3E635] text-[#0B0D12] font-black shadow-md shadow-[#A3E635]/20 scale-105'
                           : 'bg-[#141821] text-gray-400 hover:text-white hover:border-[#A3E635] border border-[#2A3245]'
@@ -795,7 +904,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                 <button
                   onClick={() => handlePageChange(validCurrentPage + 1)}
                   disabled={validCurrentPage === totalPages}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#141821] border border-[#2A3245] text-xs font-bold text-gray-300 hover:text-white hover:border-[#A3E635] disabled:opacity-40 disabled:hover:border-[#2A3245] disabled:hover:text-gray-300 disabled:cursor-not-allowed transition-all cursor-pointer"
+                  className="inline-flex items-center justify-center gap-1 min-w-10 h-10 sm:min-w-0 sm:h-auto px-3 py-1.5 rounded-xl bg-[#141821] border border-[#2A3245] text-xs font-bold text-gray-300 hover:text-white hover:border-[#A3E635] disabled:opacity-40 disabled:hover:border-[#2A3245] disabled:hover:text-gray-300 disabled:cursor-not-allowed transition-all cursor-pointer"
                   title="Keyingi sahifa"
                 >
                   <span className="hidden sm:inline">Keyingi</span>
@@ -809,48 +918,48 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
 
       {/* User Details & License Management Modal */}
       {isDetailModalOpen && selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-4xl max-h-[90vh] bg-[#141821] border border-[#2A3245] rounded-3xl overflow-hidden flex flex-col shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div className="relative w-full max-w-4xl max-h-[94dvh] sm:max-h-[90vh] bg-[#141821] border border-[#2A3245] rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl">
             {/* Modal Header */}
-            <div className="px-6 py-5 bg-[#0B0D12] border-b border-[#2A3245] flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#A3E635]/15 border border-[#A3E635]/30 text-[#A3E635] flex items-center justify-center">
+            <div className="px-4 sm:px-6 py-4 sm:py-5 bg-[#0B0D12] border-b border-[#2A3245] flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 shrink-0 rounded-xl bg-[#A3E635]/15 border border-[#A3E635]/30 text-[#A3E635] flex items-center justify-center">
                   <Users className="w-5 h-5" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <h2 className="text-base font-black text-white">Foydalanuvchi Tafsilotlari</h2>
-                  <p className="text-xs text-gray-400">Akkaunt ma’lumotlari, o‘yin litsenziyalari va bog‘langan qurilmalar</p>
+                  <p className="text-xs text-gray-400 hidden sm:block">Akkaunt ma’lumotlari, o‘yin litsenziyalari va bog‘langan qurilmalar</p>
                 </div>
               </div>
 
               <button
                 onClick={() => setIsDetailModalOpen(false)}
-                className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-[#1E2533] transition-colors"
+                className="p-2.5 shrink-0 rounded-xl text-gray-400 hover:text-white hover:bg-[#1E2533] transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Modal Scrollable Body */}
-            <div className="p-6 overflow-y-auto space-y-6 flex-1">
+            <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1">
               {/* Profile Card */}
-              <div className="p-6 rounded-2xl bg-[#0B0D12] border border-[#2A3245] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                <div className="flex items-center gap-4">
+              <div className="p-4 sm:p-6 rounded-2xl bg-[#0B0D12] border border-[#2A3245] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div className="flex items-center gap-4 min-w-0 w-full md:w-auto">
                   {selectedUser.photoURL ? (
                     <img
                       src={selectedUser.photoURL}
                       alt={selectedUser.displayName || 'Avatar'}
-                      className="w-16 h-16 rounded-2xl border-2 border-[#A3E635]/30 object-cover shadow-lg"
+                      className="w-16 h-16 shrink-0 rounded-2xl border-2 border-[#A3E635]/30 object-cover shadow-lg"
                     />
                   ) : (
-                    <div className="w-16 h-16 rounded-2xl bg-[#1E2533] border border-[#2A3245] text-[#A3E635] flex items-center justify-center font-black text-2xl">
+                    <div className="w-16 h-16 shrink-0 rounded-2xl bg-[#1E2533] border border-[#2A3245] text-[#A3E635] flex items-center justify-center font-black text-2xl">
                       {(selectedUser.displayName || selectedUser.email || 'U')[0].toUpperCase()}
                     </div>
                   )}
 
-                  <div className="space-y-1">
+                  <div className="space-y-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="text-lg font-black text-white">{selectedUser.displayName || 'Ism kiritilmagan'}</h3>
+                      <h3 className="text-base sm:text-lg font-black text-white [overflow-wrap:anywhere]">{selectedUser.displayName || 'Ism kiritilmagan'}</h3>
                       {ADMIN_EMAILS.some((e) => e.toLowerCase() === (selectedUser.email || '').toLowerCase()) ? (
                         <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-[#A3E635]/20 text-[#A3E635] border border-[#A3E635]/30">
                           Bosh Administrator
@@ -866,15 +975,15 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-300 font-mono">{selectedUser.email}</p>
-                    <div className="flex items-center gap-2 pt-1 text-xs text-gray-500">
+                    <p className="text-sm text-gray-300 font-mono break-all">{selectedUser.email}</p>
+                    <div className="flex items-center gap-2 pt-1 text-xs text-gray-500 min-w-0">
                       <span>UID:</span>
-                      <code className="text-gray-400 font-mono bg-[#141821] px-2 py-0.5 rounded border border-[#2A3245]">
+                      <code className="min-w-0 truncate text-gray-400 font-mono bg-[#141821] px-2 py-0.5 rounded border border-[#2A3245]">
                         {selectedUser.uid}
                       </code>
                       <button
                         onClick={() => copyToClipboard(selectedUser.uid, 'uid')}
-                        className="text-gray-400 hover:text-white transition-colors"
+                        className="shrink-0 p-2.5 -my-2.5 text-gray-400 hover:text-white transition-colors"
                         title="UID dan nusxa olish"
                       >
                         {copiedId === 'uid' ? (
@@ -895,11 +1004,11 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                       🔒 Asosiy Bosh Admin (O‘zgartirib bo‘lmaydi)
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full md:w-auto">
                       <button
                         onClick={() => handleRoleChange(selectedUser, selectedUser.isAdmin ? 'user' : 'admin')}
                         disabled={actionLoading === `role_${selectedUser.uid}`}
-                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        className={`w-full md:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 md:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                           selectedUser.isAdmin
                             ? 'bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30'
                             : 'bg-[#A3E635] text-[#0B0D12] hover:bg-[#b2f043] shadow-accent-glow'
@@ -954,7 +1063,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                         setGrantTargetUser(selectedUser);
                         setIsGrantModalOpen(true);
                       }}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#A3E635] hover:bg-[#8ece28] text-[#0B0D12] text-xs font-black transition-all shadow-md shadow-[#A3E635]/20 cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3 py-2.5 sm:py-1.5 rounded-xl bg-[#A3E635] hover:bg-[#8ece28] text-[#0B0D12] text-xs font-black transition-all shadow-md shadow-[#A3E635]/20 cursor-pointer"
                     >
                       <KeyRound className="w-3.5 h-3.5" />
                       <span>Litsenziya berish</span>
@@ -984,9 +1093,9 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                           className="p-4 rounded-2xl bg-[#0B0D12] border border-[#2A3245] hover:border-[#A3E635]/30 transition-all space-y-3"
                         >
                           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-2">
-                                <h5 className="text-base font-bold text-white">{lic.gameTitle}</h5>
+                            <div className="space-y-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h5 className="text-base font-bold text-white break-words">{lic.gameTitle}</h5>
                                 <span
                                   className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
                                     lic.status === 'active'
@@ -997,7 +1106,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                                   {lic.status === 'active' ? 'FAOL' : 'TO‘XTATILGAN'}
                                 </span>
                               </div>
-                              <p className="text-xs text-gray-400 font-mono">ID: {lic.gameSlug || lic.gameId}</p>
+                              <p className="text-xs text-gray-400 font-mono break-all">ID: {lic.gameSlug || lic.gameId}</p>
                             </div>
 
                             {/* Action Buttons */}
@@ -1007,7 +1116,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                                   onClick={() => handleResetHwid(lic.id, lic.gameTitle)}
                                   disabled={isResetting}
                                   title="Bog‘langan kompyuterni bekor qilish (yangi kompyuterda o‘ynash uchun)"
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-bold transition-all disabled:opacity-50"
+                                  className="inline-flex items-center gap-1.5 px-3 py-2.5 sm:py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-bold transition-all disabled:opacity-50"
                                 >
                                   {isResetting ? (
                                     <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -1021,7 +1130,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                               <button
                                 onClick={() => handleToggleLicense(lic.id, lic.status, lic.gameTitle)}
                                 disabled={isToggling}
-                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all disabled:opacity-50 ${
+                                className={`inline-flex items-center gap-1.5 px-3 py-2.5 sm:py-1.5 rounded-xl text-xs font-bold transition-all disabled:opacity-50 ${
                                   lic.status === 'active'
                                     ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30'
                                     : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
@@ -1038,7 +1147,7 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                               <button
                                 onClick={() => handleDeleteLicense(lic.id, lic.gameTitle)}
                                 disabled={isDeleting}
-                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold transition-all disabled:opacity-50"
+                                className="inline-flex items-center justify-center gap-1 min-w-10 px-2.5 py-2.5 sm:min-w-0 sm:py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold transition-all disabled:opacity-50"
                                 title="Litsenziyani butunlay o‘chirish"
                               >
                                 {isDeleting ? (
@@ -1053,8 +1162,8 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                           {/* Hardware ID and Device Info */}
                           <div className="p-3 rounded-xl bg-[#141821] border border-[#2A3245] text-xs space-y-2">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                              <div className="flex items-center gap-2">
-                                <Laptop className="w-4 h-4 text-purple-400" />
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <Laptop className="w-4 h-4 text-purple-400 shrink-0" />
                                 <span className="text-gray-400">Bog‘langan Kompyuter:</span>
                                 <span className="font-bold text-white">
                                   {lic.boundDeviceName || (lic.hwid ? 'Noma’lum Kompyuter' : 'Hali bog‘lanmagan')}
@@ -1069,14 +1178,14 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
                             </div>
 
                             {lic.hwid && (
-                              <div className="flex items-center gap-2 text-gray-400 pt-1 border-t border-[#2A3245]">
+                              <div className="flex items-center gap-2 text-gray-400 pt-1 border-t border-[#2A3245] min-w-0">
                                 <span className="text-[11px] text-gray-500 font-mono">HWID:</span>
-                                <code className="text-purple-300 font-mono text-[11px] bg-[#0B0D12] px-2 py-0.5 rounded border border-purple-500/20 break-all">
+                                <code className="min-w-0 text-purple-300 font-mono text-[11px] bg-[#0B0D12] px-2 py-0.5 rounded border border-purple-500/20 break-all">
                                   {lic.hwid}
                                 </code>
                                 <button
                                   onClick={() => copyToClipboard(lic.hwid!, `hwid_${lic.id}`)}
-                                  className="text-gray-400 hover:text-white"
+                                  className="shrink-0 p-2.5 -my-2.5 text-gray-400 hover:text-white"
                                   title="HWID nusxalash"
                                 >
                                   {copiedId === `hwid_${lic.id}` ? (
@@ -1097,7 +1206,8 @@ export const UserManager: React.FC<UserManagerProps> = ({ games = [] }) => {
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-4 bg-[#0B0D12] border-t border-[#2A3245] flex items-center justify-end">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 bg-[#0B0D12] border-t border-[#2A3245] flex items-center justify-end">
+
               <button
                 onClick={() => setIsDetailModalOpen(false)}
                 className="px-5 py-2.5 rounded-xl bg-[#1E2533] hover:bg-[#2A3245] text-white text-xs font-bold transition-all"

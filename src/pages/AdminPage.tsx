@@ -658,36 +658,36 @@ export const AdminPage: React.FC = () => {
       {/* Dedicated Admin Header (Replaces public navbar on /admin) */}
       <header className="border-b border-[#2A3245] bg-[#141821] sticky top-0 z-40 shadow-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <Link to="/" className="flex items-center gap-2.5 group">
+          <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+            <Link to="/" className="flex items-center gap-2.5 group shrink-0">
               <img
                 src="/images/logo_doppi.png"
                 alt="SubGame"
                 className="w-10 h-10 object-contain drop-shadow-[0_0_12px_rgba(163,230,53,0.35)] group-hover:scale-105 transition-transform"
               />
-              <span className="text-xl font-black text-white group-hover:text-[#A3E635] transition-colors">
+              <span className="hidden min-[360px]:inline text-xl font-black text-white group-hover:text-[#A3E635] transition-colors">
                 Sub<span className="text-[#A3E635]">Game</span>
               </span>
             </Link>
 
-            <span className="h-6 w-px bg-[#2A3245]" />
+            <span className="h-6 w-px bg-[#2A3245] shrink-0" />
 
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-[#A3E635]/15 border border-[#A3E635]/30 text-[#A3E635] flex items-center justify-center font-bold">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="hidden sm:flex w-8 h-8 rounded-lg bg-[#A3E635]/15 border border-[#A3E635]/30 text-[#A3E635] flex items-center justify-center font-bold">
                 <Gamepad2 className="w-4 h-4" />
               </div>
               <div className="flex items-center gap-1.5">
-                <h1 className="text-sm font-black text-white leading-none">
+                <h1 className="text-sm font-black text-white leading-none whitespace-nowrap">
                   Admin Panel
                 </h1>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#A3E635]/15 text-[#A3E635] border border-[#A3E635]/30">
+                <span className="hidden sm:inline text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#A3E635]/15 text-[#A3E635] border border-[#A3E635]/30">
                   BOSHQARUV
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             <span className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0B0D12] border border-[#2A3245] text-xs text-gray-300 font-mono">
               <span className="w-2 h-2 rounded-full bg-[#A3E635] animate-pulse" />
               {user?.email}
@@ -695,52 +695,53 @@ export const AdminPage: React.FC = () => {
 
             <Link
               to="/"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0B0D12] hover:bg-[#1A202C] text-gray-200 hover:text-white border border-[#2A3245] hover:border-[#A3E635]/50 text-xs font-bold transition-all shadow-sm"
+              aria-label="Saytga qaytish"
+              className="inline-flex items-center justify-center gap-2 w-10 h-10 sm:w-auto sm:h-auto px-0 sm:px-4 py-0 sm:py-2 rounded-xl bg-[#0B0D12] hover:bg-[#1A202C] text-gray-200 hover:text-white border border-[#2A3245] hover:border-[#A3E635]/50 text-xs font-bold transition-all shadow-sm"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Saytga qaytish</span>
+              <ArrowLeft className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+              <span className="hidden sm:inline">Saytga qaytish</span>
             </Link>
           </div>
         </div>
       </header>
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-6 sm:space-y-8">
         {/* Quick Stats Grid (catalog numbers; the dashboard has its own) */}
         {activeTab !== 'dashboard' && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-5 rounded-2xl bg-[#141821] border border-[#2A3245] space-y-2">
-            <span className="text-xs text-gray-400 uppercase tracking-wider block">Jami O‘yinlar</span>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#141821] border border-[#2A3245] space-y-2 min-w-0">
+            <span className="text-xs text-gray-400 uppercase tracking-wider block break-words">Jami O‘yinlar</span>
             <div className="flex items-baseline justify-between">
               <span className="text-3xl font-black text-white">{totalGames}</span>
               <Gamepad2 className="w-5 h-5 text-gray-500" />
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-[#141821] border border-emerald-500/20 space-y-2">
-            <span className="text-xs text-emerald-400 uppercase tracking-wider block">Tayyor Subtitrlar</span>
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#141821] border border-emerald-500/20 space-y-2 min-w-0">
+            <span className="text-xs text-emerald-400 uppercase tracking-wider block break-words">Tayyor Subtitrlar</span>
             <div className="flex items-baseline justify-between">
               <span className="text-3xl font-black text-emerald-400">{readyGames}</span>
               <CheckCircle2 className="w-5 h-5 text-emerald-500" />
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-[#141821] border border-amber-500/20 space-y-2">
-            <span className="text-xs text-amber-400 uppercase tracking-wider block">Jarayonda</span>
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#141821] border border-amber-500/20 space-y-2 min-w-0">
+            <span className="text-xs text-amber-400 uppercase tracking-wider block break-words">Jarayonda</span>
             <div className="flex items-baseline justify-between">
               <span className="text-3xl font-black text-amber-400">{inProgressGames}</span>
               <Clock className="w-5 h-5 text-amber-500" />
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-[#141821] border border-[#A3E635]/20 space-y-2">
-            <span className="text-xs text-[#A3E635] uppercase tracking-wider block">Backend & Baza</span>
-            <div className="flex items-baseline justify-between">
-              <span className="text-xs text-emerald-400 font-medium font-mono flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#141821] border border-[#A3E635]/20 space-y-2 min-w-0">
+            <span className="text-xs text-[#A3E635] uppercase tracking-wider block break-words">Backend & Baza</span>
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="min-w-0 text-[10px] sm:text-xs text-emerald-400 font-medium font-mono flex items-center gap-1.5 [overflow-wrap:anywhere]">
+                <span className="w-2 h-2 shrink-0 rounded-full bg-emerald-400 animate-pulse"></span>
                 SubGame API (PostgreSQL)
               </span>
-              <Sparkles className="w-5 h-5 text-[#A3E635]" />
+              <Sparkles className="w-5 h-5 shrink-0 text-[#A3E635]" />
             </div>
           </div>
         </div>
@@ -748,14 +749,14 @@ export const AdminPage: React.FC = () => {
 
         {/* Sync message alert if any */}
         {syncMessage && (
-          <div className="p-4 rounded-xl bg-[#1A1F2A] border border-[#A3E635]/40 text-sm flex items-center justify-between text-gray-200">
-            <div className="flex items-center gap-2">
+          <div className="p-4 rounded-xl bg-[#1A1F2A] border border-[#A3E635]/40 text-sm flex items-center justify-between gap-2 text-gray-200">
+            <div className="flex items-center gap-2 min-w-0">
               <CheckCircle2 className="w-5 h-5 text-[#A3E635] shrink-0" />
-              <span>{syncMessage}</span>
+              <span className="min-w-0 break-words">{syncMessage}</span>
             </div>
             <button
               onClick={() => setSyncMessage(null)}
-              className="text-gray-400 hover:text-white"
+              className="shrink-0 p-2 -m-2 text-gray-400 hover:text-white"
             >
               <X className="w-4 h-4" />
             </button>
@@ -872,8 +873,8 @@ export const AdminPage: React.FC = () => {
         {/* Action Bar (Search, Filter, Buttons) */}
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
           {/* Search & Filter */}
-          <div className="flex flex-1 items-center gap-3">
-            <div className="relative flex-1 max-w-md">
+          <div className="flex flex-1 items-center gap-2 sm:gap-3 min-w-0">
+            <div className="relative flex-1 max-w-md min-w-0">
               <Search className="w-4 h-4 text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
@@ -887,7 +888,7 @@ export const AdminPage: React.FC = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3.5 py-2.5 rounded-xl bg-[#141821] border border-[#2A3245] text-sm text-gray-300 focus:outline-none focus:border-[#A3E635]"
+              className="shrink-0 max-w-[45%] sm:max-w-none px-3 sm:px-3.5 py-2.5 rounded-xl bg-[#141821] border border-[#2A3245] text-sm text-gray-300 focus:outline-none focus:border-[#A3E635]"
             >
               <option value="Barchasi">Barcha holatlar</option>
               <option value="Tayyor">Tayyor</option>
@@ -897,11 +898,11 @@ export const AdminPage: React.FC = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2.5 flex-wrap">
+          <div className="grid grid-cols-1 sm:flex items-center gap-2.5 sm:flex-wrap">
             <button
               onClick={handleSyncInitial}
               disabled={syncing}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1A202C] text-gray-300 hover:text-white border border-[#2A3245] text-xs sm:text-sm font-semibold transition-all cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1A202C] text-gray-300 hover:text-white border border-[#2A3245] text-xs sm:text-sm font-semibold transition-all cursor-pointer disabled:opacity-50"
               title="Mavjud bo‘lmagan boshlang‘ich o‘yinlarni bazaga yuklash (mavjudlari saqlanadi)"
             >
               <RefreshCw className={`w-4 h-4 text-[#A3E635] ${syncing ? 'animate-spin' : ''}`} />
@@ -915,7 +916,7 @@ export const AdminPage: React.FC = () => {
                 setParsedGamesPreview([]);
                 setIsJsonModalOpen(true);
               }}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1E2533] text-sky-400 hover:text-sky-300 border border-sky-500/30 hover:border-sky-500/60 text-xs sm:text-sm font-bold transition-all cursor-pointer shadow-sm"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#141821] hover:bg-[#1E2533] text-sky-400 hover:text-sky-300 border border-sky-500/30 hover:border-sky-500/60 text-xs sm:text-sm font-bold transition-all cursor-pointer shadow-sm"
               title="JSON fayl yoki matn orqali o‘yin qo‘shish"
             >
               <FileCode className="w-4 h-4" />
@@ -924,7 +925,7 @@ export const AdminPage: React.FC = () => {
 
             <button
               onClick={handleOpenAddModal}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-xs sm:text-sm hover:bg-[#84CC16] shadow-accent-glow transition-all hover:scale-[1.02] cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-xs sm:text-sm hover:bg-[#84CC16] shadow-accent-glow transition-all hover:scale-[1.02] cursor-pointer"
             >
               <Plus className="w-4 h-4 stroke-[3]" />
               <span>Yangi o‘yin qo‘shish</span>
@@ -950,7 +951,80 @@ export const AdminPage: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            {/* Phones: one card per game */}
+            <ul className="md:hidden divide-y divide-[#2A3245]/60 text-xs text-gray-300">
+              {filteredGames.map((game) => (
+                <li key={game.id} className="p-4 space-y-3">
+                  <div className="flex items-start gap-3 min-w-0">
+                    <img
+                      src={game.cardImage || game.cover}
+                      alt={game.title}
+                      className="w-20 h-10 object-cover rounded-md border border-[#2A3245] bg-black shrink-0"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/images/logo_doppi.png';
+                      }}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <span className="font-bold text-sm text-white block break-words">{game.title}</span>
+                      <span className="text-[11px] text-gray-400 block truncate">
+                        {game.developer} • {game.releaseYear} • <span className="font-mono text-gray-500">/{game.slug}</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border ${
+                        game.subtitleStatus === 'Tayyor'
+                          ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                          : game.subtitleStatus === 'Jarayonda'
+                          ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                          : 'bg-blue-500/15 text-blue-400 border-blue-500/30'
+                      }`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                      {game.subtitleStatus} ({game.subtitleVersion || 'v1.0.0'})
+                    </span>
+                    <span className="font-mono text-[11px] min-w-0 break-all">
+                      <span className="text-amber-400">{game.targetRelativeDir || 'TRTEXT'}</span>
+                      <span className="text-gray-500">/</span>
+                      <span className="text-emerald-400 font-semibold">{game.targetFileName || 'tt01.pc'}</span>
+                      <span className="text-gray-500"> · {game.defaultExeName || 'Game.exe'}</span>
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-[auto_1fr_auto] gap-2">
+                    <Link
+                      to={`/games/${game.slug}`}
+                      target="_blank"
+                      className="w-10 h-10 inline-flex items-center justify-center rounded-lg bg-[#0B0D12] text-gray-400 border border-[#2A3245]"
+                      title="Saytda ko‘rish"
+                      aria-label="Saytda ko‘rish"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </Link>
+                    <button
+                      onClick={() => handleOpenEditModal(game)}
+                      className="h-10 inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#0B0D12] text-blue-400 border border-[#2A3245] text-xs font-bold cursor-pointer"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      Tahrirlash
+                    </button>
+                    <button
+                      onClick={() => handleDelete(game.id, game.title)}
+                      className="w-10 h-10 inline-flex items-center justify-center rounded-lg bg-[#0B0D12] text-rose-400 border border-[#2A3245] cursor-pointer"
+                      title="O‘chirish"
+                      aria-label="O‘chirish"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left text-xs text-gray-300">
                 <thead className="bg-[#0B0D12]/70 text-[11px] uppercase tracking-wider text-gray-400 border-b border-[#2A3245]">
                   <tr>
@@ -1052,6 +1126,7 @@ export const AdminPage: React.FC = () => {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </div>
           </>
@@ -1068,24 +1143,24 @@ export const AdminPage: React.FC = () => {
 
       {/* Add / Edit Game Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-3xl my-8 bg-[#141821] border border-[#2A3245] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="relative w-full max-w-3xl sm:my-8 bg-[#141821] border border-[#2A3245] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[94dvh] sm:max-h-[90vh]">
             {/* Modal Header */}
-            <div className="p-5 sm:p-6 border-b border-[#2A3245] flex items-center justify-between bg-[#0B0D12]/60">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-[#A3E635]/15 border border-[#A3E635]/30 text-[#A3E635] flex items-center justify-center">
+            <div className="p-4 sm:p-6 border-b border-[#2A3245] flex items-center justify-between gap-3 bg-[#0B0D12]/60">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="hidden sm:flex w-9 h-9 shrink-0 rounded-xl bg-[#A3E635]/15 border border-[#A3E635]/30 text-[#A3E635] items-center justify-center">
                   <Gamepad2 className="w-5 h-5" />
                 </div>
-                <div>
-                  <h3 className="text-base sm:text-lg font-bold text-white">
+                <div className="min-w-0">
+                  <h3 className="text-base sm:text-lg font-bold text-white break-words">
                     {isEditing ? `"${formData.title}" o‘yinini tahrirlash` : 'Yangi o‘yin qo‘shish'}
                   </h3>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-400 hidden sm:block">
                     Barcha o‘zgarishlar sayt va Launcherga real vaqtda uzatiladi
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 <input
                   type="file"
                   id="modal-json-upload"
@@ -1101,7 +1176,7 @@ export const AdminPage: React.FC = () => {
                 />
                 <label
                   htmlFor="modal-json-upload"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-semibold cursor-pointer transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-2.5 sm:py-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-semibold cursor-pointer transition-colors"
                   title="JSON faylni tanlash va shaklni avtomatik to‘ldirish"
                 >
                   <FileCode className="w-3.5 h-3.5" />
@@ -1111,7 +1186,7 @@ export const AdminPage: React.FC = () => {
 
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-[#1A202C] transition-colors cursor-pointer"
+                  className="p-2.5 sm:p-2 rounded-lg text-gray-400 hover:text-white hover:bg-[#1A202C] transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1119,7 +1194,7 @@ export const AdminPage: React.FC = () => {
             </div>
 
             {/* Modal Form */}
-            <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-6 overflow-y-auto flex-1">
+            <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6 overflow-y-auto flex-1">
               {formError && (
                 <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
@@ -1483,14 +1558,14 @@ export const AdminPage: React.FC = () => {
                         placeholder="v1.0.0"
                         value={formData.subtitleVersion || ''}
                         onChange={(e) => setFormData({ ...formData, subtitleVersion: e.target.value })}
-                        className="px-3 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white font-mono text-xs"
+                        className="w-full min-w-0 px-3 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white font-mono text-xs"
                       />
                       <input
                         type="text"
                         placeholder="1.9 MB"
                         value={formData.subtitleSize || ''}
                         onChange={(e) => setFormData({ ...formData, subtitleSize: e.target.value })}
-                        className="px-3 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white font-mono text-xs"
+                        className="w-full min-w-0 px-3 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white font-mono text-xs"
                       />
                     </div>
                   </div>
@@ -2027,18 +2102,18 @@ export const AdminPage: React.FC = () => {
             </div>
 
             {/* Modal Footer Buttons */}
-              <div className="pt-5 border-t border-[#2A3245] flex items-center justify-end gap-3 sticky bottom-0 bg-[#141821] pb-2">
+              <div className="pt-4 sm:pt-5 border-t border-[#2A3245] flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2 sm:gap-3 sticky bottom-0 bg-[#141821] pb-2">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl bg-[#1A1F2A] hover:bg-[#232938] text-gray-300 text-xs font-semibold transition-colors cursor-pointer"
+                  className="px-4 py-3 sm:py-2.5 rounded-xl bg-[#1A1F2A] hover:bg-[#232938] text-gray-300 text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Bekor qilish
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-xs hover:bg-[#84CC16] shadow-accent-glow transition-all cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-xs hover:bg-[#84CC16] shadow-accent-glow transition-all cursor-pointer disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
                   <span>{submitting ? 'Saqlanmoqda...' : isEditing ? 'O‘zgarishlarni saqlash' : 'O‘yinni qo‘shish'}</span>
@@ -2051,33 +2126,33 @@ export const AdminPage: React.FC = () => {
 
       {/* JSON Import Modal */}
       {isJsonModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-3xl my-8 bg-[#141821] border border-[#2A3245] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="relative w-full max-w-3xl sm:my-8 bg-[#141821] border border-[#2A3245] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[94dvh] sm:max-h-[90vh]">
             {/* Header */}
-            <div className="p-5 sm:p-6 border-b border-[#2A3245] flex items-center justify-between bg-[#0B0D12]/60">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center">
+            <div className="p-4 sm:p-6 border-b border-[#2A3245] flex items-center justify-between gap-3 bg-[#0B0D12]/60">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-9 h-9 shrink-0 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center">
                   <FileCode className="w-5 h-5" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <h3 className="text-base sm:text-lg font-bold text-white">
                     JSON orqali o‘yin qo‘shish
                   </h3>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-400 hidden sm:block">
                     JSON faylni tashlang yoki kodini maydonga nusxalang (Paste)
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsJsonModalOpen(false)}
-                className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-[#1A202C] transition-colors cursor-pointer"
+                className="p-2.5 sm:p-2 shrink-0 rounded-lg text-gray-400 hover:text-white hover:bg-[#1A202C] transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Body */}
-            <div className="p-5 sm:p-6 space-y-5 overflow-y-auto flex-1">
+            <div className="p-4 sm:p-6 space-y-5 overflow-y-auto flex-1">
               {/* File Dropzone / Selector */}
               <div
                 onDragOver={(e) => {
@@ -2137,7 +2212,7 @@ export const AdminPage: React.FC = () => {
                   {jsonInput && (
                     <button
                       onClick={() => parseJsonContent('')}
-                      className="text-rose-400 hover:text-rose-300 font-medium cursor-pointer"
+                      className="py-1.5 text-rose-400 hover:text-rose-300 font-medium cursor-pointer"
                     >
                       Tozalash
                     </button>
@@ -2174,7 +2249,7 @@ export const AdminPage: React.FC = () => {
                     {parsedGamesPreview.map((game, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center justify-between p-3 rounded-xl bg-[#0B0D12] border border-[#2A3245]"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-[#0B0D12] border border-[#2A3245]"
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           {game.cardImage || game.cover ? (
@@ -2197,7 +2272,7 @@ export const AdminPage: React.FC = () => {
                               {game.title}
                               {game.releaseYear ? ` (${game.releaseYear})` : ''}
                             </h4>
-                            <div className="flex items-center gap-2 mt-0.5 text-[11px] text-gray-400">
+                            <div className="flex flex-wrap items-center gap-x-2 mt-0.5 text-[11px] text-gray-400">
                               <span>{game.developer || 'Noma‘lum studiya'}</span>
                               <span>•</span>
                               <span className="text-emerald-400 font-medium">
@@ -2213,7 +2288,7 @@ export const AdminPage: React.FC = () => {
                         {parsedGamesPreview.length === 1 && (
                           <button
                             onClick={() => handleOpenInFormEditor(game)}
-                            className="px-3 py-1.5 rounded-lg bg-[#141821] hover:bg-[#1E2533] text-gray-300 hover:text-white border border-[#2A3245] text-xs font-semibold shrink-0 cursor-pointer transition-colors"
+                            className="px-3 py-2.5 sm:py-1.5 rounded-lg bg-[#141821] hover:bg-[#1E2533] text-gray-300 hover:text-white border border-[#2A3245] text-xs font-semibold shrink-0 cursor-pointer transition-colors"
                             title="Maydonlarni shaklda ko‘rish va tahrirlash"
                           >
                             Formada ko‘rish
@@ -2227,18 +2302,18 @@ export const AdminPage: React.FC = () => {
             </div>
 
             {/* Footer */}
-            <div className="p-5 sm:p-6 border-t border-[#2A3245] flex items-center justify-between bg-[#0B0D12]/60">
+            <div className="p-4 sm:p-6 border-t border-[#2A3245] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0B0D12]/60">
               <span className="text-xs text-gray-400">
                 {parsedGamesPreview.length > 0
                   ? `${parsedGamesPreview.length} ta o‘yin saqlashga tayyor`
                   : 'Saqlash uchun to‘g‘ri formatdagi JSON kiriting'}
               </span>
 
-              <div className="flex items-center gap-2.5">
+              <div className="flex flex-col-reverse sm:flex-row sm:items-center gap-2.5">
                 <button
                   type="button"
                   onClick={() => setIsJsonModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-[#1A1F2A] hover:bg-[#232938] text-gray-300 text-xs font-semibold transition-colors cursor-pointer"
+                  className="px-4 py-2.5 sm:py-2 rounded-xl bg-[#1A1F2A] hover:bg-[#232938] text-gray-300 text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Bekor qilish
                 </button>
@@ -2247,7 +2322,8 @@ export const AdminPage: React.FC = () => {
                   type="button"
                   disabled={parsedGamesPreview.length === 0 || jsonSubmitting}
                   onClick={handleDirectSaveJsonGames}
-                  className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-xs hover:bg-[#84CC16] shadow-accent-glow transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="inline-flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 sm:py-2 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-xs
+ hover:bg-[#84CC16] shadow-accent-glow transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Save className="w-4 h-4" />
                   <span>

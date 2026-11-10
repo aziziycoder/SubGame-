@@ -156,11 +156,11 @@ export const TranslationRequestManager: React.FC<{ games: Game[] }> = ({ games }
                   src={item.imageUrl}
                   alt=""
                   loading="lazy"
-                  className="w-24 aspect-[460/215] object-cover rounded-lg bg-[#0B0D12] border border-[#2A3245] shrink-0"
+                  className="w-20 sm:w-24 aspect-[460/215] object-cover rounded-lg bg-[#0B0D12] border border-[#2A3245] shrink-0"
                 />
                 <div className="min-w-0">
                   <p className="text-sm font-bold text-white truncate">{item.title}</p>
-                  <div className="mt-1 flex items-center gap-3 text-xs text-gray-400">
+                  <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-400">
                     <span className="inline-flex items-center gap-1 text-[#A3E635] font-bold">
                       <ThumbsUp className="w-3.5 h-3.5" />
                       {item.votes}
@@ -169,7 +169,7 @@ export const TranslationRequestManager: React.FC<{ games: Game[] }> = ({ games }
                       href={steamStoreUrl(item.steamAppId)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 hover:text-white"
+                      className="inline-flex items-center gap-1 py-2 -my-1 hover:text-white"
                     >
                       Steam {item.steamAppId}
                       <ExternalLink className="w-3 h-3" />
@@ -178,13 +178,13 @@ export const TranslationRequestManager: React.FC<{ games: Game[] }> = ({ games }
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:flex lg:flex-wrap items-center gap-2">
                 <select
                   value={item.status}
                   disabled={savingId === item.id}
                   onChange={(e) => save(item, { status: e.target.value as TranslationRequestStatus })}
                   aria-label="Holati"
-                  className="h-9 px-2.5 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white focus:outline-none disabled:opacity-60"
+                  className="h-10 lg:h-9 w-full lg:w-auto min-w-0 px-2.5 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white focus:outline-none disabled:opacity-60"
                 >
                   {STATUSES.map((value) => (
                     <option key={value} value={value}>
@@ -197,7 +197,7 @@ export const TranslationRequestManager: React.FC<{ games: Game[] }> = ({ games }
                   disabled={savingId === item.id}
                   onChange={(e) => save(item, { gameSlug: e.target.value || null })}
                   aria-label="Saytdagi o‘yin"
-                  className="h-9 max-w-[12rem] px-2.5 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white focus:outline-none disabled:opacity-60"
+                  className="h-10 lg:h-9 w-full lg:w-auto min-w-0 lg:max-w-[12rem] px-2.5 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white focus:outline-none disabled:opacity-60"
                 >
                   <option value="">Saytdagi o‘yin: yo‘q</option>
                   {games.map((game) => (
@@ -212,7 +212,8 @@ export const TranslationRequestManager: React.FC<{ games: Game[] }> = ({ games }
                   disabled={savingId === item.id}
                   aria-label="O‘chirish"
                   title="O‘chirish"
-                  className="h-9 w-9 flex items-center justify-center rounded-lg border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 cursor-pointer disabled:opacity-60"
+                  className="h-10 w-10 lg:h-9 lg:w-9 flex items-center
+ justify-center rounded-lg border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 cursor-pointer disabled:opacity-60"
                 >
                   {savingId === item.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                 </button>

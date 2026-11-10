@@ -83,8 +83,8 @@ const StatTile: React.FC<TileProps> = ({ label, value, icon, note, accent }) => 
     }`}
   >
     <div className="flex items-center justify-between gap-2">
-      <span className="text-[11px] sm:text-xs text-gray-400 font-medium truncate">{label}</span>
-      <span className={accent ? 'text-[#A3E635]' : 'text-gray-500'}>{icon}</span>
+      <span className="text-[11px] sm:text-xs text-gray-400 font-medium leading-tight break-words min-w-0">{label}</span>
+      <span className={`shrink-0 ${accent ? 'text-[#A3E635]' : 'text-gray-500'}`}>{icon}</span>
     </div>
     <div className="text-2xl sm:text-3xl font-black text-white leading-none">{value}</div>
     {note && <div className="text-[11px] text-gray-500 leading-snug">{note}</div>}
@@ -92,7 +92,7 @@ const StatTile: React.FC<TileProps> = ({ label, value, icon, note, accent }) => 
 );
 
 const Delta: React.FC<{ n: number; label: string }> = ({ n, label }) => (
-  <span className="whitespace-nowrap">
+  <span>
     <span className={n > 0 ? 'text-[#A3E635] font-bold' : 'text-gray-400 font-bold'}>+{fmt(n)}</span> {label}
   </span>
 );
@@ -149,7 +149,7 @@ const DailyChart: React.FC<{ series: DashboardStats['series'] }> = ({ series }) 
             <button
               key={m.key}
               onClick={() => setMetric(m.key)}
-              className={`px-2.5 py-1.5 rounded-lg font-bold whitespace-nowrap transition-all cursor-pointer ${
+              className={`px-2.5 py-2.5 sm:py-1.5 rounded-lg font-bold whitespace-nowrap transition-all cursor-pointer ${
                 metric === m.key ? 'bg-[#A3E635] text-[#0B0D12]' : 'text-gray-400 hover:text-white'
               }`}
             >
@@ -244,7 +244,8 @@ const DailyChart: React.FC<{ series: DashboardStats['series'] }> = ({ series }) 
         </div>
       </div>
 
-      <table className="sr-only">
+      <div className="sr-only">
+      <table>
         <caption>{meta.label}, so‘nggi 30 kun</caption>
         <thead>
           <tr>
@@ -267,6 +268,7 @@ const DailyChart: React.FC<{ series: DashboardStats['series'] }> = ({ series }) 
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 };
@@ -474,7 +476,8 @@ export const DashboardOverview: React.FC = () => {
         <button
           onClick={load}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-[#141821] hover:bg-[#1E2533] border border-[#2A3245] text-sm font-bold text-gray-200 hover:text-white disabled:opacity-50 cursor-pointer shrink-0"
+          className="inline-flex items-center justify-center gap-2 min-w-10 h-10 sm:h-auto px-3 sm:px-4 py-2 rounded-xl bg-[#141821]
+ hover:bg-[#1E2533] border border-[#2A3245] text-sm font-bold text-gray-200 hover:text-white disabled:opacity-50 cursor-pointer shrink-0"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#A3E635]' : ''}`} />
           <span className="hidden sm:inline">Yangilash</span>
@@ -592,7 +595,7 @@ export const DashboardOverview: React.FC = () => {
               data.games.length > data.topGames.length && (
                 <button
                   onClick={() => setShowAllGames((v) => !v)}
-                  className="text-[11px] font-bold text-gray-400 hover:text-[#A3E635] cursor-pointer"
+                  className="py-1.5 text-[11px] font-bold text-gray-400 hover:text-[#A3E635] cursor-pointer whitespace-nowrap"
                 >
                   {showAllGames ? 'Top 10' : `Barchasi (${data.games.length})`}
                 </button>
