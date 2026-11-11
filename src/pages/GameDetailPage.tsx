@@ -403,9 +403,6 @@ export const GameDetailPage: React.FC = () => {
               {/* Desktop Title (hidden on mobile) */}
               <h1 className="hidden sm:block text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
                 {game.title}
-                <span className="block text-sm sm:text-base font-semibold text-[#A3E635] mt-1.5 tracking-normal">
-                  O‘zbek tilida — O‘zbekcha subtitrli rasmiy lokalizatsiya
-                </span>
               </h1>
 
               {/* Short Description */}
