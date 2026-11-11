@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/common/SEO';
-import { Search, ThumbsUp, Check, ExternalLink, Loader2, Trophy, AlertTriangle, Vote, X } from 'lucide-react';
+import { Search, ThumbsUp, Check, ExternalLink, Loader2, Trophy, AlertTriangle, Vote, X, Plus, Users } from 'lucide-react';
+import { SteamLogo } from '../components/common/BrandLogos';
 import { useAuth } from '../context/AuthContext';
 import { ApiError } from '../services/apiClient';
 import {
@@ -56,6 +57,8 @@ const VoteButton: React.FC<VoteButtonProps> = ({ votes, hasVoted, pending, isNew
     className={`inline-flex items-center justify-center gap-1.5 h-9 sm:h-10 min-w-[3.5rem] px-3 sm:px-3.5 rounded-xl text-xs sm:text-sm font-bold border transition-all cursor-pointer shrink-0 disabled:opacity-60 ${
       hasVoted
         ? 'bg-[#A3E635] text-[#0B0D12] border-[#A3E635] hover:bg-[#84CC16]'
+        : isNew
+        ? 'bg-[#A3E635]/15 text-[#A3E635] border-[#A3E635]/45 hover:bg-[#A3E635]/25'
         : 'bg-[#141821] text-gray-200 border-[#2A3245] hover:border-[#A3E635]/60 hover:text-white'
     }`}
   >
@@ -63,6 +66,8 @@ const VoteButton: React.FC<VoteButtonProps> = ({ votes, hasVoted, pending, isNew
       <Loader2 className="w-4 h-4 animate-spin" />
     ) : hasVoted ? (
       <Check className="w-4 h-4" />
+    ) : isNew ? (
+      <Plus className="w-4 h-4" />
     ) : (
       <ThumbsUp className="w-4 h-4" />
     )}
@@ -77,6 +82,7 @@ const RANK_STYLES: Record<number, string> = {
 };
 
 interface GameRowProps {
+  id?: string;
   imageUrl: string;
   title: string;
   rank?: number | null;
@@ -90,11 +96,11 @@ interface GameRowProps {
  * beside the image and the meta line and action share the row below it; from `sm` the
  * action moves to the right-hand side and the rank gets its own column.
  */
-const GameRow: React.FC<GameRowProps> = ({ imageUrl, title, rank, meta, action, className = '' }) => {
+const GameRow: React.FC<GameRowProps> = ({ id, imageUrl, title, rank, meta, action, className = '' }) => {
   const hasRank = rank !== null && rank !== undefined;
   const rankStyle = hasRank ? RANK_STYLES[rank] ?? 'bg-[#2A3245] text-gray-200' : '';
   return (
-    <li className={`flex gap-3 sm:gap-4 ${className}`}>
+    <li id={id} className={`flex gap-3 sm:gap-4 ${className}`}>
       {hasRank && (
         <span
           className={`hidden sm:flex w-8 self-center justify-center text-xl font-black tabular-nums shrink-0 ${
@@ -151,6 +157,35 @@ export const SuggestionsPage: React.FC = () => {
 
   const [pendingKey, setPendingKey] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+
+  // Confirms a vote, so people see their game actually landed in the ranking.
+  const [toast, setToast] = useState<{ text: string; requestId: number } | null>(null);
+  const [highlightId, setHighlightId] = useState<number | null>(null);
+  const searchSectionRef = useRef<HTMLElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => setToast(null), 6000);
+    return () => clearTimeout(timer);
+  }, [toast]);
+
+  useEffect(() => {
+    if (highlightId === null) return;
+    const timer = setTimeout(() => setHighlightId(null), 3000);
+    return () => clearTimeout(timer);
+  }, [highlightId]);
+
+  const goToSearch = () => {
+    searchSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    searchInputRef.current?.focus({ preventScroll: true });
+  };
+
+  const showInRanking = (requestId: number) => {
+    setToast(null);
+    setHighlightId(requestId);
+    document.getElementById(`request-${requestId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
 
   const loadRanking = useCallback(async (which: RankingTab, page: number) => {
     setRankingLoading(true);
@@ -211,7 +246,7 @@ export const SuggestionsPage: React.FC = () => {
     void loadRanking(tab, 1);
   };
 
-  const toggleVote = async (steamAppId: number, existing: TranslationRequest | null) => {
+  const toggleVote = async (steamAppId: number, existing: TranslationRequest | null, title: string) => {
     if (!user) {
       await signInWithGoogle();
       return;
@@ -222,9 +257,16 @@ export const SuggestionsPage: React.FC = () => {
       if (existing?.hasVoted) {
         const result = await removeVote(existing.id);
         applyRequestChange(steamAppId, result.request);
+        setToast(null);
       } else {
         const updated = await voteForGame(steamAppId);
         applyRequestChange(steamAppId, updated);
+        setToast({
+          text: existing
+            ? `«${title}» uchun ovozingiz qabul qilindi.`
+            : `«${title}» reytingga qo‘shildi — birinchi ovoz sizdan!`,
+          requestId: updated.id,
+        });
       }
     } catch (err) {
       setActionError(errorText(err));
@@ -252,28 +294,64 @@ export const SuggestionsPage: React.FC = () => {
           </div>
           <h1 className="text-2xl sm:text-4xl font-black tracking-tight">Qaysi o‘yinni tarjima qilaylik?</h1>
           <p className="mt-2 text-sm sm:text-base text-gray-400 max-w-2xl leading-relaxed">
-            O‘yinni Steam’dan qidiring, taklif qiling va ovoz bering. Eng ko‘p ovoz olgan o‘yinlar tarjima uchun
-            birinchi navbatda ko‘rib chiqiladi.
+            Steam’dagi istalgan o‘yinni taklif qiling yoki boshqalar taklif qilganiga ovoz bering. Eng ko‘p ovoz
+            olgan o‘yinlar tarjima uchun birinchi navbatda ko‘rib chiqiladi.
           </p>
+
+          {/* How it works: people kept reading the search box as a filter for the list below. */}
+          {/* On phones the three steps share one row, so the search box stays near the top. */}
+          <ol className="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
+            {(
+              [
+                [Search, 'Qidiring', 'O‘yinni qidiring', 'Steam’dagi istalgan o‘yin chiqadi'],
+                [Plus, 'Taklif qiling', '“Taklif qilish”ni bosing', 'O‘yin reytingga qo‘shiladi'],
+                [Users, 'Ovoz to‘plang', 'Ovoz to‘plang', 'Do‘stlaringizga ham ayting'],
+              ] as const
+            ).map(([Icon, shortTitle, title, hint], index) => (
+              <li
+                key={title}
+                className="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-[#141821]/70 border border-[#2A3245] text-center sm:text-left"
+              >
+                <span className="relative w-9 h-9 rounded-lg bg-[#A3E635]/10 text-[#A3E635] flex items-center justify-center shrink-0">
+                  <Icon className="w-4 h-4" />
+                  <span className="absolute -top-1.5 -left-1.5 w-4 h-4 rounded-full bg-[#A3E635] text-[#0B0D12] text-[10px] font-black flex items-center justify-center">
+                    {index + 1}
+                  </span>
+                </span>
+                <span className="min-w-0">
+                  <span className="block sm:hidden text-[11px] font-bold leading-tight">{shortTitle}</span>
+                  <span className="hidden sm:block text-sm font-bold">{title}</span>
+                  <span className="hidden sm:block text-xs text-gray-400">{hint}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
         </div>
 
         {/* Search */}
-        <section className="bg-[#141821] rounded-2xl border border-[#2A3245] p-4 sm:p-6 mb-8">
-          <label htmlFor="steam-search" className="block text-sm font-bold mb-2.5">
-            O‘yin qidirish
+        <section
+          ref={searchSectionRef}
+          className="scroll-mt-24 bg-[#141821] rounded-2xl border border-[#A3E635]/30 p-4 sm:p-6 mb-8 shadow-[0_0_40px_-20px_rgba(163,230,53,0.5)]"
+        >
+          <label htmlFor="steam-search" className="block text-base sm:text-lg font-bold">
+            Yangi o‘yin taklif qiling
           </label>
+          <p className="text-xs sm:text-sm text-gray-400 mt-1 mb-3">
+            Steam’dagi istalgan o‘yinni toping va reytingga qo‘shing. Ro‘yxatda bo‘lsa, ovoz bering.
+          </p>
           <div className="relative">
             <Search className="w-4 h-4 text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
+              ref={searchInputRef}
               id="steam-search"
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Masalan: Hollow Knight"
+              placeholder="O‘yin nomini yozing…"
               autoComplete="off"
-              className="w-full h-12 pl-10 pr-10 rounded-xl bg-[#0B0D12] border border-[#2A3245] focus:border-[#A3E635]/60 focus:outline-none text-sm text-white placeholder:text-gray-500"
+              className="w-full h-12 pl-10 pr-24 rounded-xl bg-[#0B0D12] border border-[#2A3245] focus:border-[#A3E635]/60 focus:outline-none text-sm text-white placeholder:text-gray-500 [&::-webkit-search-cancel-button]:hidden"
             />
-            {query && (
+            {query ? (
               <button
                 type="button"
                 onClick={() => setQuery('')}
@@ -282,6 +360,14 @@ export const SuggestionsPage: React.FC = () => {
               >
                 <X className="w-4 h-4" />
               </button>
+            ) : (
+              <span
+                aria-hidden="true"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[#141821] border border-[#2A3245] text-[11px] font-semibold text-gray-300 pointer-events-none"
+              >
+                <SteamLogo variant="monochrome" className="w-3.5 h-3.5" />
+                Steam
+              </span>
             )}
           </div>
           {!user && (
@@ -328,8 +414,12 @@ export const SuggestionsPage: React.FC = () => {
                           ) : request ? (
                             <span className="text-[11px] text-gray-400">Taklif qilingan</span>
                           ) : (
-                            // On phones the "Taklif qilish" button beside it already says this.
-                            <span className="hidden sm:inline text-[11px] text-gray-400">Hali taklif qilinmagan</span>
+                            <>
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#A3E635] text-[#0B0D12]">
+                                Yangi
+                              </span>
+                              <span className="hidden sm:inline text-[11px] text-gray-400">Hali hech kim taklif qilmagan</span>
+                            </>
                           )
                         }
                         action={
@@ -346,7 +436,7 @@ export const SuggestionsPage: React.FC = () => {
                               hasVoted={Boolean(request?.hasVoted)}
                               isNew={!request}
                               pending={pendingKey === String(item.steamAppId)}
-                              onClick={() => toggleVote(item.steamAppId, request)}
+                              onClick={() => toggleVote(item.steamAppId, request, item.title)}
                             />
                           )
                         }
@@ -393,6 +483,8 @@ export const SuggestionsPage: React.FC = () => {
             </div>
           </div>
 
+          {tab === 'active' && ranking.length > 0 && <AddGamePrompt onClick={goToSearch} className="mb-3" />}
+
           {rankingError ? (
             <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/25 text-sm text-rose-300 flex items-center justify-between gap-3">
               <span>{rankingError}</span>
@@ -421,7 +513,12 @@ export const SuggestionsPage: React.FC = () => {
                 return (
                   <GameRow
                     key={item.id}
-                    className="p-3 sm:p-4 rounded-2xl bg-[#141821] border border-[#2A3245]"
+                    id={`request-${item.id}`}
+                    className={`scroll-mt-28 p-3 sm:p-4 rounded-2xl border transition-colors duration-700 ${
+                      highlightId === item.id
+                        ? 'bg-[#A3E635]/10 border-[#A3E635] ring-2 ring-[#A3E635]/40'
+                        : 'bg-[#141821] border-[#2A3245]'
+                    }`}
                     imageUrl={item.imageUrl}
                     title={item.title}
                     rank={item.rank}
@@ -452,7 +549,7 @@ export const SuggestionsPage: React.FC = () => {
                           votes={item.votes}
                           hasVoted={item.hasVoted}
                           pending={pendingKey === String(item.steamAppId)}
-                          onClick={() => toggleVote(item.steamAppId, item)}
+                          onClick={() => toggleVote(item.steamAppId, item, item.title)}
                         />
                       ) : (
                         <span className="text-xs text-gray-400 tabular-nums">{item.votes} ovoz</span>
@@ -477,8 +574,54 @@ export const SuggestionsPage: React.FC = () => {
               </button>
             </div>
           )}
+
+          {/* Whoever scrolls to the end without finding their game stops right here. */}
+          {tab === 'active' && ranking.length > 0 && !hasMore && (
+            <AddGamePrompt onClick={goToSearch} className="mt-4" />
+          )}
         </section>
       </div>
+
+      {toast && (
+        <div
+          role="status"
+          className="fixed z-50 bottom-4 inset-x-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-max sm:max-w-md flex items-center gap-3 p-3 pl-4 rounded-2xl bg-[#141821]/95 backdrop-blur-md border border-[#A3E635]/50 shadow-2xl shadow-black/70"
+        >
+          <Check className="w-5 h-5 text-[#A3E635] shrink-0" />
+          <p className="flex-1 min-w-0 text-sm text-white">{toast.text}</p>
+          <button
+            type="button"
+            onClick={() => showInRanking(toast.requestId)}
+            className="shrink-0 h-9 px-3 rounded-xl bg-[#A3E635] text-[#0B0D12] text-xs font-bold cursor-pointer hover:bg-[#84CC16]"
+          >
+            Ko‘rish
+          </button>
+          <button
+            type="button"
+            onClick={() => setToast(null)}
+            aria-label="Yopish"
+            className="shrink-0 p-1.5 rounded-lg text-gray-400 hover:text-white cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
+
+const AddGamePrompt: React.FC<{ onClick: () => void; className?: string }> = ({ onClick, className = '' }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`w-full flex items-center gap-3 p-3 sm:p-4 rounded-2xl border border-dashed border-[#A3E635]/40 bg-[#A3E635]/5 hover:bg-[#A3E635]/10 text-left cursor-pointer transition-colors ${className}`}
+  >
+    <span className="w-9 h-9 rounded-lg bg-[#A3E635]/15 text-[#A3E635] flex items-center justify-center shrink-0">
+      <Plus className="w-5 h-5" />
+    </span>
+    <span className="min-w-0">
+      <span className="block text-sm font-bold text-white">Kerakli o‘yin yo‘qmi?</span>
+      <span className="block text-xs text-gray-400">Uni o‘zingiz qo‘shing: Steam’dan qidiring va taklif qiling</span>
+    </span>
+  </button>
+);
