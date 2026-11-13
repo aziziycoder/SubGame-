@@ -9,6 +9,7 @@ import { ClickPaymentModal } from '../components/payment/ClickPaymentModal';
 import { GameEasterEgg } from '../components/easter-eggs/GameEasterEgg';
 import { LicenseEasterEgg } from '../components/easter-eggs/LicenseEasterEgg';
 import { AmbientEasterEgg } from '../components/easter-eggs/AmbientEasterEgg';
+import { GameDetailSkeleton } from '../components/game/GameDetailSkeleton';
 import { useGameTitleFont } from '../components/easter-eggs/useGameTitleFont';
 import { ClickLogo, SteamLogo, EpicGamesLogo } from '../components/common/BrandLogos';
 import { getGamePriceInfo } from '../services/paymentService';
@@ -107,22 +108,7 @@ export const GameDetailPage: React.FC = () => {
   }, [game?.id, game?.slug]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen pt-32 pb-20 flex flex-col items-center justify-center text-center px-4 bg-[#0B0D12]">
-        <div className="relative mb-5 flex items-center justify-center">
-          {/* Smooth circular spinning ring */}
-          <div className="w-12 h-12 rounded-full border-3 border-[#2A3245] border-t-[#A3E635] animate-spin shadow-accent-glow" />
-          {/* Subtle center glowing dot */}
-          <div className="absolute w-2.5 h-2.5 rounded-full bg-[#A3E635] animate-pulse" />
-        </div>
-        <h2 className="text-base sm:text-lg font-bold text-white mb-1 tracking-tight">
-          Yuklanmoqda...
-        </h2>
-        <p className="text-gray-400 text-xs max-w-xs">
-          O‘yin ma’lumotlari tayyorlanmoqda
-        </p>
-      </div>
-    );
+    return <GameDetailSkeleton />;
   }
 
   if (!game) {

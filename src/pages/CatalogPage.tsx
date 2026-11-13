@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { SEO } from '../components/common/SEO';
+import { PageLoader } from '../components/common/PageLoader';
 import { getGames } from '../services/gamesService';
 import type { Game } from '../types/game';
 import { GameCard } from '../components/game/GameCard';
@@ -9,7 +10,6 @@ import {
   Search,
   RotateCcw,
   Layers,
-  Loader2,
   X,
   ChevronLeft,
   ChevronRight,
@@ -510,10 +510,7 @@ export const CatalogPage: React.FC = () => {
         <div ref={gamesGridRef} className="scroll-mt-28" />
 
         {loading ? (
-          <div className="py-24 text-center flex flex-col items-center justify-center gap-3">
-            <Loader2 className="w-8 h-8 text-[#A3E635] animate-spin" />
-            <p className="text-sm text-gray-400 font-medium">O‘yinlar bazadan yuklanmoqda...</p>
-          </div>
+          <PageLoader label="O‘yinlar yuklanmoqda" className="py-24" />
         ) : filteredGames.length > 0 ? (
           <div className="space-y-10">
             {/* Grid of games */}

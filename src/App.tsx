@@ -1,4 +1,4 @@
-import React, { useState, Suspense, lazy } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { FavoritesProvider } from './context/FavoritesContext';
@@ -7,6 +7,7 @@ import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { AdminRoute } from './components/auth/AdminRoute';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { PageLoader } from './components/common/PageLoader';
 
 import { HomePage } from './pages/HomePage';
 import { CatalogPage } from './pages/CatalogPage';
@@ -44,11 +45,17 @@ function lazyWithRetry<T extends React.ComponentType<any>>(
 }
 
 // Route-level Code Splitting for non-landing pages with deployment auto-retry
-const GameDetailPage = lazyWithRetry(() => import('./pages/GameDetailPage').then((m) => ({ default: m.GameDetailPage })));
-const SuggestionsPage = lazyWithRetry(() => import('./pages/SuggestionsPage').then((m) => ({ default: m.SuggestionsPage })));
-const AboutPage = lazyWithRetry(() => import('./pages/AboutPage').then((m) => ({ default: m.AboutPage })));
-const FavoritesPage = lazyWithRetry(() => import('./pages/FavoritesPage').then((m) => ({ default: m.FavoritesPage })));
-const LauncherPage = lazyWithRetry(() => import('./pages/LauncherPage').then((m) => ({ default: m.LauncherPage })));
+const loadGameDetailPage = () => import('./pages/GameDetailPage').then((m) => ({ default: m.GameDetailPage }));
+const loadSuggestionsPage = () => import('./pages/SuggestionsPage').then((m) => ({ default: m.SuggestionsPage }));
+const loadAboutPage = () => import('./pages/AboutPage').then((m) => ({ default: m.AboutPage }));
+const loadFavoritesPage = () => import('./pages/FavoritesPage').then((m) => ({ default: m.FavoritesPage }));
+const loadLauncherPage = () => import('./pages/LauncherPage').then((m) => ({ default: m.LauncherPage }));
+
+const GameDetailPage = lazyWithRetry(loadGameDetailPage);
+const SuggestionsPage = lazyWithRetry(loadSuggestionsPage);
+const AboutPage = lazyWithRetry(loadAboutPage);
+const FavoritesPage = lazyWithRetry(loadFavoritesPage);
+const LauncherPage = lazyWithRetry(loadLauncherPage);
 const ConnectLauncherPage = lazyWithRetry(() => import('./pages/ConnectLauncherPage').then((m) => ({ default: m.ConnectLauncherPage })));
 const AdminPage = lazyWithRetry(() => import('./pages/AdminPage').then((m) => ({ default: m.AdminPage })));
 const NotFoundPage = lazyWithRetry(() => import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })));
@@ -56,15 +63,30 @@ const NotFoundPage = lazyWithRetry(() => import('./pages/NotFoundPage').then((m)
 // Lazy-load heavy user modals only when triggered
 const ReportIssueModal = lazyWithRetry(() => import('./components/home/ReportIssueModal').then((m) => ({ default: m.ReportIssueModal })));
 
-const PageLoader: React.FC = () => (
-  <div className="min-h-[60vh] flex items-center justify-center">
-    <div className="w-8 h-8 rounded-full border-2 border-[#2A3245] border-t-[#A3E635] animate-spin" />
-  </div>
-);
+/** The pages linked from the navbar, fetched while the browser is idle so opening them is instant. */
+const PRELOADED_PAGES = [loadGameDetailPage, loadSuggestionsPage, loadLauncherPage, loadAboutPage, loadFavoritesPage];
+
+function usePreloadPages() {
+  useEffect(() => {
+    const preload = () => {
+      for (const load of PRELOADED_PAGES) {
+        // A failure here only means the page loads on click instead, as before.
+        load().catch(() => {});
+      }
+    };
+    if ('requestIdleCallback' in window) {
+      const id = window.requestIdleCallback(preload, { timeout: 4000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const timer = setTimeout(preload, 2500);
+    return () => clearTimeout(timer);
+  }, []);
+}
 
 const AppContent: React.FC = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const location = useLocation();
+  usePreloadPages();
 
   const isAdminRoute = location.pathname.startsWith('/admin');
 
@@ -128,7 +150,12 @@ export const App: React.FC = () => {
     <ErrorBoundary>
       <AuthProvider>
         <FavoritesProvider>
-          <BrowserRouter>
+          {/*
+            Without transitions a page that is still loading shows the loader at once. With them
+            (the router's default) React kept the old page on screen while the URL had already
+            changed, which looked like the site had frozen.
+          */}
+          <BrowserRouter useTransitions={false}>
             <ScrollToTop />
             <AppContent />
           </BrowserRouter>

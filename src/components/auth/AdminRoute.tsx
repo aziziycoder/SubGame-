@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { ShieldAlert, ArrowLeft, LogIn } from 'lucide-react';
+import { PageLoader } from '../common/PageLoader';
 
 interface AdminRouteProps {
   children: React.ReactNode;
@@ -12,8 +13,8 @@ export const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0B0D12] flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-[#A3E635] border-t-transparent rounded-full animate-spin" />
+      <div className="bg-[#0B0D12]">
+        <PageLoader className="min-h-screen" />
       </div>
     );
   }
