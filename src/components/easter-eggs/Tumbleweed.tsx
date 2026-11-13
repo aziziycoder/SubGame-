@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-const FIRST_ROLL_MS: [number, number] = [5000, 9000];
+/** Counted from when the effect has loaded, about a second after the page opens. */
+const FIRST_ROLL_MS: [number, number] = [3000, 4000];
 const NEXT_ROLL_MS: [number, number] = [25000, 40000];
 const MAX_ROLLS_PER_VISIT = 4;
 const STRAW_PIECES = 26;
@@ -153,10 +154,6 @@ const RollingTumbleweed: React.FC<{ onGone: () => void }> = ({ onGone }) => {
       className="fixed left-0 top-0 z-40 cursor-pointer p-0 border-0 bg-transparent"
       style={{ transform: 'translate(-200px, -200px)' }}
     >
-      <span
-        className="absolute left-1/2 bottom-[-6px] w-3/4 h-2 -translate-x-1/2 rounded-full bg-black/40 blur-[3px]"
-        aria-hidden="true"
-      />
       <TumbleweedArt />
     </button>
   );

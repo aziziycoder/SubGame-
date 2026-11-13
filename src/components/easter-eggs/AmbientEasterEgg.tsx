@@ -8,7 +8,7 @@ const AMBIENT_EFFECTS: Record<string, () => Promise<AmbientEffect>> = {
 };
 
 /** Loads after the page has settled, so the effect never competes with the page itself. */
-const LOAD_DELAY_MS = 2500;
+const LOAD_DELAY_MS = 1000;
 
 export const AmbientEasterEgg: React.FC<{ slug: string }> = ({ slug }) => {
   const [Effect, setEffect] = useState<AmbientEffect | null>(null);

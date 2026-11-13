@@ -30,7 +30,6 @@ const EASTER_EGGS: Record<string, EasterEgg> = {
   },
   'red-dead-redemption-2': {
     label: 'Dead Eye',
-    cursor: 'cursor-crosshair',
     load: () => import('./DeadEye').then((m) => m.DeadEye),
   },
 };

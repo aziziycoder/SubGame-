@@ -12,7 +12,7 @@ interface TitleFont {
  * can't be served, so these are open-licensed (OFL) look-alikes from Google Fonts.
  */
 const TITLE_FONTS: Record<string, TitleFont> = {
-  'red-dead-redemption': { family: 'Smokum', query: 'Smokum' },
+  'red-dead-redemption': { family: 'Rye', query: 'Rye' },
   'red-dead-redemption-2': { family: 'Rye', query: 'Rye' },
 };
 
