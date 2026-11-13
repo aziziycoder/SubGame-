@@ -13,8 +13,10 @@ type EffectComponent = React.ComponentType<EasterEggEffectProps>;
 
 interface EasterEgg {
   label: string;
-  /** What peeks out from behind the poster and gives the secret away. */
-  teaser: React.ReactNode;
+  /** What peeks out from behind the poster and gives the secret away, if anything. */
+  teaser?: React.ReactNode;
+  /** The pointer over the poster, the other hint that it can be clicked. */
+  cursor?: string;
   /** Imported on first click, so nobody downloads an effect they never trigger. */
   load: () => Promise<EffectComponent>;
 }
@@ -25,6 +27,11 @@ const EASTER_EGGS: Record<string, EasterEgg> = {
     label: 'Poster orqasidagi tolalar',
     teaser: <CordycepsTeaser />,
     load: () => import('./CordycepsOutbreak').then((m) => m.CordycepsOutbreak),
+  },
+  'red-dead-redemption-2': {
+    label: 'Dead Eye',
+    cursor: 'cursor-crosshair',
+    load: () => import('./DeadEye').then((m) => m.DeadEye),
   },
 };
 
@@ -63,7 +70,7 @@ export const GameEasterEgg: React.FC<{ slug: string; children: React.ReactNode }
         onClick={handleClick}
         aria-label={egg.label}
         aria-pressed={Boolean(Effect)}
-        className="absolute z-0 cursor-pointer rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#b4a95f]"
+        className={`absolute z-0 ${egg.cursor ?? 'cursor-pointer'} rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#b4a95f]`}
         style={{
           top: 'calc(-1 * var(--poster-inset-y))',
           bottom: 'calc(-1 * var(--poster-inset-y))',

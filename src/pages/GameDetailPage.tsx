@@ -8,6 +8,8 @@ import { Lightbox } from '../components/common/Lightbox';
 import { ClickPaymentModal } from '../components/payment/ClickPaymentModal';
 import { GameEasterEgg } from '../components/easter-eggs/GameEasterEgg';
 import { LicenseEasterEgg } from '../components/easter-eggs/LicenseEasterEgg';
+import { AmbientEasterEgg } from '../components/easter-eggs/AmbientEasterEgg';
+import { useGameTitleFont } from '../components/easter-eggs/useGameTitleFont';
 import { ClickLogo, SteamLogo, EpicGamesLogo } from '../components/common/BrandLogos';
 import { getGamePriceInfo } from '../services/paymentService';
 import { fetchSingleGameLicenseStats, type GameLicenseCountStats } from '../services/licensesService';
@@ -39,6 +41,8 @@ import {
 
 export const GameDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  // Called before the loading return below, as hooks must run on every render.
+  const titleFont = useGameTitleFont(slug);
   const [game, setGame] = useState<Game | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -341,8 +345,9 @@ export const GameDetailPage: React.FC = () => {
                   )}
                 </div>
 
-                <h1 className="text-xl font-black text-white tracking-tight leading-tight line-clamp-2">
-                  {game.title}
+                {/* Three lines: a two-line title plus the subtitle line under it. */}
+                <h1 className="text-xl font-black text-white tracking-tight leading-tight line-clamp-3">
+                  <span style={titleFont}>{game.title}</span>
                   <span className="block text-xs font-semibold text-[#A3E635] mt-0.5 tracking-normal">
                     O‘zbek tilida (O‘zbekcha subtitr)
                   </span>
@@ -401,7 +406,10 @@ export const GameDetailPage: React.FC = () => {
               </div>
 
               {/* Desktop Title (hidden on mobile) */}
-              <h1 className="hidden sm:block text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
+              <h1
+                className="hidden sm:block text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight"
+                style={titleFont}
+              >
                 {game.title}
               </h1>
 
@@ -1183,6 +1191,7 @@ export const GameDetailPage: React.FC = () => {
       
 
       <LicenseEasterEgg slug={game.slug} active={claimSuccess} />
+      <AmbientEasterEgg slug={game.slug} />
 
       {/* Floating Corner Toast Notification */}
       {claimSuccess && (
