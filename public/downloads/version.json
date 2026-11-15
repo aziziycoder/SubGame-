@@ -1,11 +1,11 @@
 {
-  "version": "1.4.2",
+  "version": "1.4.3",
   "downloadUrl": "https://www.subgame.uz/downloads/SubGame-Launcher.exe",
   "minRequiredVersion": "1.4.1",
-  "changelog": "SubGame Launcher 1.4.2: launcher endi o'zini to'liq yangilashda xatoga uchramaydi (avval \"Qayta ishga tushirish\" bosilganda hech narsa bo'lmasdi). Bu kichik yangilanish — bir necha yuz KB.",
-  "releaseDate": "2026-11-09",
+  "changelog": "SubGame Launcher 1.4.3: Detroit: Become Human va boshqa katta zip subtitr paketlarini yuklash hamda arxivdan ochishdagi xatolik to‘liq bartaraf etildi. Subtitrlarni tezkor ulash tizimi yaxshilandi.",
+  "releaseDate": "2026-11-15",
   "patchUrl": "https://www.subgame.uz/downloads/update-bundle.zip",
   "patchSize": "805 KB",
   "patchBaseVersion": "1.4.1",
-  "highlight": "Yangilanishlar endi faqat o'zgargan qismni yuklab oladi va to'g'ri o'rnatiladi"
+  "highlight": "Detroit va katta zip paketli o‘yinlar bilan ishlash to‘liq tuzatildi"
 }
