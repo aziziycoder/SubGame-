@@ -1,11 +1,11 @@
 {
-  "version": "1.4.4",
+  "version": "1.4.5",
   "downloadUrl": "https://www.subgame.uz/downloads/SubGame-Launcher.exe",
   "minRequiredVersion": "1.4.1",
-  "changelog": "SubGame Launcher 1.4.4: Red Dead Redemption 2 uchun SUB-RDR2 kalitlari bilan faollashtirish tuzatildi, o'zbekcha shrift xaritasi (commonx) endi o'yin papkasiga to'g'ri o'rnatiladi, subtitr fayllari almashinib qolishi xatosi bartaraf etildi. Bundan keyingi yangilanishlar ixtiyoriy bo'ladi: \"Keyinroq\" tugmasi bilan o'tkazib yuborish mumkin.",
+  "changelog": "SubGame Launcher 1.4.5: Red Dead Redemption 2 endi to'g'ri ishga tushadi (\"ERR_NO_LAUNCHER\" xatosi tuzatildi): launcher o'yinni Rockstar launcheri orqali ochadi va o'zbekcha subtitrlar o'yin davomida ulanib turadi.",
   "releaseDate": "2026-11-16",
   "patchUrl": "https://www.subgame.uz/downloads/update-bundle.zip",
   "patchSize": "806 KB",
   "patchBaseVersion": "1.4.1",
-  "highlight": "Red Dead Redemption 2 bilan ishlash tuzatildi"
+  "highlight": "Red Dead Redemption 2 to'g'ri ishga tushadi"
 }
