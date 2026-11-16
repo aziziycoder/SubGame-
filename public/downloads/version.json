@@ -1,11 +1,11 @@
 {
-  "version": "1.4.3",
+  "version": "1.4.4",
   "downloadUrl": "https://www.subgame.uz/downloads/SubGame-Launcher.exe",
   "minRequiredVersion": "1.4.1",
-  "changelog": "SubGame Launcher 1.4.3: Detroit: Become Human va boshqa katta zip subtitr paketlarini yuklash hamda arxivdan ochishdagi xatolik to‘liq bartaraf etildi. Subtitrlarni tezkor ulash tizimi yaxshilandi.",
-  "releaseDate": "2026-11-15",
+  "changelog": "SubGame Launcher 1.4.4: Red Dead Redemption 2 uchun SUB-RDR2 kalitlari bilan faollashtirish tuzatildi, o'zbekcha shrift xaritasi (commonx) endi o'yin papkasiga to'g'ri o'rnatiladi, subtitr fayllari almashinib qolishi xatosi bartaraf etildi. Bundan keyingi yangilanishlar ixtiyoriy bo'ladi: \"Keyinroq\" tugmasi bilan o'tkazib yuborish mumkin.",
+  "releaseDate": "2026-11-16",
   "patchUrl": "https://www.subgame.uz/downloads/update-bundle.zip",
-  "patchSize": "805 KB",
+  "patchSize": "806 KB",
   "patchBaseVersion": "1.4.1",
-  "highlight": "Detroit va katta zip paketli o‘yinlar bilan ishlash to‘liq tuzatildi"
+  "highlight": "Red Dead Redemption 2 bilan ishlash tuzatildi"
 }
