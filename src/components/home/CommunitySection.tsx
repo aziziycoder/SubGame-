@@ -46,32 +46,6 @@ export const CommunitySection: React.FC = () => {
                 <span>O‘yin taklif qilish</span>
               </Link>
             </div>
-
-            {/* Live community stats badge */}
-            <div className="mt-8 pt-8 border-t border-[#2A3245]/60 flex flex-wrap items-center gap-8 text-xs text-gray-400">
-              <div>
-                <span className="text-white font-bold text-sm">2+ o‘yin</span>
-                <p>To‘liq subtitr bilan</p>
-              </div>
-              <div className="h-6 w-px bg-[#2A3245]" />
-              <div>
-                <span className="text-[#A3E635] font-bold text-sm">100% bepul</span>
-                <p>O‘zbek geymerlari uchun</p>
-              </div>
-              <div className="h-6 w-px bg-[#2A3245]" />
-              <a
-                href={SITE_CONFIG.telegramUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group block cursor-pointer transition-transform hover:scale-105"
-                title="Telegram kanaliga o‘tish"
-              >
-                <span className="text-sky-400 font-bold text-sm group-hover:text-sky-300 group-hover:underline flex items-center gap-1">
-                  {SITE_CONFIG.telegramChannelName}
-                </span>
-                <p className="text-gray-400 group-hover:text-gray-200">Rasmiy muhokama kanali ↗</p>
-              </a>
-            </div>
           </div>
         </div>
       </div>

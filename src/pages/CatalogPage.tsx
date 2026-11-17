@@ -16,6 +16,18 @@ import {
 } from 'lucide-react';
 import { getGamePriceInfo } from '../services/paymentService';
 
+// Helper to get game release/creation date on SubGame platform (strictly when added/released, never by updatedAt)
+function getSubGameReleaseTimestamp(game?: Game): number {
+  if (!game) return 0;
+  // 1. Backend createdAt timestamp (exact platform creation/release date)
+  if (game.createdAt) {
+    const t = new Date(game.createdAt).getTime();
+    if (!isNaN(t) && t > 0) return t;
+  }
+  // 2. Fallback to game releaseYear
+  return (Number(game.releaseYear) || 2000) * 10000;
+}
+
 export const CatalogPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearch = searchParams.get('q') || '';
@@ -163,10 +175,16 @@ export const CatalogPage: React.FC = () => {
         const countB = (licenseStats[b?.id]?.total || (b?.slug ? licenseStats[b.slug]?.total : 0)) || 0;
         if (countB !== countA) return countB - countA;
       }
-      const yearA = Number(a?.releaseYear) || 0;
-      const yearB = Number(b?.releaseYear) || 0;
-      if (sortBy === 'newest') return yearB - yearA;
-      if (sortBy === 'oldest') return yearA - yearB;
+      const timeA = getSubGameReleaseTimestamp(a);
+      const timeB = getSubGameReleaseTimestamp(b);
+      if (sortBy === 'newest') {
+        if (timeB !== timeA) return timeB - timeA;
+        return (a?.title || '').localeCompare(b?.title || '');
+      }
+      if (sortBy === 'oldest') {
+        if (timeA !== timeB) return timeA - timeB;
+        return (a?.title || '').localeCompare(b?.title || '');
+      }
       if (sortBy === 'title') return (a?.title || '').localeCompare(b?.title || '');
       return 0;
     });
@@ -355,9 +373,9 @@ export const CatalogPage: React.FC = () => {
                       : 'bg-[#141821] text-gray-300 border-[#2A3245] hover:border-gray-600'
                   }`}
                 >
-                  <option value="newest" className="bg-[#141821] text-white">Saralash: Yangi</option>
+                  <option value="newest" className="bg-[#141821] text-white">Saralash: Yangi chiqqanlar</option>
                   <option value="popular" className="bg-[#141821] text-white">Saralash: Ommabop (Ko‘p olingan)</option>
-                  <option value="oldest" className="bg-[#141821] text-white">Saralash: Avvalgi</option>
+                  <option value="oldest" className="bg-[#141821] text-white">Saralash: Avvalgi chiqqanlar</option>
                   <option value="title" className="bg-[#141821] text-white">Saralash: A–Z</option>
                 </select>
                 <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400">▼</span>
