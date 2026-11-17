@@ -14,8 +14,7 @@ import {
   ArrowRight,
   LifeBuoy,
   Play,
-  ExternalLink,
-  CheckCircle2
+  ExternalLink
 } from 'lucide-react';
 import { TelegramLogo } from '../components/common/BrandLogos';
 import { FaqSection } from '../components/home/FaqSection';
@@ -104,18 +103,9 @@ export const LauncherPage: React.FC = () => {
             O‘zbekcha o‘yinlarni boshqarish uchun <span className="text-[#A3E635]">SubGame Launcher</span>
           </h1>
 
-          <p className="text-base sm:text-lg text-gray-300 leading-relaxed mb-6">
+          <p className="text-base sm:text-lg text-gray-300 leading-relaxed mb-8">
             Subtitr fayllarini qo‘lda ko‘chirib yurishga chek qo‘ying! Rasmiy Launcher orqali o‘zbekcha tarjimalarni 1 bosishda o‘rnating, litsenziyalarni boshqaring va o‘yinlarni to‘g‘ridan-to‘g‘ri ishga tushiring.
           </p>
-
-          {release?.highlight ? (
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#141821] border border-[#A3E635]/30 text-xs text-gray-300 mb-8 shadow-sm">
-              <CheckCircle2 className="w-4 h-4 text-[#A3E635] shrink-0" />
-              <span>Yangi v{release.version}: {release.highlight}</span>
-            </div>
-          ) : (
-            <div className="mb-8" />
-          )}
 
           {/* Download Action */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
