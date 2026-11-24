@@ -30,7 +30,9 @@ const CORDYCEPS_EGG: EasterEgg = {
 /** Add a game here, keyed by its slug, to give its page an easter egg. */
 const EASTER_EGGS: Record<string, EasterEgg> = {
   'the-last-of-us-part-i': CORDYCEPS_EGG,
+  'the-last-of-us-part-ii': CORDYCEPS_EGG,
   'the-last-of-us-part-ii-remastered': CORDYCEPS_EGG,
+  'the-last-of-us-part-2': CORDYCEPS_EGG,
   'the-last-of-us-part-2-remastered': CORDYCEPS_EGG,
   'red-dead-redemption-2': {
     label: 'Dead Eye',
