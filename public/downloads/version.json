@@ -1,11 +1,11 @@
 {
-  "version": "1.4.6",
+  "version": "1.4.7",
   "downloadUrl": "https://www.subgame.uz/downloads/SubGame-Launcher.exe",
   "minRequiredVersion": "1.4.1",
-  "changelog": "SubGame Launcher 1.4.6: endi o'yinni o'ynab bo'lgach o'zbekcha subtitrlarni kompyuterdan o'chirib, joy bo'shatishingiz mumkin. O'yin oynasidagi \"O‘chirish\" tugmasi o'yinni asl holiga qaytaradi va launcher yuklagan fayllarni o'chiradi. Litsenziyangiz saqlanib qoladi: xohlasangiz istalgan vaqt pulsiz qayta o'rnatasiz.",
-  "releaseDate": "2026-11-21",
+  "changelog": "SubGame Launcher 1.4.7: katta arxivli o'yinlar (jumladan The Last of Us Part II Remastered) uchun yangi SGPATCH2 tezkor bayt-oraliq patchi qo'llab-quvvatlanishi qo'shildi. Endi bir necha gigabayt o'rniga atigi bir necha megabaytlik paketlar bilan o'zbekcha tarjima o'rnatiladi.",
+  "releaseDate": "2026-11-24",
   "patchUrl": "https://www.subgame.uz/downloads/update-bundle.zip",
   "patchSize": "813 KB",
   "patchBaseVersion": "1.4.1",
-  "highlight": "Subtitrlarni kompyuterdan o'chirish"
+  "highlight": "The Last of Us Part II va SGPATCH2 qo'llab-quvvatlashi"
 }
