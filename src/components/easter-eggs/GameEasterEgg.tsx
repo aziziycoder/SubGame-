@@ -21,13 +21,17 @@ interface EasterEgg {
   load: () => Promise<EffectComponent>;
 }
 
+const CORDYCEPS_EGG: EasterEgg = {
+  label: 'Poster orqasidagi tolalar',
+  teaser: <CordycepsTeaser />,
+  load: () => import('./CordycepsOutbreak').then((m) => m.CordycepsOutbreak),
+};
+
 /** Add a game here, keyed by its slug, to give its page an easter egg. */
 const EASTER_EGGS: Record<string, EasterEgg> = {
-  'the-last-of-us-part-i': {
-    label: 'Poster orqasidagi tolalar',
-    teaser: <CordycepsTeaser />,
-    load: () => import('./CordycepsOutbreak').then((m) => m.CordycepsOutbreak),
-  },
+  'the-last-of-us-part-i': CORDYCEPS_EGG,
+  'the-last-of-us-part-ii-remastered': CORDYCEPS_EGG,
+  'the-last-of-us-part-2-remastered': CORDYCEPS_EGG,
   'red-dead-redemption-2': {
     label: 'Dead Eye',
     load: () => import('./DeadEye').then((m) => m.DeadEye),
