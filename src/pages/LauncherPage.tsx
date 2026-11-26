@@ -110,8 +110,9 @@ export const LauncherPage: React.FC = () => {
           {/* Download Action */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
             <a
-              href="/downloads/SubGame-Launcher.exe"
-              download="SubGame-Launcher.exe"
+              href="https://github.com/aziziycoder/subgame-launcher/releases/download/v1.4.8/SubGame.Launcher.1.4.8.exe"
+              download="SubGame.Launcher.1.4.8.exe"
+              rel="noopener noreferrer"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl bg-[#A3E635] text-[#0B0D12] hover:bg-[#84CC16] font-extrabold text-base shadow-lg shadow-[#A3E635]/25 hover:scale-105 transition-all"
             >
               <Download className="w-5 h-5" />
