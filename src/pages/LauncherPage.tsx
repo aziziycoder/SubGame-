@@ -23,6 +23,7 @@ import { SITE_CONFIG } from '../config/site';
 interface LauncherRelease {
   version: string;
   highlight?: string;
+  downloadUrl?: string;
 }
 
 // Launcher versiyasi qo'lda yozilmaydi: launcher yangilanishlari uchun chiqariladigan version.json dan olinadi
@@ -33,7 +34,13 @@ function useLauncherRelease(): LauncherRelease | null {
     fetch(`/downloads/version.json?t=${Date.now()}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (!cancelled && data?.version) setRelease({ version: data.version, highlight: data.highlight });
+        if (!cancelled && data?.version) {
+          setRelease({
+            version: data.version,
+            highlight: data.highlight,
+            downloadUrl: data.downloadUrl,
+          });
+        }
       })
       .catch(() => {});
     return () => {
@@ -110,8 +117,8 @@ export const LauncherPage: React.FC = () => {
           {/* Download Action */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
             <a
-              href="https://github.com/aziziycoder/subgame-launcher/releases/download/v1.4.8/SubGame.Launcher.1.4.8.exe"
-              download="SubGame.Launcher.1.4.8.exe"
+              href={release?.downloadUrl || 'https://github.com/aziziycoder/subgame-launcher/releases/download/v1.5.0/SubGame.Launcher.1.5.0.exe'}
+              download={`SubGame.Launcher.${release?.version || '1.5.0'}.exe`}
               rel="noopener noreferrer"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl bg-[#A3E635] text-[#0B0D12] hover:bg-[#84CC16] font-extrabold text-base shadow-lg shadow-[#A3E635]/25 hover:scale-105 transition-all"
             >
