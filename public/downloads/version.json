@@ -1,11 +1,11 @@
 {
-  "version": "1.4.7",
+  "version": "1.4.8",
   "downloadUrl": "https://www.subgame.uz/downloads/SubGame-Launcher.exe",
   "minRequiredVersion": "1.4.1",
-  "changelog": "SubGame Launcher 1.4.7: katta arxivli o'yinlar (jumladan The Last of Us Part II Remastered) uchun yangi SGPATCH2 tezkor bayt-oraliq patchi qo'llab-quvvatlanishi qo'shildi. Endi bir necha gigabayt o'rniga atigi bir necha megabaytlik paketlar bilan o'zbekcha tarjima o'rnatiladi.",
-  "releaseDate": "2026-11-24",
+  "changelog": "SubGame Launcher 1.4.8: O‘zbekcha dublyaj paketlari (Subtitr va Dublyaj alohida tanlovi hamda hajm ko‘rsatkichlari) qo‘llab-quvvatlashi qo‘shildi.",
+  "releaseDate": "2026-11-26",
   "patchUrl": "https://www.subgame.uz/downloads/update-bundle.zip",
-  "patchSize": "813 KB",
+  "patchSize": "815 KB",
   "patchBaseVersion": "1.4.1",
-  "highlight": "The Last of Us Part II va SGPATCH2 qo'llab-quvvatlashi"
+  "highlight": "O‘zbekcha dublyaj paketlari qo‘llab-quvvatlashi"
 }
