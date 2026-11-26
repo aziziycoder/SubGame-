@@ -26,7 +26,9 @@ import {
   Cpu,
   KeyRound,
   LayoutDashboard,
-  Vote
+  Vote,
+  ArrowUp,
+  ArrowDown
 } from 'lucide-react';
 import { uploadAdminFile } from '../services/apiClient';
 import {
@@ -37,7 +39,7 @@ import {
   syncInitialGames,
   normalizeGameData
 } from '../services/gamesService';
-import type { Game, SubtitleStatus, OfficialStoreLink } from '../types/game';
+import type { Game, SubtitleStatus, OfficialStoreLink, SubtitleVariant } from '../types/game';
 import { useAuth } from '../context/AuthContext';
 import { SliderManager } from '../components/admin/SliderManager';
 import { UserManager } from '../components/admin/UserManager';
@@ -81,6 +83,42 @@ export const AdminPage: React.FC = () => {
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [uploadingVariantIdx, setUploadingVariantIdx] = useState<number | null>(null);
+  const [variantUploadError, setVariantUploadError] = useState<string | null>(null);
+  const [variantSizeRulesText, setVariantSizeRulesText] = useState<Record<number, string>>({});
+
+  const handleVariantFileUpload = async (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const gameSlug = (formData.slug?.trim().toLowerCase() || 'general').replace(/[^a-z0-9-]+/g, '-');
+    setUploadingVariantIdx(idx);
+    setVariantUploadError(null);
+
+    try {
+      const uploaded = await uploadAdminFile(file, gameSlug, () => {});
+      const formattedSize =
+        file.size >= 1048576
+          ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+          : `${(file.size / 1024).toFixed(1)} KB`;
+
+      setFormData((prev) => {
+        const next = [...(prev.variants || [])];
+        if (!next[idx]) return prev;
+        next[idx] = {
+          ...next[idx],
+          targetFileName: next[idx].targetFileName || file.name,
+          subtitleSize: formattedSize,
+          subtitleDownloadUrl: uploaded.url,
+        };
+        return { ...prev, variants: next };
+      });
+    } catch (err: any) {
+      setVariantUploadError(err.message || 'Yuklashda xatolik');
+    } finally {
+      setUploadingVariantIdx(null);
+    }
+  };
 
   const handleSubtitleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -155,6 +193,7 @@ export const AdminPage: React.FC = () => {
     targetFileName: 'tt01.pc',
     targetRelativeDir: 'TRTEXT',
     keyPrefix: 'SUB-GAME',
+    variants: [],
     minimumRequirements: {
       os: '',
       processor: '',
@@ -295,6 +334,7 @@ export const AdminPage: React.FC = () => {
       targetFileName: raw.targetFileName || '',
       targetRelativeDir: raw.targetRelativeDir || '',
       keyPrefix: raw.keyPrefix || '',
+      variants: Array.isArray(raw.variants) ? raw.variants : [],
       isFeatured: Boolean(raw.isFeatured),
       tags: Array.isArray(raw.tags) ? raw.tags : genres,
       installationGuide: Array.isArray(raw.installationGuide) && raw.installationGuide.length > 0 ? raw.installationGuide : [
@@ -321,6 +361,14 @@ export const AdminPage: React.FC = () => {
 
   const applyGameToForm = (game: Game) => {
     setFormData(game);
+    const sizeTextMap: Record<number, string> = {};
+    (game.variants || []).forEach((v, idx) => {
+      if (v.detectFileSizes && Object.keys(v.detectFileSizes).length > 0) {
+        sizeTextMap[idx] = JSON.stringify(v.detectFileSizes);
+      }
+    });
+    setVariantSizeRulesText(sizeTextMap);
+    setVariantUploadError(null);
     setGenresInput(game.genres ? game.genres.join(', ') : 'Sarguzasht');
     setScreenshotsInput(game.screenshots ? game.screenshots.join('\n') : '');
     const steam = game.officialStoreLinks?.find((s) => s.name === 'Steam')?.url || '';
@@ -634,6 +682,23 @@ export const AdminPage: React.FC = () => {
         }
         return links;
       })(),
+      variants: (formData.variants || [])
+        .map((v, idx) => ({
+          ...v,
+          key: (v.key || `variant-${idx + 1}`).trim().toLowerCase(),
+          label: (v.label || v.key || `Versiya ${idx + 1}`).trim(),
+          subtitleVersion: (v.subtitleVersion || 'v1.0.0').trim(),
+          subtitleSize: (v.subtitleSize || '').trim(),
+          subtitleDownloadUrl: toDirectDownloadUrl(v.subtitleDownloadUrl || ''),
+          targetFileName: (v.targetFileName || '').trim(),
+          targetRelativeDir: (v.targetRelativeDir || '').trim(),
+          defaultExeName: (v.defaultExeName || '').trim(),
+          sortOrder: idx,
+          detectFilesPresent: Array.isArray(v.detectFilesPresent) ? v.detectFilesPresent : [],
+          detectFilesAbsent: Array.isArray(v.detectFilesAbsent) ? v.detectFilesAbsent : [],
+          detectFileSizes: v.detectFileSizes && typeof v.detectFileSizes === 'object' ? v.detectFileSizes : {},
+        }))
+        .filter((v) => v.key),
     } as Game;
 
     const finalPayload = normalizeGameData(payload);
@@ -1784,6 +1849,293 @@ export const AdminPage: React.FC = () => {
                         Google Drive havolasini tashlasangiz, tizim uni avtomatik yuklab olish formatiga aylantiradi. (Faylni Google Drive'da "Havolaga ega har kim" qilib qo‘ying).
                       </p>
                     </div>
+                  </div>
+
+                  {/* Versiyalar (Torrent / Steam / ...) */}
+                  <div className="sm:col-span-2 p-4 rounded-2xl bg-[#0B0D12] border border-[#2A3245] space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <label className="text-xs font-bold text-white flex items-center gap-2">
+                          <Layers className="w-4 h-4 text-[#A3E635]" />
+                          <span>Versiyalar (Torrent / Steam / ...)</span>
+                        </label>
+                        <p className="text-[11px] text-gray-500 mt-0.5">
+                          Bitta o‘yin uchun bir nechta mos kelmaydigan patchlar bo‘lsa qo‘shing. Bo‘sh qoldirilsa, yuqoridagi asosiy maydonlar ishlaydi.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const current = formData.variants || [];
+                          const nextIdx = current.length;
+                          const newVariant: SubtitleVariant =
+                            nextIdx === 0
+                              ? {
+                                  key: 'torrent',
+                                  label: 'Torrent',
+                                  subtitleVersion: formData.subtitleVersion || 'v1.0.0',
+                                  subtitleSize: formData.subtitleSize || '',
+                                  subtitleDownloadUrl: formData.subtitleDownloadUrl && formData.subtitleDownloadUrl !== '/launcher' ? formData.subtitleDownloadUrl : '',
+                                  targetFileName: formData.targetFileName || '',
+                                  targetRelativeDir: formData.targetRelativeDir || '.',
+                                  defaultExeName: formData.defaultExeName || '',
+                                  sortOrder: 0,
+                                  detectFilesPresent: [],
+                                  detectFilesAbsent: [],
+                                  detectFileSizes: {},
+                                }
+                              : {
+                                  key: nextIdx === 1 ? 'steam' : `variant-${nextIdx + 1}`,
+                                  label: nextIdx === 1 ? 'Steam' : `Versiya ${nextIdx + 1}`,
+                                  subtitleVersion: 'v1.0.0',
+                                  subtitleSize: '',
+                                  subtitleDownloadUrl: '',
+                                  targetFileName: '',
+                                  targetRelativeDir: formData.targetRelativeDir || '.',
+                                  defaultExeName: formData.defaultExeName || '',
+                                  sortOrder: nextIdx,
+                                  detectFilesPresent: [],
+                                  detectFilesAbsent: [],
+                                  detectFileSizes: {},
+                                };
+                          setFormData({ ...formData, variants: [...current, newVariant] });
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#A3E635]/15 hover:bg-[#A3E635]/25 border border-[#A3E635]/40 text-[#A3E635] text-xs font-bold transition-colors cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Variant qo‘shish</span>
+                      </button>
+                    </div>
+
+                    {variantUploadError && (
+                      <p className="text-xs text-red-400 font-medium">{variantUploadError}</p>
+                    )}
+
+                    {(formData.variants || []).length > 0 && (
+                      <div className="space-y-3 pt-1">
+                        {(formData.variants || []).map((variant, idx) => {
+                          const updateVariant = (patch: Partial<SubtitleVariant>) => {
+                            const next = [...(formData.variants || [])];
+                            next[idx] = { ...next[idx], ...patch };
+                            setFormData({ ...formData, variants: next });
+                          };
+                          const moveVariant = (dir: -1 | 1) => {
+                            const list = [...(formData.variants || [])];
+                            const target = idx + dir;
+                            if (target < 0 || target >= list.length) return;
+                            [list[idx], list[target]] = [list[target], list[idx]];
+                            setFormData({ ...formData, variants: list });
+                          };
+                          const removeVariant = () => {
+                            const list = (formData.variants || []).filter((_, i) => i !== idx);
+                            setFormData({ ...formData, variants: list });
+                          };
+
+                          return (
+                            <div
+                              key={`${variant.key}-${idx}`}
+                              className="p-3.5 rounded-xl bg-[#141821] border border-[#2A3245] space-y-3"
+                            >
+                              <div className="flex items-center justify-between gap-2 border-b border-[#2A3245] pb-2">
+                                <span className="text-xs font-bold text-[#A3E635]">
+                                  #{idx + 1} · {variant.label || variant.key || 'Yangi variant'}
+                                </span>
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    type="button"
+                                    onClick={() => moveVariant(-1)}
+                                    disabled={idx === 0}
+                                    className="p-1 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-gray-400 hover:text-white disabled:opacity-30 cursor-pointer"
+                                    title="Yuqoriga"
+                                  >
+                                    <ArrowUp className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => moveVariant(1)}
+                                    disabled={idx === (formData.variants?.length || 0) - 1}
+                                    className="p-1 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-gray-400 hover:text-white disabled:opacity-30 cursor-pointer"
+                                    title="Pastga"
+                                  >
+                                    <ArrowDown className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={removeVariant}
+                                    className="p-1 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 cursor-pointer"
+                                    title="Variantni o‘chirish"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                                <div>
+                                  <label className="block text-[10px] text-gray-400 mb-1">Kalit (key) *</label>
+                                  <input
+                                    type="text"
+                                    placeholder="torrent / steam"
+                                    value={variant.key}
+                                    onChange={(e) => updateVariant({ key: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '') })}
+                                    className="w-full px-2.5 py-2 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white font-mono"
+                                  />
+                                </div>
+                                <div className="sm:col-span-2">
+                                  <label className="block text-[10px] text-gray-400 mb-1">Ko‘rinadigan nomi (Label) *</label>
+                                  <input
+                                    type="text"
+                                    placeholder="Torrent (igruha) / Steam"
+                                    value={variant.label}
+                                    onChange={(e) => updateVariant({ label: e.target.value })}
+                                    className="w-full px-2.5 py-2 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-[10px] text-gray-400 mb-1">Versiya</label>
+                                  <input
+                                    type="text"
+                                    placeholder="v1.0.0"
+                                    value={variant.subtitleVersion || ''}
+                                    onChange={(e) => updateVariant({ subtitleVersion: e.target.value })}
+                                    className="w-full px-2.5 py-2 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white font-mono"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                <div>
+                                  <label className="block text-[10px] text-gray-400 mb-1">Hajmi</label>
+                                  <input
+                                    type="text"
+                                    placeholder="84.7 MB"
+                                    value={variant.subtitleSize || ''}
+                                    onChange={(e) => updateVariant({ subtitleSize: e.target.value })}
+                                    className="w-full px-2.5 py-2 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white font-mono"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-[10px] text-gray-400 mb-1">Joylashtirish papkasi</label>
+                                  <input
+                                    type="text"
+                                    placeholder="."
+                                    value={variant.targetRelativeDir || ''}
+                                    onChange={(e) => updateVariant({ targetRelativeDir: e.target.value })}
+                                    className="w-full px-2.5 py-2 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white font-mono"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-[10px] text-gray-400 mb-1">Asosiy .exe (ixtiyoriy)</label>
+                                  <input
+                                    type="text"
+                                    placeholder={formData.defaultExeName || 'Game.exe'}
+                                    value={variant.defaultExeName || ''}
+                                    onChange={(e) => updateVariant({ defaultExeName: e.target.value })}
+                                    className="w-full px-2.5 py-2 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white font-mono"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <div>
+                                  <label className="block text-[10px] text-gray-400 mb-1">Nishon fayl nomi *</label>
+                                  <input
+                                    type="text"
+                                    placeholder="BigFile_PC.d30, BigFile_PC.idx"
+                                    value={variant.targetFileName || ''}
+                                    onChange={(e) => updateVariant({ targetFileName: e.target.value })}
+                                    className="w-full px-2.5 py-2 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white font-mono"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-[10px] text-gray-400 mb-1">Yuklab olish havolasi (URL) va fayl yuklash</label>
+                                  <div className="flex gap-1.5">
+                                    <input
+                                      type="text"
+                                      placeholder="https://drive.google.com/..."
+                                      value={variant.subtitleDownloadUrl || ''}
+                                      onChange={(e) => updateVariant({ subtitleDownloadUrl: toDirectDownloadUrl(e.target.value) })}
+                                      className="flex-1 min-w-0 px-2.5 py-2 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white font-mono"
+                                    />
+                                    <label className="inline-flex items-center justify-center px-2.5 py-2 rounded-lg bg-[#1E2533] hover:bg-[#2A3245] border border-[#2A3245] text-xs font-semibold text-white cursor-pointer shrink-0">
+                                      <UploadCloud className="w-3.5 h-3.5 text-[#A3E635]" />
+                                      <input
+                                        type="file"
+                                        accept=".pak,.pc,.enc,.zip,.rar,.json,.txt"
+                                        onChange={(e) => handleVariantFileUpload(idx, e)}
+                                        disabled={uploadingVariantIdx === idx}
+                                        className="sr-only"
+                                      />
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Ixtiyoriy aniqlash qoidalari */}
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 border-t border-[#2A3245]/60">
+                                <div>
+                                  <label className="block text-[10px] text-gray-400 mb-1">Mavjud fayllar (vergul bilan)</label>
+                                  <input
+                                    type="text"
+                                    placeholder="BigFile_PC.d29"
+                                    value={(variant.detectFilesPresent || []).join(', ')}
+                                    onChange={(e) =>
+                                      updateVariant({
+                                        detectFilesPresent: e.target.value
+                                          .split(',')
+                                          .map((s) => s.trim())
+                                          .filter(Boolean),
+                                      })
+                                    }
+                                    className="w-full px-2.5 py-1.5 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-[11px] text-white font-mono"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-[10px] text-gray-400 mb-1">Bo‘lmasligi kerak fayllar</label>
+                                  <input
+                                    type="text"
+                                    placeholder="BigFile_PC.d27"
+                                    value={(variant.detectFilesAbsent || []).join(', ')}
+                                    onChange={(e) =>
+                                      updateVariant({
+                                        detectFilesAbsent: e.target.value
+                                          .split(',')
+                                          .map((s) => s.trim())
+                                          .filter(Boolean),
+                                      })
+                                    }
+                                    className="w-full px-2.5 py-1.5 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-[11px] text-white font-mono"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-[10px] text-gray-400 mb-1">Fayl hajmi qoidasi (JSON)</label>
+                                  <input
+                                    type="text"
+                                    placeholder='{"BigFile_PC.idx": 10465049}'
+                                    value={variantSizeRulesText[idx] ?? (variant.detectFileSizes && Object.keys(variant.detectFileSizes).length > 0 ? JSON.stringify(variant.detectFileSizes) : '')}
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      setVariantSizeRulesText((prev) => ({ ...prev, [idx]: val }));
+                                      if (!val.trim()) {
+                                        updateVariant({ detectFileSizes: {} });
+                                        return;
+                                      }
+                                      try {
+                                        const parsed = JSON.parse(val);
+                                        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                                          updateVariant({ detectFileSizes: parsed });
+                                        }
+                                      } catch {}
+                                    }}
+                                    className="w-full px-2.5 py-1.5 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-[11px] text-white font-mono"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
