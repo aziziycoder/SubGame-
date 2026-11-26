@@ -11,11 +11,11 @@ import { LicenseEasterEgg } from '../components/easter-eggs/LicenseEasterEgg';
 import { AmbientEasterEgg } from '../components/easter-eggs/AmbientEasterEgg';
 import { GameDetailSkeleton } from '../components/game/GameDetailSkeleton';
 import { useGameTitleFont } from '../components/easter-eggs/useGameTitleFont';
-import { ClickLogo, SteamLogo, EpicGamesLogo } from '../components/common/BrandLogos';
-import { getGamePriceInfo } from '../services/paymentService';
+import { ClickLogo, ClickBadge, SteamLogo, EpicGamesLogo } from '../components/common/BrandLogos';
+import { getGamePriceInfo, getDubbingPriceInfo } from '../services/paymentService';
 import { fetchSingleGameLicenseStats, type GameLicenseCountStats } from '../services/licensesService';
 import { useFavorites } from '../context/FavoritesContext';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, type LicenseEdition } from '../context/AuthContext';
 import {
   Download,
   ExternalLink,
@@ -37,7 +37,9 @@ import {
   Tag,
   X,
   ShoppingCart,
-  Users
+  Users,
+  Mic,
+  FileText
 } from 'lucide-react';
 
 export const GameDetailPage: React.FC = () => {
@@ -76,6 +78,8 @@ export const GameDetailPage: React.FC = () => {
   const [copiedPath, setCopiedPath] = useState<string | null>(null);
   const [shared, setShared] = useState(false);
   const [isClickModalOpen, setIsClickModalOpen] = useState(false);
+  const [isPackageModalOpen, setIsPackageModalOpen] = useState(false);
+  const [selectedEdition, setSelectedEdition] = useState<LicenseEdition>('subtitle');
   const [claimedStats, setClaimedStats] = useState<GameLicenseCountStats>({ total: 0, bound: 0 });
 
   useEffect(() => {
@@ -133,16 +137,27 @@ export const GameDetailPage: React.FC = () => {
   }
 
   const favorited = isFavorite(game.id);
-  const hasLicense = isAdmin || isLicenseClaimed(game.id);
-  const license = getGameLicense(game.id);
+  const hasSubLicense = isAdmin || isLicenseClaimed(game.id, 'subtitle');
+  const hasDubLicense = game.hasDubbing ? (isAdmin || isLicenseClaimed(game.id, 'dubbing')) : false;
   const priceInfo = getGamePriceInfo(game);
+  const dubPriceInfo = game.hasDubbing ? getDubbingPriceInfo(game) : null;
+  const activeEdition: LicenseEdition = game.hasDubbing ? selectedEdition : 'subtitle';
+  const activePriceInfo = activeEdition === 'dubbing' && dubPriceInfo ? dubPriceInfo : priceInfo;
+  const hasLicense = activeEdition === 'dubbing' ? hasDubLicense : hasSubLicense;
+  const license = getGameLicense(game.id, activeEdition);
 
-  const handleClaimLicense = async () => {
+  const handleClaimLicense = async (editionOverride?: LicenseEdition) => {
+    const ed = editionOverride || activeEdition;
     setIsClaiming(true);
     try {
-      const res = await claimLicense(game.id, game.title, game.slug);
+      const res = await claimLicense(game.id, game.title, game.slug, ed);
+      // Agar dublyaj tanlansa, subtitrlar ham qo'shib beriladi
+      if (res.success && ed === 'dubbing' && !hasSubLicense) {
+        await claimLicense(game.id, game.title, game.slug, 'subtitle');
+      }
       if (res.success) {
         setClaimSuccess(true);
+        setIsPackageModalOpen(false);
         setClaimedStats((prev) => ({ ...prev, total: prev.total + 1 }));
         setTimeout(() => setClaimSuccess(false), 5000);
       }
@@ -304,20 +319,6 @@ export const GameDetailPage: React.FC = () => {
                   {game.subtitleStatus !== 'Tayyor' && (
                     <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
                   )}
-                  
-                  {/* Compact Price Tag on Mobile - Only shown if game is ready */}
-                  {game.subtitleStatus === 'Tayyor' && (
-                    <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black tracking-wide border shadow-sm ${
-                        priceInfo.isPaid
-                          ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
-                          : 'bg-[#A3E635]/20 text-[#A3E635] border-[#A3E635]/40'
-                      }`}
-                    >
-                      <Tag className="w-3 h-3" />
-                      <span>{priceInfo.text}</span>
-                    </span>
-                  )}
 
                   {/* Claim count on Mobile */}
                   {claimedStats.total > 0 && (
@@ -356,20 +357,6 @@ export const GameDetailPage: React.FC = () => {
               <div className="hidden sm:flex flex-wrap items-center gap-2 sm:gap-3">
                 {game.subtitleStatus !== 'Tayyor' && (
                   <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
-                )}
-                
-                {/* Prominent Subtitle Price Tag - Only shown if game is ready */}
-                {game.subtitleStatus === 'Tayyor' && (
-                  <div
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-black tracking-wide border shadow-md ${
-                      priceInfo.isPaid
-                        ? 'bg-sky-500/20 text-sky-300 border-sky-500/40 shadow-sky-500/20'
-                        : 'bg-[#A3E635]/20 text-[#A3E635] border-[#A3E635]/40 shadow-lime-500/20'
-                    }`}
-                  >
-                    <Tag className="w-3.5 h-3.5" />
-                    <span>Subtitr narxi: {priceInfo.text}</span>
-                  </div>
                 )}
 
                 {/* Claimed count */}
@@ -421,7 +408,15 @@ export const GameDetailPage: React.FC = () => {
                 {/* Main Action Button */}
                 <div className="w-full sm:w-auto">
                   {game.subtitleStatus === 'Tayyor' ? (
-                    !user ? (
+                    game.hasDubbing && !(hasSubLicense && hasDubLicense) ? (
+                      <button
+                        onClick={() => setIsPackageModalOpen(true)}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 rounded-xl bg-[#A3E635] hover:bg-[#84CC16] text-[#0B0D12] font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer whitespace-nowrap h-11 sm:h-10.5"
+                      >
+                        <ShoppingCart className="w-4 h-4 shrink-0" />
+                        <span>Sotib olish</span>
+                      </button>
+                    ) : !user ? (
                       <button
                         onClick={signInWithGoogle}
                         className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-xl bg-white hover:bg-gray-100 text-[#0B0D12] font-bold text-xs sm:text-sm transition-all hover:scale-[1.02] shadow-md cursor-pointer whitespace-nowrap h-11 sm:h-10.5"
@@ -447,17 +442,17 @@ export const GameDetailPage: React.FC = () => {
                         <span>Google orqali litsenziya olish</span>
                       </button>
                     ) : !hasLicense ? (
-                      priceInfo.isPaid ? (
+                      activePriceInfo.isPaid ? (
                         <button
                           onClick={() => setIsClickModalOpen(true)}
                           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-xl bg-[#0065FF] hover:bg-[#0052cc] text-white font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] shadow-lg shadow-blue-500/25 cursor-pointer whitespace-nowrap h-11 sm:h-10.5"
                         >
                           <ClickLogo variant="icon" className="w-4 h-4 text-white shrink-0" />
-                          <span>Click orqali sotib olish ({priceInfo.text})</span>
+                          <span>Click orqali sotib olish ({activePriceInfo.text})</span>
                         </button>
                       ) : (
                         <button
-                          onClick={handleClaimLicense}
+                          onClick={() => handleClaimLicense('subtitle')}
                           disabled={isClaiming}
                           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-xl bg-[#A3E635] text-[#0B0D12] font-bold text-xs sm:text-sm hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer disabled:opacity-60 whitespace-nowrap h-11 sm:h-10.5"
                         >
@@ -681,6 +676,39 @@ export const GameDetailPage: React.FC = () => {
                   </strong>
                 </div>
 
+                {/* Dubbing Info Card - Only shown if game has dubbing */}
+                {game.hasDubbing && dubPriceInfo && (
+                  <div className="p-4 rounded-xl bg-violet-500/10 border border-violet-500/35 sm:col-span-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <span className="text-xs text-violet-300 uppercase tracking-wider font-bold flex items-center gap-1.5 mb-1">
+                        <Mic className="w-3.5 h-3.5 text-violet-400" />
+                        <span>O‘zbekcha Dublyaj</span>
+                      </span>
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-gray-200 font-semibold">
+                        <span className="px-2 py-0.5 rounded-md bg-violet-500/20 border border-violet-400/30 text-violet-200">
+                          {game.dubbingType || 'AI Dublyaj'}
+                        </span>
+                        <span className="text-gray-400 font-normal">
+                          • Versiya: {game.dubbingVersion || 'v1.0.0'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-mono font-bold bg-[#0B0D12] text-violet-300 border border-violet-500/30">
+                        {game.dubbingSize || '—'}
+                      </span>
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-sm font-black border ${
+                        dubPriceInfo.isPaid
+                          ? 'bg-sky-500/15 text-sky-300 border-sky-500/40'
+                          : 'bg-violet-500/20 text-violet-200 border-violet-400/40'
+                      }`}>
+                        <Tag className="w-4 h-4" />
+                        <span>{dubPriceInfo.text}</span>
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 {/* Subtitle License Price - Only shown if game is ready */}
                 {game.subtitleStatus === 'Tayyor' && (
                   <div className="p-4 rounded-xl bg-[#0B0D12] border border-[#2A3245] sm:col-span-2 flex items-center justify-between">
@@ -724,16 +752,6 @@ export const GameDetailPage: React.FC = () => {
                     </div>
                   </div>
                 )}
-              </div>
-
-              <div className="p-4 rounded-xl bg-[#1A1F2A] border border-[#2A3245] space-y-2 mb-4">
-                <div className="flex items-center gap-2 text-xs font-bold text-gray-300 uppercase tracking-wider">
-                  <CheckCircle2 className="w-4 h-4 text-[#A3E635]" />
-                  <span>Moslik (Compatibility)</span>
-                </div>
-                <p className="text-xs sm:text-sm text-gray-300">
-                  {game.subtitleCompatibility}
-                </p>
               </div>
 
               {game.knownIssues && game.knownIssues.length > 0 && (
@@ -923,8 +941,8 @@ export const GameDetailPage: React.FC = () => {
                 </span>
               </div>
 
-              {/* Price Highlight Banner */}
-              {isAdmin ? (
+              {/* Admin badge only (Subtitle license price box removed per design) */}
+              {isAdmin && (
                 <div className="p-3.5 rounded-xl bg-[#0B0D12] border border-[#A3E635]/40 flex items-center justify-between">
                   <div>
                     <span className="text-[11px] text-[#A3E635] block font-bold">Admin hisobi:</span>
@@ -934,23 +952,7 @@ export const GameDetailPage: React.FC = () => {
                     ADMIN
                   </span>
                 </div>
-              ) : game.subtitleStatus === 'Tayyor' ? (
-                <div className="p-3.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] flex items-center justify-between">
-                  <div>
-                    <span className="text-[11px] text-gray-400 block font-medium">Subtitr litsenziyasi:</span>
-                    <span className="text-[10px] text-gray-500">1 Akkaunt = 1 Kompyuter</span>
-                  </div>
-                  <div className="text-right">
-                    <span className={`text-base sm:text-lg font-black tracking-tight ${
-                      priceInfo.isPaid
-                        ? 'text-sky-300'
-                        : 'text-[#A3E635]'
-                    }`}>
-                      {priceInfo.text}
-                    </span>
-                  </div>
-                </div>
-              ) : null}
+              )}
 
               <h3 className="text-base sm:text-lg font-bold text-white">
                 1 Akkaunt = 1 Qurilma
@@ -999,6 +1001,14 @@ export const GameDetailPage: React.FC = () => {
                       </svg>
                       <span>Google bilan kirish va litsenziya olish</span>
                     </button>
+                  ) : game.hasDubbing && !(hasSubLicense && hasDubLicense) ? (
+                    <button
+                      onClick={() => setIsPackageModalOpen(true)}
+                      className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#A3E635] text-[#0B0D12] font-extrabold text-xs sm:text-sm hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer"
+                    >
+                      <ShoppingCart className="w-4 h-4 shrink-0" />
+                      <span>Sotib olish</span>
+                    </button>
                   ) : !hasLicense ? (
                     priceInfo.isPaid ? (
                       <button
@@ -1010,7 +1020,7 @@ export const GameDetailPage: React.FC = () => {
                       </button>
                     ) : (
                       <button
-                        onClick={handleClaimLicense}
+                        onClick={() => handleClaimLicense('subtitle')}
                         disabled={isClaiming}
                         className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#A3E635] text-[#0B0D12] font-black text-xs hover:bg-[#84CC16] transition-all hover:scale-[1.02] shadow-accent-glow cursor-pointer disabled:opacity-60"
                       >
@@ -1202,11 +1212,211 @@ export const GameDetailPage: React.FC = () => {
         </div>
       )}
 
+      {/* Package Selection Modal (Subtitr vs Dublyaj + Subtitr) */}
+      {isPackageModalOpen && game.hasDubbing && dubPriceInfo && (() => {
+        const chosenPrice = selectedEdition === 'dubbing' ? dubPriceInfo : priceInfo;
+        const anyPaid = priceInfo.isPaid || dubPriceInfo.isPaid;
+        return (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+            <div className="fixed inset-0 cursor-pointer" onClick={() => setIsPackageModalOpen(false)} aria-hidden="true" />
+            <div className="relative w-full max-w-md bg-[#121620] border-t sm:border border-[#2A3245] rounded-t-[28px] sm:rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col max-h-[95vh]">
+              {/* Mobile top pull indicator */}
+              <div className="sm:hidden w-12 h-1 rounded-full bg-white/20 mx-auto mt-2.5 mb-1 shrink-0" />
+
+              {/* Header with Game Image banner */}
+              <div className="relative h-28 sm:h-36 w-full bg-[#0B0D12] overflow-hidden shrink-0">
+                <img
+                  src={game.cardImage || game.cover}
+                  alt={game.title}
+                  className="w-full h-full object-cover opacity-55"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#121620] via-[#121620]/60 to-transparent" />
+
+                <button
+                  onClick={() => setIsPackageModalOpen(false)}
+                  aria-label="Yopish"
+                  className="absolute top-3 right-3 p-2 rounded-full bg-black/60 hover:bg-black/90 text-gray-300 hover:text-white transition-all cursor-pointer backdrop-blur-sm shadow-md"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+
+                <div className="absolute bottom-3 left-4 right-4 sm:left-5 sm:right-5 flex items-end justify-between gap-3">
+                  <div className="min-w-0">
+                    <span className="text-[10px] uppercase font-bold text-[#A3E635] tracking-wider block">
+                      Rasmiy Litsenziya
+                    </span>
+                    <h3 className="text-lg sm:text-xl font-black text-white leading-tight truncate">
+                      {game.title}
+                    </h3>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <span className="text-[11px] text-gray-400 block font-medium">Litsenziya narxi:</span>
+                    <span className="text-base sm:text-lg font-black text-[#A3E635] drop-shadow-[0_0_12px_rgba(163,230,53,0.35)]">
+                      {chosenPrice.text}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Content Body */}
+              <div className="p-4 sm:p-5 space-y-3 overflow-y-auto">
+                {/* Package options */}
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedEdition('subtitle')}
+                    className={`w-full text-left p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                      selectedEdition === 'subtitle'
+                        ? 'bg-[#A3E635]/15 border-[#A3E635] shadow-md shadow-[#A3E635]/10'
+                        : 'bg-[#0B0D12]/80 border-[#2A3245] hover:border-gray-500'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-[#A3E635]" />
+                        <span className="font-bold text-sm text-white">Faqat Subtitr</span>
+                        {hasSubLicense && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#A3E635]/20 text-[#A3E635]">
+                            Olingan
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-sm font-black text-[#A3E635]">{priceInfo.text}</span>
+                    </div>
+                    <div className="mt-1 flex items-center justify-between text-xs text-gray-400">
+                      <span>O‘zbekcha matn tarjimasi</span>
+                      <span className="font-mono">{game.subtitleSize || 'Kichik'}</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedEdition('dubbing')}
+                    className={`w-full text-left p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                      selectedEdition === 'dubbing'
+                        ? 'bg-violet-500/20 border-violet-400 shadow-md shadow-violet-500/15'
+                        : 'bg-[#0B0D12]/80 border-[#2A3245] hover:border-gray-500'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Mic className="w-4 h-4 text-violet-400" />
+                        <span className="font-bold text-sm text-white">Dublyaj + Subtitr</span>
+                        {hasDubLicense && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-500/25 text-violet-200">
+                            Olingan
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-sm font-black text-violet-300">{dubPriceInfo.text}</span>
+                    </div>
+                    <div className="mt-1 flex items-center justify-between text-xs text-gray-300">
+                      <span>{game.dubbingType || 'AI Dublyaj'} • Subtitr qo‘shib beriladi</span>
+                      <span className="font-mono text-violet-300">{game.dubbingSize || '1.16 GB'}</span>
+                    </div>
+                  </button>
+                </div>
+
+                {/* DRM Notice */}
+                <div className="p-3 rounded-2xl bg-[#0B0D12]/80 border border-[#2A3245] space-y-1 text-xs">
+                  <div className="flex items-center gap-2 font-bold text-white">
+                    <ShieldCheck className="w-4 h-4 text-[#A3E635] shrink-0" />
+                    <span>SubGame 1-Qurilma (DRM) Himoyasi</span>
+                  </div>
+                  <p className="text-[11px] text-gray-400 leading-relaxed pl-6">
+                    Litsenziya olingandan so‘ng <strong className="text-gray-200">{user?.email || 'hisobingiz'}</strong>ga biriktiriladi va SubGame Launcherda ushbu kompyuteringiz uchun avtomatik faollashadi.
+                  </p>
+                </div>
+
+                {/* Click Payment Provider Info (Uzcard / Humo) */}
+                {(chosenPrice.isPaid || anyPaid) && (
+                  <div className="p-3 rounded-2xl bg-[#0065FF]/10 border border-[#0065FF]/25 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <ClickBadge size="md" />
+                      <div className="min-w-0">
+                        <span className="text-xs sm:text-sm font-black text-white block truncate">
+                          Click Up / Click Merchant
+                        </span>
+                        <span className="text-[11px] text-sky-300 block truncate">
+                          Click ilovasi yoki Uzcard / Humo karta
+                        </span>
+                      </div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-[#A3E635]/15 text-[#A3E635] border border-[#A3E635]/30 text-[10px] font-extrabold whitespace-nowrap shrink-0">
+                      0% Komissiya
+                    </span>
+                  </div>
+                )}
+
+                {/* Action Button */}
+                <div className="space-y-2 pt-1">
+                  {!user ? (
+                    <button
+                      onClick={signInWithGoogle}
+                      className="w-full h-12 flex items-center justify-center gap-2.5 rounded-2xl bg-white hover:bg-gray-100 text-[#0B0D12] font-extrabold text-sm transition-all cursor-pointer"
+                    >
+                      <KeyRound className="w-4 h-4" />
+                      <span>Google orqali kirish va olish</span>
+                    </button>
+                  ) : ((selectedEdition === 'subtitle' && hasSubLicense) || (selectedEdition === 'dubbing' && hasDubLicense)) ? (
+                    <Link
+                      to="/launcher"
+                      onClick={() => setIsPackageModalOpen(false)}
+                      className="w-full h-12 flex items-center justify-center gap-2 rounded-2xl bg-[#A3E635] hover:bg-[#84CC16] text-[#0B0D12] font-extrabold text-sm transition-all"
+                    >
+                      <Play className="w-4 h-4 fill-current" />
+                      <span>Launcherni ochish</span>
+                    </Link>
+                  ) : chosenPrice.isPaid ? (
+                    <button
+                      onClick={() => {
+                        setIsPackageModalOpen(false);
+                        setIsClickModalOpen(true);
+                      }}
+                      className="w-full h-12 flex items-center justify-center gap-2.5 px-4 rounded-2xl bg-[#0065FF] hover:bg-[#0052cc] text-white font-extrabold text-sm sm:text-base shadow-xl shadow-blue-600/30 transition-all cursor-pointer"
+                    >
+                      <ClickLogo variant="icon" className="w-5 h-5 text-white shrink-0" />
+                      <span>Click orqali to‘lov qilish ({chosenPrice.text})</span>
+                      <ExternalLink className="w-4 h-4 opacity-80 shrink-0" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleClaimLicense(selectedEdition)}
+                      disabled={isClaiming}
+                      className={`w-full h-12 flex items-center justify-center gap-2 rounded-2xl font-extrabold text-sm transition-all cursor-pointer disabled:opacity-60 ${
+                        selectedEdition === 'dubbing'
+                          ? 'bg-violet-500 hover:bg-violet-400 text-white'
+                          : 'bg-[#A3E635] hover:bg-[#84CC16] text-[#0B0D12]'
+                      }`}
+                    >
+                      <KeyRound className="w-4 h-4" />
+                      <span>
+                        {isClaiming
+                          ? 'Biriktirilmoqda...'
+                          : selectedEdition === 'dubbing'
+                            ? 'Dublyaj + Subtitrni olish (Bepul)'
+                            : 'Subtitrni olish (Bepul)'}
+                      </span>
+                    </button>
+                  )}
+
+                  {/* Card payment hint */}
+                  <p className="text-[11px] text-gray-400 text-center leading-relaxed px-1">
+                    Pullik paketlarda Click ilovasi shart emas: to‘lov sahifasida <span className="text-white font-semibold">«Оплата картой»</span> ni tanlab, Uzcard yoki Humo karta ma’lumotlarini kiriting.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Click Payment Modal */}
       {isClickModalOpen && user && !isAdmin && (
         <ClickPaymentModal
           game={game}
           user={user}
+          edition={activeEdition}
           onClose={() => setIsClickModalOpen(false)}
           onSuccess={() => {
             setIsClickModalOpen(false);

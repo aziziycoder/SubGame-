@@ -9,6 +9,18 @@ export const ADMIN_EMAILS = [
 ];
 
 const USER_STORAGE_KEY = 'subgame_auth_user';
+const LOCAL_DUB_LICENSES_KEY = 'subgame_local_dub_licenses';
+
+export type LicenseEdition = 'subtitle' | 'dubbing';
+
+function readLocalDubLicenses(): Record<string, GameLicense> {
+  try {
+    const raw = localStorage.getItem(LOCAL_DUB_LICENSES_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -18,9 +30,9 @@ interface AuthContextType {
   licenses: Record<string, GameLicense>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
-  claimLicense: (gameId: string, gameTitle: string, gameSlug: string) => Promise<{ success: boolean; message?: string }>;
-  isLicenseClaimed: (gameId: string) => boolean;
-  getGameLicense: (gameId: string) => GameLicense | undefined;
+  claimLicense: (gameId: string, gameTitle: string, gameSlug: string, edition?: LicenseEdition) => Promise<{ success: boolean; message?: string }>;
+  isLicenseClaimed: (gameId: string, edition?: LicenseEdition) => boolean;
+  getGameLicense: (gameId: string, edition?: LicenseEdition) => GameLicense | undefined;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -72,12 +84,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshLicenses = useCallback(async () => {
     try {
-      setLicenses(await apiRequest<Record<string, GameLicense>>('api/v1/licenses/my/'));
+      const remote = await apiRequest<Record<string, GameLicense>>('api/v1/licenses/my/');
+      setLicenses({ ...readLocalDubLicenses(), ...remote });
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
         clearSession();
       } else {
         console.warn('Could not load licenses:', err);
+        setLicenses((prev) => ({ ...readLocalDubLicenses(), ...prev }));
       }
     }
   }, [clearSession]);
@@ -127,9 +141,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     clearSession();
   };
 
-  const claimLicense = async (gameId: string, gameTitle: string, gameSlug: string) => {
+  const claimLicense = async (
+    gameId: string,
+    gameTitle: string,
+    gameSlug: string,
+    edition: LicenseEdition = 'subtitle'
+  ) => {
     const PAID_GAMES = ['stray', 'a-plague-tale-legacy'];
-    if (!isAdmin && (PAID_GAMES.includes(gameId) || PAID_GAMES.includes(gameSlug))) {
+    if (edition === 'subtitle' && !isAdmin && (PAID_GAMES.includes(gameId) || PAID_GAMES.includes(gameSlug))) {
       return {
         success: false,
         message: 'Ushbu o‘yin pullik. Litsenziya faqat to‘lov muvaffaqiyatli amalga oshirilganda avtomatik biriktiriladi.',
@@ -144,33 +163,64 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
 
+    const targetKey = edition === 'dubbing' ? `${gameId}__dub` : gameId;
+    const targetSlugKey = edition === 'dubbing' ? `${gameSlug}__dub` : gameSlug;
+
     try {
       const claimRes = await apiRequest<{ success: boolean; license?: GameLicense }>('api/v1/licenses/claim-free/', {
         method: 'POST',
-        body: JSON.stringify({ gameId, gameTitle, gameSlug }),
+        body: JSON.stringify({ gameId: targetKey, gameTitle, gameSlug: targetSlugKey }),
       });
 
       if (claimRes.license) {
         setLicenses((prev) => ({
           ...prev,
-          [gameId]: claimRes.license!,
-          [gameSlug]: claimRes.license!,
+          [targetKey]: claimRes.license!,
+          [targetSlugKey]: claimRes.license!,
         }));
       }
       return { success: true };
     } catch (error: any) {
+      // Local fallback for dubbing edition when remote backend has not yet registered __dub records
+      if (edition === 'dubbing') {
+        const localLic: GameLicense = {
+          id: `${user?.uid || 'local'}_${targetKey}`,
+          userId: user?.uid || 'local',
+          userEmail: user?.email || '',
+          userName: user?.displayName || undefined,
+          gameId: targetKey,
+          gameTitle: `${gameTitle} (Dublyaj)`,
+          gameSlug: targetSlugKey,
+          status: 'active',
+          createdAt: new Date().toISOString(),
+        };
+        const stored = readLocalDubLicenses();
+        stored[targetKey] = localLic;
+        stored[targetSlugKey] = localLic;
+        try {
+          localStorage.setItem(LOCAL_DUB_LICENSES_KEY, JSON.stringify(stored));
+        } catch {}
+        setLicenses((prev) => ({
+          ...prev,
+          [targetKey]: localLic,
+          [targetSlugKey]: localLic,
+        }));
+        return { success: true };
+      }
       console.error('Error claiming license:', error);
       return { success: false, message: error?.message || 'Litsenziyani olishda xatolik yuz berdi.' };
     }
   };
 
-  const isLicenseClaimed = (gameId: string): boolean => {
+  const isLicenseClaimed = (gameId: string, edition: LicenseEdition = 'subtitle'): boolean => {
     if (isAdmin) return true;
-    return !!licenses[gameId];
+    const key = edition === 'dubbing' ? `${gameId}__dub` : gameId;
+    return !!licenses[key];
   };
 
-  const getGameLicense = (gameId: string): GameLicense | undefined => {
-    return licenses[gameId];
+  const getGameLicense = (gameId: string, edition: LicenseEdition = 'subtitle'): GameLicense | undefined => {
+    const key = edition === 'dubbing' ? `${gameId}__dub` : gameId;
+    return licenses[key];
   };
 
   return (

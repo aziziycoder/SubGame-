@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { X, ShieldCheck, Loader2, ExternalLink, Lock } from 'lucide-react';
 import type { Game } from '../../types/game';
-import { createClickOrder, getGamePriceInfo } from '../../services/paymentService';
+import { createClickOrder, getGamePriceInfo, getDubbingPriceInfo } from '../../services/paymentService';
 import { ClickLogo, ClickBadge } from '../common/BrandLogos';
 
 interface ClickPaymentModalProps {
   game: Game;
   user: any;
+  edition?: 'subtitle' | 'dubbing';
   onClose: () => void;
   onSuccess?: () => void;
 }
@@ -14,19 +15,20 @@ interface ClickPaymentModalProps {
 export const ClickPaymentModal: React.FC<ClickPaymentModalProps> = ({
   game,
   user,
+  edition = 'subtitle',
   onClose,
 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const priceInfo = getGamePriceInfo(game);
+  const priceInfo = edition === 'dubbing' ? getDubbingPriceInfo(game) : getGamePriceInfo(game);
   const displayPrice = priceInfo.text;
 
   const handleProceedClick = async () => {
     setLoading(true);
     setError(null);
     try {
-      const order = await createClickOrder({ game });
+      const order = await createClickOrder({ game, edition });
 
       // Redirect to official Click payment gateway
       window.location.href = order.clickUrl;
@@ -70,7 +72,7 @@ export const ClickPaymentModal: React.FC<ClickPaymentModalProps> = ({
           <div className="absolute bottom-3 left-4 right-4 sm:left-5 sm:right-5 flex items-end justify-between gap-3">
             <div className="min-w-0">
               <span className="text-[10px] uppercase font-bold text-[#A3E635] tracking-wider block">
-                Rasmiy Litsenziya
+                Rasmiy Litsenziya • {edition === 'dubbing' ? 'O‘zbekcha Dublyaj' : 'Subtitr'}
               </span>
               <h3 className="text-lg sm:text-xl font-black text-white leading-tight truncate">
                 {game.title}

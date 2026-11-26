@@ -129,6 +129,12 @@ export const AdminPage: React.FC = () => {
     subtitleDownloadUrl: '/launcher',
     subtitlePrice: 'Bepul',
     subtitleTranslationType: 'To‘liq adabiy o‘zbekcha tarjima',
+    hasDubbing: false,
+    dubbingType: 'AI Dublyaj',
+    dubbingPrice: 'Bepul',
+    dubbingSize: '',
+    dubbingVersion: 'v1.0.0',
+    dubbingDownloadUrl: '',
     isFeatured: true,
     tags: ['O‘zbekcha subtitr'],
     // Launcher fields
@@ -266,6 +272,12 @@ export const AdminPage: React.FC = () => {
       subtitleSize: raw.subtitleSize || '',
       subtitlePrice: raw.subtitlePrice || 'Bepul',
       subtitleTranslationType: raw.subtitleTranslationType || 'To‘liq matnli mahalliylashtirish',
+      hasDubbing: Boolean(raw.hasDubbing),
+      dubbingType: raw.dubbingType || 'AI Dublyaj',
+      dubbingPrice: raw.dubbingPrice || 'Bepul',
+      dubbingSize: raw.dubbingSize || '',
+      dubbingVersion: raw.dubbingVersion || 'v1.0.0',
+      dubbingDownloadUrl: raw.dubbingDownloadUrl || '',
       defaultExeName: raw.defaultExeName || '',
       targetFileName: raw.targetFileName || '',
       targetRelativeDir: raw.targetRelativeDir || '',
@@ -1568,6 +1580,65 @@ export const AdminPage: React.FC = () => {
                         className="w-full min-w-0 px-3 py-2.5 rounded-xl bg-[#0B0D12] border border-[#2A3245] text-sm text-white font-mono text-xs"
                       />
                     </div>
+                  </div>
+
+                  {/* O'zbekcha Dublyaj sozlamalari */}
+                  <div className="p-3.5 rounded-xl bg-violet-500/10 border border-violet-500/30 space-y-3">
+                    <label className="flex items-center gap-2 text-xs font-bold text-violet-300 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(formData.hasDubbing)}
+                        onChange={(e) => setFormData({ ...formData, hasDubbing: e.target.checked })}
+                        className="rounded border-[#2A3245] bg-[#0B0D12] text-violet-500 focus:ring-violet-500"
+                      />
+                      <span>O‘zbekcha Dublyaj mavjud</span>
+                    </label>
+
+                    {formData.hasDubbing && (
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div>
+                          <label className="block text-[10px] text-gray-400 mb-1">Dublyaj turi</label>
+                          <select
+                            value={formData.dubbingType || 'AI Dublyaj'}
+                            onChange={(e) => setFormData({ ...formData, dubbingType: e.target.value })}
+                            className="w-full px-2.5 py-2 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white focus:outline-none focus:border-violet-400"
+                          >
+                            <option value="AI Dublyaj">AI Dublyaj</option>
+                            <option value="Professional Dublyaj">Professional Dublyaj</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] text-gray-400 mb-1">Dublyaj narxi</label>
+                          <input
+                            type="text"
+                            placeholder="Bepul yoki 25 000 so‘m"
+                            value={formData.dubbingPrice || 'Bepul'}
+                            onChange={(e) => setFormData({ ...formData, dubbingPrice: e.target.value })}
+                            className="w-full px-2.5 py-2 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white focus:outline-none focus:border-violet-400"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] text-gray-400 mb-1">Dublyaj hajmi</label>
+                          <input
+                            type="text"
+                            placeholder="1.16 GB"
+                            value={formData.dubbingSize || ''}
+                            onChange={(e) => setFormData({ ...formData, dubbingSize: e.target.value })}
+                            className="w-full px-2.5 py-2 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white font-mono focus:outline-none focus:border-violet-400"
+                          />
+                        </div>
+                        <div className="sm:col-span-3">
+                          <label className="block text-[10px] text-gray-400 mb-1">Dublyaj yuklab olish havolasi (URL)</label>
+                          <input
+                            type="text"
+                            placeholder="https://drive.google.com/..."
+                            value={formData.dubbingDownloadUrl || ''}
+                            onChange={(e) => setFormData({ ...formData, dubbingDownloadUrl: e.target.value })}
+                            className="w-full px-2.5 py-2 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white font-mono focus:outline-none focus:border-violet-400"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div>

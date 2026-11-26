@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import type { Game } from '../../types/game';
 import { SubtitleStatusBadge } from '../common/Badge';
 import { useFavorites } from '../../context/FavoritesContext';
-import { Heart, Monitor, ArrowRight, ShieldCheck, Tag, Sparkles, Users } from 'lucide-react';
-import { getGamePriceInfo } from '../../services/paymentService';
+import { Heart, Monitor, ArrowRight, ShieldCheck, Tag, Sparkles, Users, Mic, FileText } from 'lucide-react';
+import { getGamePriceInfo, getDubbingPriceInfo } from '../../services/paymentService';
 
 interface GameCardProps {
   game: Game;
@@ -16,6 +16,7 @@ export const GameCard: React.FC<GameCardProps> = ({ game, priority = false, clai
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorited = isFavorite(game.id);
   const priceInfo = getGamePriceInfo(game);
+  const dubPriceInfo = game.hasDubbing ? getDubbingPriceInfo(game) : null;
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -25,10 +26,21 @@ export const GameCard: React.FC<GameCardProps> = ({ game, priority = false, clai
 
   return (
     <div className="group relative bg-[#1A1F2A] rounded-2xl border border-[#2A3245] hover:border-[#A3E635]/60 transition-all duration-300 hover:shadow-card-glow flex flex-col overflow-hidden">
-      {/* Top Header Bar: Status Badge & Favorite button */}
+      {/* Top Header Bar: Status Badge & Dublyaj badge + Favorite button */}
       <div className="flex items-center justify-between px-3.5 py-2.5 bg-[#141821] border-b border-[#2A3245]">
-        <div className="flex items-center gap-2">
-          <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {(!game.hasDubbing || game.subtitleStatus !== 'Tayyor') && (
+            <SubtitleStatusBadge status={game.subtitleStatus} size="sm" />
+          )}
+          {game.hasDubbing && (
+            <span
+              className="inline-flex items-center gap-1 text-[11px] font-bold text-violet-300 bg-violet-500/15 border border-violet-500/35 px-2 py-0.5 rounded-full"
+              title="O‘zbekcha dublyaj"
+            >
+              <Mic className="w-3 h-3 text-violet-400" />
+              <span>Dublyaj</span>
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
@@ -108,11 +120,22 @@ export const GameCard: React.FC<GameCardProps> = ({ game, priority = false, clai
         </div>
 
         {/* Footer info: Platforms, Price status, Batafsil button */}
-        <div className="pt-4 mt-4 border-t border-[#2A3245]/60 flex items-center justify-between">
+        <div className="pt-4 mt-4 border-t border-[#2A3245]/60 flex items-center justify-between gap-2">
           <div className="flex flex-col min-w-0 pr-2">
-            <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Subtitr narxi:</span>
+            <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+              {game.hasDubbing ? 'Subtitr + Dublyaj:' : 'Subtitr narxi:'}
+            </span>
             <div className="mt-1 flex items-center">
-              {priceInfo.isPaid ? (
+              {game.hasDubbing && dubPriceInfo ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-black text-violet-300 bg-violet-500/20 border border-violet-500/40 shadow-sm">
+                  <FileText className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+                  <span className="text-violet-300/80 font-bold">+</span>
+                  <Mic className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+                  <span className="truncate text-violet-300">
+                    {dubPriceInfo.isPaid ? dubPriceInfo.text : priceInfo.text}
+                  </span>
+                </span>
+              ) : priceInfo.isPaid ? (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-black text-sky-300 bg-sky-500/15 border border-sky-500/35 shadow-sm">
                   <Tag className="w-3 h-3 text-sky-400 shrink-0" />
                   <span className="truncate">{priceInfo.text}</span>

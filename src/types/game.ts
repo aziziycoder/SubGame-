@@ -56,6 +56,18 @@ export interface Game {
   subtitleDownloadUrl?: string; // Real or direct link
   subtitlePrice: 'Bepul' | 'Pullik' | 'Tez kunda';
   subtitleTranslationType: string;
+
+  // Dubbing (Uzbek Voiceover) information
+  hasDubbing?: boolean;
+  dubbingStatus?: SubtitleStatus;
+  dubbingLanguage?: string;
+  dubbingVersion?: string;
+  dubbingLastUpdated?: string;
+  dubbingSize?: string;
+  dubbingDownloadUrl?: string;
+  dubbingPrice?: 'Bepul' | 'Pullik' | 'Tez kunda' | string;
+  dubbingType?: string;
+  dubbingFormat?: string;
   
   // Installation & Requirements
   installationGuide: InstallationStep[];

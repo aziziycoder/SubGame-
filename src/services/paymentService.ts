@@ -31,11 +31,10 @@ export interface GamePriceInfo {
 }
 
 /**
- * Standardized price calculator for cards, badges and checkout.
+ * Shared price calculator for subtitle or dubbing editions.
  */
-export function getGamePriceInfo(game: Game): GamePriceInfo {
-  // 1. If subtitle is not yet ready, it's always "Tez kunda"
-  if (game.subtitleStatus !== 'Tayyor') {
+function resolvePriceInfo(status: string | undefined, rawSubPrice: string, rawPrice: string): GamePriceInfo {
+  if (status && status !== 'Tayyor') {
     return {
       text: 'Tez kunda',
       isFree: false,
@@ -44,10 +43,6 @@ export function getGamePriceInfo(game: Game): GamePriceInfo {
       numericAmount: 0,
     };
   }
-
-  // 2. Check if explicit "Tez kunda"
-  const rawSubPrice = (game.subtitlePrice || '').trim();
-  const rawPrice = (game.price || '').trim();
 
   if (rawSubPrice.toLowerCase() === 'tez kunda' || rawPrice.toLowerCase() === 'tez kunda') {
     return {
@@ -59,7 +54,6 @@ export function getGamePriceInfo(game: Game): GamePriceInfo {
     };
   }
 
-  // 3. Numeric price in price or subtitlePrice
   const num = parseGamePrice(rawSubPrice) || parseGamePrice(rawPrice);
   if (num > 0) {
     const formatted = `${num.toLocaleString('ru-RU')} so‘m`;
@@ -72,7 +66,6 @@ export function getGamePriceInfo(game: Game): GamePriceInfo {
     };
   }
 
-  // 4. "Pullik" without explicit numbers -> default 15 000 so‘m
   if (rawSubPrice.toLowerCase() === 'pullik' || rawPrice.toLowerCase() === 'pullik') {
     return {
       text: '15 000 so‘m',
@@ -83,7 +76,6 @@ export function getGamePriceInfo(game: Game): GamePriceInfo {
     };
   }
 
-  // 5. Free
   return {
     text: 'Bepul',
     isFree: true,
@@ -93,8 +85,29 @@ export function getGamePriceInfo(game: Game): GamePriceInfo {
   };
 }
 
+/**
+ * Standardized price calculator for cards, badges and checkout (Subtitle).
+ */
+export function getGamePriceInfo(game: Game): GamePriceInfo {
+  return resolvePriceInfo(
+    game.subtitleStatus,
+    (game.subtitlePrice || '').trim(),
+    (game.price || '').trim()
+  );
+}
+
+/**
+ * Standardized price calculator for Dubbing (O'zbekcha ovoz berish).
+ */
+export function getDubbingPriceInfo(game: Game): GamePriceInfo {
+  const dubStatus = game.dubbingStatus || (game.hasDubbing ? 'Tayyor' : 'Tez kunda');
+  const rawDubPrice = (game.dubbingPrice || '').trim();
+  return resolvePriceInfo(dubStatus, rawDubPrice, rawDubPrice);
+}
+
 export interface CreateOrderParams {
   game: Game;
+  edition?: 'subtitle' | 'dubbing';
 }
 
 export interface CreateOrderResult {
@@ -108,12 +121,13 @@ export interface CreateOrderResult {
  * Creates an order on the backend and returns the official Click checkout redirect URL.
  * The backend takes the buyer from the JWT and the price from the game record.
  */
-export async function createClickOrder({ game }: CreateOrderParams): Promise<CreateOrderResult> {
+export async function createClickOrder({ game, edition = 'subtitle' }: CreateOrderParams): Promise<CreateOrderResult> {
   return apiRequest<CreateOrderResult>('api/v1/payments/order/create/', {
     method: 'POST',
     body: JSON.stringify({
-      gameId: game.id,
+      gameId: edition === 'dubbing' ? `${game.id}__dub` : game.id,
       gameSlug: game.slug,
+      edition,
     }),
   });
 }
