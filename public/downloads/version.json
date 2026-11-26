@@ -1,8 +1,8 @@
 {
-  "version": "1.4.8",
+  "version": "1.4.9",
   "downloadUrl": "https://github.com/aziziycoder/subgame-launcher/releases/download/v1.4.8/SubGame.Launcher.1.4.8.exe",
   "minRequiredVersion": "1.4.1",
-  "changelog": "SubGame Launcher 1.4.8: O‘zbekcha dublyaj paketlari (Subtitr va Dublyaj alohida tanlovi hamda hajm ko‘rsatkichlari) qo‘llab-quvvatlashi qo‘shildi.",
+  "changelog": "SubGame Launcher 1.4.9: O‘zbekcha dublyaj paketlarini avtomatik yuklab olish va o‘yin papkasiga joylashtirish tuzatildi.",
   "releaseDate": "2026-11-26",
   "patchUrl": "https://www.subgame.uz/downloads/update-bundle.zip",
   "patchSize": "815 KB",
