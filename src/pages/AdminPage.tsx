@@ -46,6 +46,19 @@ import { DashboardOverview } from '../components/admin/DashboardOverview';
 import { TranslationRequestManager } from '../components/admin/TranslationRequestManager';
 import { SteamLogo, EpicGamesLogo } from '../components/common/BrandLogos';
 
+function toDirectDownloadUrl(raw: string): string {
+  const val = raw.trim();
+  const gDriveMatch = val.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (gDriveMatch && gDriveMatch[1]) {
+    return `https://drive.google.com/uc?export=download&id=${gDriveMatch[1]}`;
+  }
+  const gDriveIdMatch = val.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (gDriveIdMatch && gDriveIdMatch[1] && val.includes('drive.google.com')) {
+    return `https://drive.google.com/uc?export=download&id=${gDriveIdMatch[1]}`;
+  }
+  return val;
+}
+
 export const AdminPage: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'games' | 'sliders' | 'users' | 'licenses' | 'requests'>('dashboard');
@@ -1633,7 +1646,7 @@ export const AdminPage: React.FC = () => {
                             type="text"
                             placeholder="https://drive.google.com/..."
                             value={formData.dubbingDownloadUrl || ''}
-                            onChange={(e) => setFormData({ ...formData, dubbingDownloadUrl: e.target.value })}
+                            onChange={(e) => setFormData({ ...formData, dubbingDownloadUrl: toDirectDownloadUrl(e.target.value) })}
                             className="w-full px-2.5 py-2 rounded-lg bg-[#0B0D12] border border-[#2A3245] text-xs text-white font-mono focus:outline-none focus:border-violet-400"
                           />
                         </div>
@@ -1764,27 +1777,7 @@ export const AdminPage: React.FC = () => {
                         type="text"
                         placeholder="Google Drive havolasi yoki to‘g‘ridan-to‘g‘ri yuklab olish URL"
                         value={formData.subtitleDownloadUrl || ''}
-                        onChange={(e) => {
-                          const val = e.target.value.trim();
-                          // Auto-convert Google Drive sharing link to direct download link
-                          const gDriveMatch = val.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-                          if (gDriveMatch && gDriveMatch[1]) {
-                            setFormData({
-                              ...formData,
-                              subtitleDownloadUrl: `https://drive.google.com/uc?export=download&id=${gDriveMatch[1]}`,
-                            });
-                          } else {
-                            const gDriveIdMatch = val.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-                            if (gDriveIdMatch && gDriveIdMatch[1] && val.includes('drive.google.com')) {
-                              setFormData({
-                                ...formData,
-                                subtitleDownloadUrl: `https://drive.google.com/uc?export=download&id=${gDriveIdMatch[1]}`,
-                              });
-                            } else {
-                              setFormData({ ...formData, subtitleDownloadUrl: val });
-                            }
-                          }
-                        }}
+                        onChange={(e) => setFormData({ ...formData, subtitleDownloadUrl: toDirectDownloadUrl(e.target.value) })}
                         className="w-full px-3.5 py-2 rounded-xl bg-[#141821] border border-[#2A3245] text-xs text-white font-mono focus:outline-none focus:border-[#A3E635]"
                       />
                       <p className="text-[11px] text-gray-500 mt-1">
